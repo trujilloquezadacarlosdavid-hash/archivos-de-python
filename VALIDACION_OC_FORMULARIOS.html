@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Validacion OC vs Formularios</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; background:#f0f2f5; color:#333; padding:20px; }
+.header { background: linear-gradient(135deg, #1a237e 0%, #283593 100%); color:#fff; padding:24px 32px; border-radius:12px; margin-bottom:24px; }
+.header h1 { font-size:22px; font-weight:600; }
+.header .sub { opacity:0.85; margin-top:6px; font-size:14px; }
+.card { background:#fff; border-radius:10px; margin-bottom:20px; box-shadow:0 1px 3px rgba(0,0,0,0.08); overflow:hidden; }
+.card-header { padding:16px 20px; }
+.card-title { display:flex; align-items:center; gap:10px; font-size:16px; font-weight:600; flex-wrap:wrap; }
+.card-icon { font-size:20px; }
+.card-badge { color:#fff; font-size:11px; padding:3px 10px; border-radius:12px; font-weight:500; }
+.card-meta { font-size:13px; color:#666; margin-top:6px; }
+.kpis { display:flex; gap:12px; padding:0 20px 16px; flex-wrap:wrap; }
+.kpi { background:#f8f9fa; border-radius:8px; padding:10px 16px; text-align:center; min-width:80px; }
+.kpi-val { font-size:20px; font-weight:700; display:block; }
+.kpi-lbl { font-size:11px; color:#888; text-transform:uppercase; }
+.kpi-ok .kpi-val { color:#27ae60; }
+.kpi-warn .kpi-val { color:#f39c12; }
+.kpi-bad .kpi-val { color:#e74c3c; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+thead { background:#f8f9fa; }
+th { text-align:left; padding:10px 12px; font-weight:600; color:#555; font-size:12px; text-transform:uppercase; border-bottom:2px solid #e0e0e0; }
+td { padding:8px 12px; border-bottom:1px solid #f0f0f0; }
+.num { text-align:right; font-variant-numeric:tabular-nums; }
+.desc { max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#555; }
+.status-icon { text-align:center; font-size:16px; }
+.status-text { font-weight:600; font-size:12px; }
+.row-ok .status-text { color:#27ae60; }
+.row-warn { background:#fff8e1; }
+.row-warn .status-text { color:#f39c12; }
+.row-bad { background:#fde8e8; }
+.row-bad .status-text { color:#e74c3c; }
+.nota { font-size:11px; color:#2980b9; font-style:italic; max-width:220px; }
+.footer { text-align:center; color:#aaa; font-size:12px; margin-top:24px; }
+</style>
+</head>
+<body>
+<div class="header">
+    <h1>Validacion de OC vs Formularios de Entrega</h1>
+    <div class="sub">Verifica disponibilidad de Orden de Compra para las entregas de manana &mdash; Generado: 21/08/2026 08:32</div>
+</div>
+
+<div class="card" style="border-left: 5px solid #e74c3c">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">&#10060;</span>
+            <span>MONDELEZ GUATEMALA LTDA.</span>
+            <span class="card-badge" style="background:#e74c3c">NO CUMPLE</span>
+        </div>
+        <div class="card-meta">
+            OC: <b>4400004059</b> &nbsp;|&nbsp;
+            Entrega: <b>21/08/2026</b> &nbsp;|&nbsp;
+            Bodega: <b>1110 CD - EL FRUTAL</b> &nbsp;|&nbsp;
+            De: Ampie Chavarria, Paola (Contractor)
+        </div>
+    </div>
+    <div class="kpis">
+        <div class="kpi"><span class="kpi-val">11</span><span class="kpi-lbl">SKUs</span></div>
+        <div class="kpi kpi-ok"><span class="kpi-val">9</span><span class="kpi-lbl">Cumple</span></div>
+        <div class="kpi kpi-warn"><span class="kpi-val">0</span><span class="kpi-lbl">Parcial</span></div>
+        <div class="kpi kpi-bad"><span class="kpi-val">2</span><span class="kpi-lbl">No Cumple</span></div>
+        <div class="kpi kpi-bad"><span class="kpi-val">5</span><span class="kpi-lbl">Agotada</span></div>
+        <div class="kpi"><span class="kpi-val">2,447</span><span class="kpi-lbl">Cajas Formulario</span></div>
+        <div class="kpi"><span class="kpi-val">5,255</span><span class="kpi-lbl">Cajas Disponibles</span></div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>OC</th>
+                <th>Codigo</th>
+                <th>Descripcion</th>
+                <th>Cajas Env.</th>
+                <th>Cajas Disp.</th>
+                <th>Status</th>
+                <th>Nota</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="row-ok">
+                <td class="status-icon">&#10004;</td>
+                <td>4400004063</td>
+                <td>A0010001411</td>
+                <td class="desc">CLORETS 100S BLUE CAM 32X60X2.8g</td>
+                <td class="num">1,400</td>
+                <td class="num">4,095</td>
+                <td class="status-text">CUMPLE</td>
+                <td class="nota"></td>
+            </tr>
+            <tr class="row-ok">
+                <td class="status-icon">&#10004;</td>
+                <td>4400004059</td>
+                <td>A0000001317</td>
+                <td class="desc">HALLS 100S SANDIA 30X100X3G</td>
+                <td class="num">309</td>
+                <td class="num">460</td>
+                <td class="status-text">CUMPLE</td>
+                <td class="nota"></td>
+            </tr>
+            <tr class="row-ok">
+                <td class="status-icon">&#10004;</td>
+                <td>4400004059</td>
+                <td>A0000001417</td>
+                <td class="desc">CLIGHT TE LIMON BI-PO 12X15X14G</td>
+                <td class="num">40</td>
+                <td class="num">40</td>
+                <td class="status-text">CUMPLE</td>
+                <td class="nota"></td>
+            </tr>
+            <tr class="row-ok">
+                <td class="status-icon">&#10004;</td>
+                <td>4400004059</td>
+                <td>A0000001365</td>
+                <td class="desc">CLIGHT FRESA BI-PO 12X15X14G FOP</td>
+                <td class="num">79</td>
+                <td class="num">79</td>
+                <td class="status-text">CUMPLE</td>
+                <td class="nota"></td>
+            </tr>
+            <tr class="row-ok">
+                <td class="status-icon">&#10004;</td>
+                <td>4400004059</td>
+                <td>A0010001429</td>
+                <td class="desc">TANG UVA WC 12X12X13GR</td>
+                <td class="num">56</td>
+                <td class="num">56</td>
+                <td class="status-text">CUMPLE</td>
+                <td class="nota"></td>
+            </tr>
+            <tr class="row-bad">
+                <td class="status-icon">&#10060;</td>
+                <td>4400004124</td>
+                <td>A0010001429</td>
+                <td class="desc">TANG UVA WC 12X12X13GR</td>
+                <td class="num">198</td>
+                <td class="num">0</td>
+                <td class="status-text">NO CUMPLE</td>
+                <td class="nota">Disponible en OC 4400004123 (198 cajas)</td>
+            </tr>
+            <tr class="row-ok">
+                <td class="status-icon">&#10004;</td>
+                <td>4400004059</td>
+                <td>A0010001423</td>
+                <td class="desc">TANG MIX NAR FRES MARAC 12X12X13GR</td>
+                <td class="num">81</td>
+                <td class="num">152</td>
+                <td class="status-text">CUMPLE</td>
+                <td class="nota"></td>
+            </tr>
+            <tr class="row-ok">
+                <td class="status-icon">&#10004;</td>
+                <td>4400004059</td>
+                <td>A0010002898</td>
+                <td class="desc">TRIDENT SPLASH FRELIM WC 18X10X17.9</td>
+                <td class="num">82</td>
+                <td class="num">207</td>
+                <td class="status-text">CUMPLE</td>
+                <td class="nota"></td>
+            </tr>
+            <tr class="row-ok">
+                <td class="status-icon">&#10004;</td>
+                <td>4400004059</td>
+                <td>A0000004308</td>
+                <td class="desc">TRIDENT SPLASH SANLIM WC 18X10X17.9</td>
+                <td class="num">89</td>
+                <td class="num">89</td>
+                <td class="status-text">CUMPLE</td>
+                <td class="nota"></td>
+            </tr>
+            <tr class="row-bad">
+                <td class="status-icon">&#10060;</td>
+                <td>4400003204</td>
+                <td>A0000004308</td>
+                <td class="desc">TRIDENT SPLASH SANLIM WC 18X10X17.9</td>
+                <td class="num">36</td>
+                <td class="num">0</td>
+                <td class="status-text">NO CUMPLE</td>
+                <td class="nota">Disponible en OC 4400004059 (89 cajas)</td>
+            </tr>
+            <tr class="row-ok">
+                <td class="status-icon">&#10004;</td>
+                <td>4400004059</td>
+                <td>A0010002899</td>
+                <td class="desc">TRIDENT SPLASH YERBA WC 18X10X17.1</td>
+                <td class="num">77</td>
+                <td class="num">77</td>
+                <td class="status-text">CUMPLE</td>
+                <td class="nota"></td>
+            </tr>
+            <tr><td colspan="8" style="padding:10px 12px;font-weight:600;font-size:12px;color:#c0392b;background:#fde8e8;border-top:2px solid #e74c3c;">
+                &#9888; Otros productos en esta OC con capacidad agotada en SAP
+            </td></tr>
+            <tr class="row-bad">
+                <td class="status-icon">&#128683;</td>
+                <td>4400004063</td>
+                <td>A0000001394</td>
+                <td class="desc">(Pedido: 1,964 / Recibido: 1,964)</td>
+                <td class="num">-</td>
+                <td class="num">0</td>
+                <td class="status-text">AGOTADA</td>
+                <td class="nota"></td>
+            </tr>
+            <tr class="row-bad">
+                <td class="status-icon">&#128683;</td>
+                <td>4400004063</td>
+                <td>A0000001501</td>
+                <td class="desc">(Pedido: 152 / Recibido: 152)</td>
+                <td class="num">-</td>
+                <td class="num">0</td>
+                <td class="status-text">AGOTADA</td>
+                <td class="nota"></td>
+            </tr>
+            <tr class="row-bad">
+                <td class="status-icon">&#128683;</td>
+                <td>4400004063</td>
+                <td>A0050001340</td>
+                <td class="desc">(Pedido: 9,868 / Recibido: 9,868)</td>
+                <td class="num">-</td>
+                <td class="num">0</td>
+                <td class="status-text">AGOTADA</td>
+                <td class="nota"></td>
+            </tr>
+            <tr class="row-bad">
+                <td class="status-icon">&#128683;</td>
+                <td>4400004124</td>
+                <td>A0010003284</td>
+                <td class="desc">(Pedido: 104 / Recibido: 104)</td>
+                <td class="num">-</td>
+                <td class="num">0</td>
+                <td class="status-text">AGOTADA</td>
+                <td class="nota"></td>
+            </tr>
+            <tr class="row-bad">
+                <td class="status-icon">&#128683;</td>
+                <td>4400004124</td>
+                <td>A0020003286</td>
+                <td class="desc">(Pedido: 104 / Recibido: 104)</td>
+                <td class="num">-</td>
+                <td class="num">0</td>
+                <td class="status-text">AGOTADA</td>
+                <td class="nota"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="footer">
+    Fuente: LOGISTICA.V_OC_CAJAS_DISPONIBLES &mdash; SQL 172.16.5.43/IN_E
+</div>
+</body>
+</html>

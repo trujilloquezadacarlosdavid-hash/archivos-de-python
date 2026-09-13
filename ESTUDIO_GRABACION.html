@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estudio de Grabación - Actividad 2 IBS</title>
+<style>
+  :root{
+    --navy:#1B2A4A; --navy2:#243356; --blue:#2563EB; --amber:#F59E0B;
+    --teal:#0D9488; --purple:#7C3AED; --ink:#0f172a; --muted:#94A3B8;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Segoe UI',Calibri,Arial,sans-serif;
+    background:#0b1220; color:#fff; overflow:hidden;
+  }
+  #stage{position:fixed; inset:0; display:flex; align-items:center; justify-content:center;}
+  #bg{position:absolute; inset:0; background:
+      radial-gradient(1200px 600px at 80% 20%, #24345a 0%, transparent 60%),
+      radial-gradient(900px 500px at 10% 90%, #1c2c50 0%, transparent 55%),
+      linear-gradient(135deg, #0d1730 0%, #16234a 100%);}
+  .orb{position:absolute; border-radius:50%; filter:blur(2px); opacity:.35;}
+  .orb.a{width:520px;height:520px;right:-120px;top:-120px;background:radial-gradient(circle,#2b3e6e,transparent 70%);}
+  .orb.b{width:360px;height:360px;left:-100px;bottom:-90px;background:radial-gradient(circle,#22528f,transparent 70%);}
+
+  #camWrap{
+    position:relative; width:min(92vw,1180px); aspect-ratio:16/9;
+    border-radius:22px; overflow:hidden;
+    box-shadow:0 40px 90px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.06);
+    background:#000;
+  }
+  #video{position:absolute; width:1px; height:1px; opacity:0; pointer-events:none;}
+  #out{width:100%; height:100%; display:block; object-fit:cover;}
+
+  #brand{
+    position:absolute; left:26px; bottom:24px; z-index:5;
+    display:flex; align-items:center; gap:14px;
+    background:linear-gradient(90deg, rgba(27,42,74,.92), rgba(27,42,74,.55));
+    padding:12px 20px 12px 16px; border-radius:14px; backdrop-filter:blur(6px);
+    box-shadow:0 10px 30px rgba(0,0,0,.4);
+  }
+  #brand .badge{
+    width:46px;height:46px;border-radius:11px;
+    background:linear-gradient(135deg,var(--amber),#d97706);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:20px;color:#1b2a4a;flex:0 0 auto;
+  }
+  #brand .name{font-size:19px;font-weight:700;line-height:1.1;}
+  #brand .role{font-size:12.5px;color:#cbd5e1;letter-spacing:.3px;margin-top:2px;}
+
+  #sectionTag{
+    position:absolute; right:26px; top:22px; z-index:5;
+    background:rgba(15,23,42,.72); backdrop-filter:blur(6px);
+    padding:9px 16px; border-radius:999px; font-size:13px; font-weight:600;
+    letter-spacing:.4px; color:#e2e8f0; box-shadow:0 8px 24px rgba(0,0,0,.35);
+    display:flex; align-items:center; gap:8px;
+  }
+  #sectionTag .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);}
+
+  #recTag{
+    position:absolute; left:26px; top:22px; z-index:6;
+    display:none; align-items:center; gap:9px;
+    background:rgba(220,38,38,.92); padding:8px 15px; border-radius:999px;
+    font-weight:700; font-size:14px; box-shadow:0 8px 24px rgba(0,0,0,.4);
+  }
+  #recTag.on{display:flex;}
+  #recTag .blink{width:11px;height:11px;border-radius:50%;background:#fff;animation:blink 1s infinite;}
+  @keyframes blink{50%{opacity:.25;}}
+
+  #prompter{
+    position:absolute; left:50%; transform:translateX(-50%);
+    top:4%; width:min(80%,900px); height:34%;
+    z-index:4; overflow:hidden; pointer-events:none;
+    -webkit-mask-image:linear-gradient(to bottom, transparent, #000 16%, #000 78%, transparent);
+            mask-image:linear-gradient(to bottom, transparent, #000 16%, #000 78%, transparent);
+  }
+  #prompterInner{
+    padding:0 8px; text-align:center; will-change:transform;
+    text-shadow:0 2px 14px rgba(0,0,0,.9), 0 0 30px rgba(0,0,0,.6);
+  }
+  #prompterInner .line{ font-size:30px; line-height:1.5; font-weight:600; color:#fff; padding:6px 0; }
+  #prompterInner .cue{
+    display:inline-block; margin:14px 0 4px; padding:4px 14px;
+    font-size:15px; font-weight:800; letter-spacing:1px; border-radius:8px;
+    background:var(--amber); color:#1b2a4a;
+  }
+  #prompter.hidden{display:none;}
+
+  #bar{
+    position:fixed; left:50%; transform:translateX(-50%); bottom:16px; z-index:20;
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:center;
+    background:rgba(15,23,42,.92); border:1px solid rgba(255,255,255,.08);
+    padding:10px 14px; border-radius:16px; backdrop-filter:blur(10px);
+    box-shadow:0 18px 50px rgba(0,0,0,.5); max-width:96vw;
+  }
+  .btn{
+    border:none; border-radius:10px; padding:10px 15px; font-size:14px; font-weight:700;
+    cursor:pointer; color:#fff; background:#334155; transition:.15s; white-space:nowrap;
+  }
+  .btn:hover{filter:brightness(1.15);}
+  .btn.primary{background:var(--blue);}
+  .btn.rec{background:#dc2626;}
+  .btn.amber{background:var(--amber); color:#1b2a4a;}
+  .btn.ghost{background:#1e293b;}
+  .btn.on{outline:2px solid var(--amber);}
+  .btn:disabled{opacity:.4; cursor:not-allowed;}
+  .grp{display:flex; align-items:center; gap:6px; padding:0 6px; border-left:1px solid rgba(255,255,255,.1);}
+  .grp:first-child{border-left:none;}
+  .lbl{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
+  .iconbtn{
+    width:38px;height:38px;border-radius:10px;border:none;background:#334155;color:#fff;
+    font-size:17px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  }
+  .iconbtn:hover{filter:brightness(1.2);}
+  select{background:#334155;color:#fff;border:none;border-radius:9px;padding:9px;font-size:13px;font-weight:600;cursor:pointer;}
+
+  #sections{
+    position:fixed; right:14px; top:14px; z-index:15; width:230px;
+    background:rgba(15,23,42,.92); border:1px solid rgba(255,255,255,.08);
+    border-radius:14px; padding:12px; backdrop-filter:blur(10px);
+    box-shadow:0 18px 50px rgba(0,0,0,.5); display:none;
+  }
+  #sections.on{display:block;}
+  #sections h4{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;}
+  .secItem{ padding:8px 10px;border-radius:9px;font-size:13px;cursor:pointer; color:#cbd5e1;margin-bottom:4px;transition:.12s; }
+  .secItem:hover{background:#1e293b;}
+  .secItem.active{background:var(--blue);color:#fff;font-weight:700;}
+
+  /* Panel del saco */
+  #suitPanel{
+    position:fixed; left:14px; top:14px; z-index:15; width:210px;
+    background:rgba(15,23,42,.94); border:1px solid rgba(255,255,255,.08);
+    border-radius:14px; padding:14px; box-shadow:0 18px 50px rgba(0,0,0,.5); display:none;
+  }
+  #suitPanel.on{display:block;}
+  #suitPanel h4{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;}
+  #suitPanel .exp{font-size:10.5px;color:#fca5a5;margin-bottom:10px;line-height:1.3;}
+  #suitPanel label{font-size:11.5px;color:#cbd5e1;display:block;margin:9px 0 3px;}
+  #suitPanel input[type=range]{width:100%;}
+  #suitPanel .row{display:flex;gap:6px;margin-top:10px;}
+  #suitPanel .chip{flex:1;padding:6px;border-radius:8px;border:none;font-size:11px;font-weight:700;cursor:pointer;color:#fff;}
+
+
+  #intro{
+    position:fixed; inset:0; z-index:50; background:linear-gradient(135deg,#0d1730,#16234a);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; overflow:auto;
+  }
+  #intro h1{font-size:32px; margin-bottom:8px;}
+  #intro p{color:#cbd5e1; max-width:600px; margin-bottom:6px; line-height:1.5;}
+  #intro .steps{text-align:left; background:rgba(255,255,255,.05); padding:16px 22px; border-radius:14px; margin:16px 0; max-width:600px;}
+  #intro .steps li{margin:6px 0; color:#e2e8f0;}
+  #startBtn{margin-top:6px; font-size:17px; padding:15px 34px;}
+  #err{color:#fca5a5; margin-top:14px; font-size:14px; min-height:20px; max-width:600px;}
+  .hint{font-size:12.5px;color:var(--muted);margin-top:10px; max-width:600px;}
+  kbd{background:#334155;border-radius:5px;padding:1px 7px;font-size:12px;font-weight:700;}
+  #status{position:fixed; left:50%; transform:translateX(-50%); top:14px; z-index:30;
+    background:rgba(15,23,42,.9); padding:8px 16px; border-radius:999px; font-size:12.5px; color:#cbd5e1; display:none;}
+  #status.on{display:block;}
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div id="bg"><div class="orb a"></div><div class="orb b"></div></div>
+
+  <div id="camWrap">
+    <video id="video" autoplay playsinline muted></video>
+    <canvas id="out" width="1600" height="900"></canvas>
+
+    <div id="recTag"><span class="blink"></span><span id="recTime">00:00</span></div>
+    <div id="sectionTag"><span class="dot"></span><span id="sectionName">Portada</span></div>
+
+    <div id="prompter"><div id="prompterInner"></div></div>
+
+    <div id="brand">
+      <div class="badge">CT</div>
+      <div>
+        <div class="name" id="brandName">Carlos Trujillo</div>
+        <div class="role">Actividad 2 &middot; El reto de una empresa en crecimiento</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="status"></div>
+
+<div id="sections">
+  <h4>Secciones del guion</h4>
+  <div id="secList"></div>
+</div>
+
+<div id="suitPanel">
+  <h4>Saco / traje</h4>
+  <div class="exp">Experimental: es un overlay fijo. Ajústalo o mejor usa un saco real.</div>
+  <label>Tamaño</label><input id="suitSize" type="range" min="30" max="90" value="58">
+  <label>Vertical</label><input id="suitVert" type="range" min="-120" max="180" value="30">
+  <label>Horizontal</label><input id="suitHorz" type="range" min="-150" max="150" value="0">
+  <div class="row">
+    <button class="chip" style="background:#2b3345" data-tie="navy">Corbata azul</button>
+    <button class="chip" style="background:#7a1f2b" data-tie="maroon">Corbata vino</button>
+  </div>
+</div>
+
+<div id="bar">
+  <div class="grp">
+    <button class="btn rec" id="recBtn">● Grabar</button>
+    <button class="btn ghost" id="stopBtn" disabled>■ Detener</button>
+  </div>
+  <div class="grp">
+    <span class="lbl">Fondo</span>
+    <select id="bgSel">
+      <option value="blur" selected>Desenfocar mi cuarto (real)</option>
+      <option value="userbg">Subir foto real…</option>
+      <option value="office">Oficina desenfocada (simulada)</option>
+      <option value="studio">Fondo azul pro</option>
+      <option value="gray">Fondo gris neutro</option>
+      <option value="none">Sin efecto (cámara real)</option>
+    </select>
+    <input type="file" id="bgFile" accept="image/*" style="display:none">
+    <button class="btn ghost" id="suitBtn">👔 Saco</button>
+  </div>
+  <div class="grp">
+    <button class="btn primary" id="playBtn">▶ Teleprompter</button>
+    <button class="iconbtn" id="slowBtn" title="Más lento">–</button>
+    <span class="lbl" id="spdLbl">Vel 3</span>
+    <button class="iconbtn" id="fastBtn" title="Más rápido">+</button>
+    <button class="btn ghost" id="resetBtn">⟲</button>
+  </div>
+  <div class="grp">
+    <button class="iconbtn" id="fontDown" title="Texto menor">A-</button>
+    <button class="iconbtn" id="fontUp" title="Texto mayor">A+</button>
+    <button class="iconbtn" id="promUp" title="Subir texto (mirada más alta)">⤒</button>
+    <button class="iconbtn" id="promDown" title="Bajar texto">⤓</button>
+    <button class="btn ghost" id="secBtn">☰</button>
+    <button class="btn ghost" id="promBtn">Prompter: ON</button>
+    <button class="btn amber" id="fsBtn">⛶</button>
+  </div>
+</div>
+
+<div id="intro">
+  <h1>🎬 Estudio de Grabación</h1>
+  <p><strong>Actividad 2 — IBS.</strong> Cámara frontal, fondo profesional, teleprompter y grabación, todo aquí.</p>
+  <div class="steps">
+    <ol>
+      <li>Presiona <strong>Iniciar</strong> y permite <strong>cámara y micrófono</strong>.</li>
+      <li>Elige el <strong>Fondo</strong>: <em>Desenfocar mi cuarto</em> es lo más natural. Pon <strong>Pantalla completa</strong> ⛶.</li>
+      <li>Presiona <strong>● Grabar</strong>, espera 2 seg, y dale <strong>▶ Teleprompter</strong>.</li>
+      <li>Lee mirando a la cámara. Al terminar, <strong>■ Detener</strong> descarga tu video.</li>
+    </ol>
+  </div>
+  <button class="btn primary" id="startBtn">Iniciar cámara</button>
+  <div id="err"></div>
+  <p class="hint">Los fondos necesitan <strong>internet la primera vez</strong> (descargan el motor de imagen). Si tu red lo bloquea, usa "Sin efecto" y ordena tu fondo real.</p>
+  <p class="hint">Atajos: <kbd>Espacio</kbd> teleprompter · <kbd>R</kbd> grabar · <kbd>+</kbd>/<kbd>−</kbd> velocidad · <kbd>F</kbd> pantalla completa. Usa <strong>Chrome o Edge</strong> y ponte con luz de frente.</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
+<script>
+// ====== GUION ======
+const SCRIPT = [
+  { tag:"Portada", cue:"PORTADA", lines:[
+    "Buenas, soy Carlos Trujillo.",
+    "Les voy a hablar de una empresa de tecnología que está creciendo bien rápido,",
+    "pero trae cuatro problemas: la gente nueva no se acopla, se le va el personal,",
+    "los jefes no dan retroalimentación, y no hay planes para que la gente crezca.",
+    "Aquí les va lo que yo haría."
+  ]},
+  { tag:"1. La entrada (30/60/90)", cue:"ENTRADA DE LA GENTE NUEVA · 30/60/90", lines:[
+    "Primero, la entrada de la gente nueva, en tres etapas: treinta, sesenta y noventa días.",
+    "Los primeros treinta días son para que se acople.",
+    "Le pongo un compañero que lo guíe, lo capacito bien en las herramientas,",
+    "y lo presento con cada área, para que no ande perdido.",
+    "Porque la verdad, si uno deja botado al nuevo, se aburre y se va rápido.",
+    "Del treinta al sesenta, ya lo meto a trabajar con apoyo:",
+    "que agarre proyectos reales y que su jefe le diga cómo va, cada semana.",
+    "Y del sesenta al noventa, le pongo metas propias, su primera evaluación,",
+    "y un plan para que siga creciendo.",
+    "A los tres meses ya tenemos a alguien que rinde y que se pone la camiseta."
+  ]},
+  { tag:"2. Que crezcan", cue:"CÓMO HAGO QUE LA GENTE CREZCA", lines:[
+    "Segundo, cómo hago que la gente crezca. Trabajaría cuatro cosas.",
+    "Liderazgo: un programa de mentoría, que los más experimentados jalen a los que tienen potencial.",
+    "Comunicación: talleres cada tres meses, practicando situaciones de a de veras, no pura teoría.",
+    "Pensamiento analítico: proyectos donde se juntan distintas áreas a resolver un problema real.",
+    "Y adaptación: rotarlos de puesto de vez en cuando, para que aprendan de todo.",
+    "Todo esto le pega a la rotación, porque cuando la gente siente que crece, no se va."
+  ]},
+  { tag:"3. Cómo los evalúo", cue:"CÓMO LOS EVALÚO · + STAR", lines:[
+    "Tercero, cómo los evalúo. Yo mezclaría tres cosas.",
+    "Por objetivos: los números, qué entregó, si cumplió sus metas.",
+    "Por competencias: el cómo, cómo se comunica, cómo trabaja en equipo.",
+    "Y evaluación trescientos sesenta: que no solo opine el jefe, sino los compañeros y hasta uno mismo.",
+    "¿Por qué las tres juntas? Porque una sola se queda coja; juntas dan la foto completa.",
+    "Y para sacar pruebas de verdad, en las entrevistas usaría la técnica STAR:",
+    "Situación, Tarea, Acción y Resultado.",
+    "En vez de preguntar '¿sos bueno en equipo?', le digo:",
+    "contame una situación difícil, qué te tocaba hacer, qué hiciste, y cómo salió.",
+    "Así me baso en hechos, no en pura carreta."
+  ]},
+  { tag:"4. Feedback (SBI)", cue:"FEEDBACK · MODELO SBI", lines:[
+    "Y por último, el feedback. Usaría el modelo SBI: Situación, Comportamiento e Impacto.",
+    "En vez de decirle a alguien 'lo hiciste mal', que no ayuda en nada, le digo:",
+    "Situación: en la reunión del lunes.",
+    "Comportamiento: presentaste sin las gráficas.",
+    "Impacto: el cliente no entendió, y se atrasó la decisión.",
+    "Así es claro, no es ataque personal, y se ve la consecuencia.",
+    "Para que jale: capacito a todos los jefes en esto,",
+    "pongo pláticas uno a uno cada dos semanas,",
+    "y que el feedback sea al momento, no guardado para fin de año."
+  ]},
+  { tag:"Cierre", cue:"CIERRE", lines:[
+    "Para cerrar: las cuatro cosas van amarradas.",
+    "Una buena entrada baja la rotación, el desarrollo retiene a la gente,",
+    "una evaluación justa da claridad, y el feedback constante",
+    "cierra la brecha entre el jefe y el colaborador.",
+    "Al final, para una empresa que crece, no se trata solo de contratar más gente,",
+    "sino de que la que llega se quiera quedar y crezca junto con la empresa.",
+    "Muchas gracias."
+  ]}
+];
+
+// ====== TAMAÑO DEL LIENZO (se ajusta a la resolución real de la cámara) ======
+let CW=1280, CH=720;
+const CAP=3840;   // tope 4K de ancho
+
+// Oficina realista fuera de foco (bokeh + luz de ventana, todo muy desenfocado)
+const officeSVG = `<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+  <defs>
+    <linearGradient id='wall' x1='0' y1='0' x2='0.3' y2='1'>
+      <stop offset='0' stop-color='#d7d1c5'/><stop offset='0.55' stop-color='#c3bcae'/><stop offset='1' stop-color='#a49d90'/>
+    </linearGradient>
+    <radialGradient id='win' cx='0.5' cy='0.45' r='0.6'>
+      <stop offset='0' stop-color='#fff6e2' stop-opacity='0.95'/><stop offset='1' stop-color='#f0e2c4' stop-opacity='0'/>
+    </radialGradient>
+    <radialGradient id='vig' cx='0.5' cy='0.48' r='0.75'>
+      <stop offset='0' stop-color='#000000' stop-opacity='0'/><stop offset='1' stop-color='#000000' stop-opacity='0.30'/>
+    </radialGradient>
+    <filter id='blurBig' x='-20%' y='-20%' width='140%' height='140%'><feGaussianBlur stdDeviation='30'/></filter>
+    <filter id='blurMed'><feGaussianBlur stdDeviation='14'/></filter>
+  </defs>
+  <rect width='1600' height='900' fill='url(#wall)'/>
+  <g filter='url(#blurBig)'>
+    <rect x='980' y='-60' width='700' height='1020' fill='#f6edd9' opacity='0.75'/>
+    <ellipse cx='1320' cy='300' rx='460' ry='560' fill='url(#win)'/>
+    <circle cx='1180' cy='170' r='80' fill='#fff3d6' opacity='0.55'/>
+    <circle cx='1380' cy='300' r='120' fill='#ffe6b8' opacity='0.45'/>
+    <circle cx='1500' cy='150' r='66' fill='#ffffff' opacity='0.40'/>
+    <circle cx='1060' cy='430' r='95' fill='#efe1c2' opacity='0.42'/>
+    <circle cx='1430' cy='520' r='90' fill='#f3e4c0' opacity='0.35'/>
+    <circle cx='250' cy='250' r='150' fill='#c9cdd4' opacity='0.35'/>
+    <circle cx='120' cy='540' r='120' fill='#bcc3ce' opacity='0.30'/>
+    <circle cx='520' cy='170' r='90' fill='#d5d9e0' opacity='0.30'/>
+    <rect x='-60' y='540' width='560' height='460' rx='50' fill='#8b8275' opacity='0.55'/>
+    <ellipse cx='360' cy='760' rx='180' ry='260' fill='#5f7a55' opacity='0.45'/>
+  </g>
+  <g filter='url(#blurMed)' opacity='0.55'>
+    <circle cx='1250' cy='210' r='24' fill='#fff7e2' opacity='0.75'/>
+    <circle cx='1440' cy='360' r='18' fill='#ffffff' opacity='0.6'/>
+    <circle cx='990' cy='300' r='22' fill='#ffe9c4' opacity='0.6'/>
+    <circle cx='1330' cy='120' r='16' fill='#fff' opacity='0.55'/>
+  </g>
+  <rect width='1600' height='900' fill='#2a2418' opacity='0.08'/>
+  <rect width='1600' height='900' fill='url(#vig)'/>
+</svg>`;
+const bgOffice = new Image();
+bgOffice.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(officeSVG);
+let userBg = null;   // imagen propia subida por el usuario
+
+// Saco SVG (se regenera al cambiar corbata)
+let suitTie='navy';
+function suitDataURI(){
+  const tie = suitTie==='maroon' ? '#7a1f2b' : '#243a63';
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='620' height='420'>
+    <path d='M60,420 L120,150 C160,120 250,110 310,150 C370,110 460,120 500,150 L560,420 Z' fill='#2b3140'/>
+    <path d='M120,150 L310,300 L200,420 L110,420 Z' fill='#3a4152'/>
+    <path d='M500,150 L310,300 L420,420 L510,420 Z' fill='#3a4152'/>
+    <path d='M235,150 C270,130 350,130 385,150 L360,420 L260,420 Z' fill='#f4f6fa'/>
+    <path d='M310,155 L285,200 L310,235 L335,200 Z' fill='${tie}'/>
+    <path d='M296,235 L324,235 L340,420 L280,420 Z' fill='${tie}'/>
+    <path d='M235,150 L310,205 L290,150 Z' fill='#e7ebf2'/>
+    <path d='M385,150 L310,205 L330,150 Z' fill='#e7ebf2'/>
+  </svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+let suitImg = new Image(); suitImg.src = suitDataURI();
+
+// ====== ESTADO ======
+let stream=null, recorder=null, chunks=[], recording=false, recStart=0, recTimer=null;
+let speed=3, fontSize=30, scrolling=false, rafId=null, offset=0, promVisible=true;
+let effect='blur', running=false, selfie=null, selfieReady=false, segFailed=false;
+let suitOn=false, suitScale=0.58, suitX=0, suitY=30;
+let bgBlur=5;          // desenfoque del fondo subido (profundidad de campo)
+let promTopPct=4;      // altura del teleprompter (cerca de la cámara)
+
+const inner=document.getElementById('prompterInner');
+const prompter=document.getElementById('prompter');
+const video=document.getElementById('video');
+const canvas=document.getElementById('out');
+const octx=canvas.getContext('2d');
+octx.imageSmoothingEnabled=true; octx.imageSmoothingQuality='high';
+let gradBlue=null, gradGray=null;
+
+function sizeCanvasToCamera(){
+  let w=video.videoWidth||1280, h=video.videoHeight||720;
+  if(w>CAP){ const s=CAP/w; w=CAP; h=Math.round(h*s); }
+  CW=w; CH=h;
+  canvas.width=CW; canvas.height=CH;
+  const label = CH>=2100 ? '4K' : CH>=1400 ? '2K/1440p' : CH>=1000 ? '1080p' : CH>=700 ? '720p' : (CH+'p');
+  showStatus('Cámara real detectada: '+CW+'×'+CH+' ('+label+'). '+(CH<1400?'Tu webcam no entrega 4K nativo; se graba a su máxima resolución real.':'Grabando en alta resolución.'), 6000);
+}
+
+function buildStudioGrad(){
+  // Fondo azul tipo estudio: foco de luz suave al centro, oscurece a los bordes (viñeta)
+  gradBlue=octx.createRadialGradient(CW*0.5,CH*0.40,CH*0.12, CW*0.5,CH*0.55,CH*1.05);
+  gradBlue.addColorStop(0,'#3d5c8a'); gradBlue.addColorStop(0.45,'#233c63');
+  gradBlue.addColorStop(1,'#0e1c34');
+  // Fondo gris neutro tipo ciclorama fotográfico
+  gradGray=octx.createRadialGradient(CW*0.5,CH*0.40,CH*0.12, CW*0.5,CH*0.55,CH*1.05);
+  gradGray.addColorStop(0,'#6b7480'); gradGray.addColorStop(0.5,'#454b55');
+  gradGray.addColorStop(1,'#23272e');
+}
+
+// ====== PROMPTER ======
+function buildPrompter(){
+  inner.innerHTML='';
+  SCRIPT.forEach((sec,si)=>{
+    const cue=document.createElement('div');
+    cue.className='cue'; cue.textContent='● '+sec.cue; cue.dataset.sec=si;
+    inner.appendChild(cue);
+    sec.lines.forEach(l=>{
+      const d=document.createElement('div'); d.className='line'; d.textContent=l; d.dataset.sec=si;
+      inner.appendChild(d);
+    });
+  });
+  applyFont();
+}
+function applyFont(){ document.querySelectorAll('#prompterInner .line').forEach(l=>l.style.fontSize=fontSize+'px'); }
+
+const secList=document.getElementById('secList');
+SCRIPT.forEach((sec,i)=>{
+  const d=document.createElement('div'); d.className='secItem'+(i===0?' active':'');
+  d.textContent=sec.tag; d.dataset.sec=i;
+  d.onclick=()=>jumpToSection(i);
+  secList.appendChild(d);
+});
+
+// ====== CÁMARA + SEGMENTACIÓN ======
+async function startCamera(){
+  const err=document.getElementById('err'); err.textContent='';
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({
+      video:{width:{ideal:3840},height:{ideal:2160},frameRate:{ideal:30},facingMode:'user'},
+      audio:{echoCancellation:true,noiseSuppression:true}
+    });
+    video.srcObject=stream;
+    await new Promise(r=>{ if(video.readyState>=1){r();} else { video.onloadedmetadata=r; } });
+    await video.play().catch(()=>{});
+    sizeCanvasToCamera();
+    document.getElementById('intro').style.display='none';
+    buildStudioGrad();
+    buildPrompter();
+    initSegmentation();
+    running=true; tick();
+  }catch(e){
+    err.textContent='No se pudo acceder a la cámara/micrófono: '+e.message+'. Revisa el candado de permisos en la barra de dirección.';
+  }
+}
+
+function initSegmentation(){
+  try{
+    if(typeof SelfieSegmentation==='undefined'){ segFailed=true; onSegFail(); return; }
+    selfie=new SelfieSegmentation({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${f}`});
+    selfie.setOptions({modelSelection:1, selfieMode:false});
+    selfie.onResults(onResults);
+    selfieReady=true;
+  }catch(e){ segFailed=true; onSegFail(); }
+}
+function onSegFail(){
+  effect='none'; document.getElementById('bgSel').value='none';
+  showStatus('No se pudo cargar el motor de fondo (¿sin internet o red bloqueada?). Grabando sin efecto de fondo.', 6000);
+}
+function showStatus(msg,ms){
+  const s=document.getElementById('status'); s.textContent=msg; s.classList.add('on');
+  if(ms) setTimeout(()=>s.classList.remove('on'),ms);
+}
+
+
+function coverParams(iw,ih){
+  const s=Math.max(CW/iw, CH/ih);
+  const dw=iw*s, dh=ih*s;
+  return {dx:(CW-dw)/2, dy:(CH-dh)/2, dw, dh};
+}
+
+async function tick(){
+  if(!running) return;
+  if(video.readyState>=2){
+    if(effect==='none' || !selfieReady || segFailed){ drawRaw(); }
+    else{
+      try{ await selfie.send({image:video}); }
+      catch(e){ drawRaw(); }
+    }
+  }
+  rafId=requestAnimationFrame(tick);
+}
+
+function drawRaw(){
+  const iw=video.videoWidth||1280, ih=video.videoHeight||720;
+  const p=coverParams(iw,ih);
+  octx.setTransform(-1,0,0,1,CW,0);   // espejo
+  octx.clearRect(0,0,CW,CH);
+  octx.drawImage(video,p.dx,p.dy,p.dw,p.dh);
+  octx.setTransform(1,0,0,1,0,0);
+  if(suitOn) drawSuit();
+}
+
+function onResults(results){
+  const iw=results.image.width||1280, ih=results.image.height||720;
+  const p=coverParams(iw,ih);
+  octx.setTransform(-1,0,0,1,CW,0);   // espejo
+  octx.clearRect(0,0,CW,CH);
+  // persona recortada por la máscara (con borde suave)
+  octx.filter='blur(2.5px)';
+  octx.drawImage(results.segmentationMask,p.dx,p.dy,p.dw,p.dh);
+  octx.globalCompositeOperation='source-in';
+  octx.filter='contrast(1.08) saturate(1.10) brightness(1.06)';   // realza a la persona
+  octx.drawImage(results.image,p.dx,p.dy,p.dw,p.dh);
+  octx.filter='none';
+  // fondo detrás
+  octx.globalCompositeOperation='destination-over';
+  if(effect==='blur'){
+    octx.filter='blur(18px)';
+    octx.drawImage(results.image,p.dx-28,p.dy-28,p.dw+56,p.dh+56);
+    octx.filter='none';
+  }else if(effect==='userbg' && userBg && userBg.complete && userBg.naturalWidth){
+    const q=coverParams(userBg.naturalWidth,userBg.naturalHeight);
+    octx.filter='blur('+bgBlur+'px)';                              // profundidad de campo
+    octx.drawImage(userBg,q.dx-16,q.dy-16,q.dw+32,q.dh+32);
+    octx.filter='none';
+  }else if(effect==='office'){
+    const q=coverParams(bgOffice.naturalWidth||CW,bgOffice.naturalHeight||CH);
+    if(bgOffice.complete && bgOffice.naturalWidth) octx.drawImage(bgOffice,q.dx,q.dy,q.dw,q.dh);
+    else { octx.fillStyle=gradBlue; octx.fillRect(0,0,CW,CH); }
+  }else if(effect==='studio'){
+    octx.fillStyle=gradBlue; octx.fillRect(0,0,CW,CH);
+  }else if(effect==='gray'){
+    octx.fillStyle=gradGray; octx.fillRect(0,0,CW,CH);
+  }else{
+    octx.fillStyle=gradBlue; octx.fillRect(0,0,CW,CH);
+  }
+  octx.globalCompositeOperation='source-over';
+  octx.setTransform(1,0,0,1,0,0);
+  if(suitOn) drawSuit();
+}
+
+function drawSuit(){
+  if(!suitImg.complete || !suitImg.naturalWidth) return;
+  const sw=CW*suitScale;
+  const sh=(suitImg.naturalHeight/suitImg.naturalWidth)*sw;
+  const sx=(CW-sw)/2 + suitX;
+  const sy=CH-sh+ (suitY-30);
+  octx.drawImage(suitImg,sx,sy,sw,sh);
+}
+
+// ====== GRABACIÓN (graba el canvas compuesto + audio) ======
+function pickMime(){
+  const opts=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm','video/mp4'];
+  for(const o of opts){ if(MediaRecorder.isTypeSupported(o)) return o; }
+  return '';
+}
+function startRec(){
+  if(!stream||recording) return;
+  chunks=[];
+  const cs=canvas.captureStream(30);
+  const at=stream.getAudioTracks()[0];
+  if(at) cs.addTrack(at);
+  const mime=pickMime();
+  // bitrate acorde a la resolución real: ~4K 24Mbps, 1440p 16, 1080p 10, 720p 6
+  const vbps = CH>=2100?24000000 : CH>=1400?16000000 : CH>=1000?10000000 : 6000000;
+  const opts=mime?{mimeType:mime, videoBitsPerSecond:vbps}:{videoBitsPerSecond:vbps};
+  try{ recorder=new MediaRecorder(cs, opts); }
+  catch(e){ try{ recorder=new MediaRecorder(cs); }catch(e2){ alert('No se pudo iniciar la grabación: '+e2.message); return; } }
+  recorder.ondataavailable=e=>{ if(e.data.size>0) chunks.push(e.data); };
+  recorder.onstop=saveRec;
+  recorder.start();
+  recording=true; recStart=Date.now();
+  document.getElementById('recTag').classList.add('on');
+  document.getElementById('recBtn').disabled=true;
+  document.getElementById('stopBtn').disabled=false;
+  recTimer=setInterval(()=>{
+    const s=Math.floor((Date.now()-recStart)/1000);
+    const m=String(Math.floor(s/60)).padStart(2,'0'), ss=String(s%60).padStart(2,'0');
+    const t=document.getElementById('recTime'); t.textContent=m+':'+ss;
+    t.style.color = s>360 ? '#fecaca' : '#fff';
+  },250);
+}
+function stopRec(){
+  if(!recording) return;
+  recorder.stop(); recording=false;
+  clearInterval(recTimer);
+  document.getElementById('recTag').classList.remove('on');
+  document.getElementById('recBtn').disabled=false;
+  document.getElementById('stopBtn').disabled=true;
+}
+function saveRec(){
+  const type=recorder.mimeType||'video/webm';
+  const ext=type.includes('mp4')?'mp4':'webm';
+  const blob=new Blob(chunks,{type});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='Actividad2_Carlos_Trujillo.'+ext;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),4000);
+}
+
+// ====== TELEPROMPTER MOVIMIENTO ======
+function loop(){
+  if(!scrolling) return;
+  offset += speed*0.14;
+  const max=inner.scrollHeight+prompter.clientHeight*0.5;
+  if(offset>max){ offset=max; scrolling=false; document.getElementById('playBtn').textContent='▶ Teleprompter'; }
+  inner.style.transform='translateY('+(prompter.clientHeight*0.28 - offset)+'px)';
+  updateSectionByScroll();
+  requestAnimationFrame(loop);
+}
+function togglePlay(){
+  scrolling=!scrolling;
+  document.getElementById('playBtn').textContent = scrolling?'⏸ Pausar':'▶ Teleprompter';
+  if(scrolling) loop();
+}
+function resetPrompter(){
+  scrolling=false; offset=0;
+  inner.style.transform='translateY('+(prompter.clientHeight*0.28)+'px)';
+  document.getElementById('playBtn').textContent='▶ Teleprompter';
+  jumpToSection(0);
+}
+function jumpToSection(i){
+  const el=[...document.querySelectorAll('#prompterInner .cue')][i];
+  if(!el) return;
+  offset=el.offsetTop;
+  inner.style.transform='translateY('+(prompter.clientHeight*0.28 - offset)+'px)';
+  setActiveSection(i);
+}
+function updateSectionByScroll(){
+  const cues=[...document.querySelectorAll('#prompterInner .cue')];
+  let cur=0; cues.forEach((c,i)=>{ if(c.offsetTop<=offset+40) cur=i; });
+  setActiveSection(cur);
+}
+function setActiveSection(i){
+  document.getElementById('sectionName').textContent=SCRIPT[i].tag;
+  document.querySelectorAll('.secItem').forEach((s,si)=>s.classList.toggle('active',si===i));
+}
+
+// ====== CONTROLES ======
+document.getElementById('startBtn').onclick=startCamera;
+document.getElementById('recBtn').onclick=startRec;
+document.getElementById('stopBtn').onclick=stopRec;
+document.getElementById('playBtn').onclick=togglePlay;
+document.getElementById('resetBtn').onclick=resetPrompter;
+document.getElementById('slowBtn').onclick=()=>setSpeed(speed-1);
+document.getElementById('fastBtn').onclick=()=>setSpeed(speed+1);
+function setSpeed(v){ speed=Math.max(1,Math.min(20,v)); document.getElementById('spdLbl').textContent='Vel '+speed; }
+document.getElementById('fontUp').onclick=()=>{ fontSize=Math.min(52,fontSize+2); applyFont(); };
+document.getElementById('fontDown').onclick=()=>{ fontSize=Math.max(18,fontSize-2); applyFont(); };
+function applyPromTop(){ prompter.style.top=promTopPct+'%'; }
+document.getElementById('promUp').onclick=()=>{ promTopPct=Math.max(0,promTopPct-3); applyPromTop(); };
+document.getElementById('promDown').onclick=()=>{ promTopPct=Math.min(55,promTopPct+3); applyPromTop(); };
+document.getElementById('secBtn').onclick=()=>document.getElementById('sections').classList.toggle('on');
+document.getElementById('promBtn').onclick=()=>{
+  promVisible=!promVisible;
+  prompter.classList.toggle('hidden',!promVisible);
+  document.getElementById('promBtn').textContent='Prompter: '+(promVisible?'ON':'OFF');
+};
+document.getElementById('fsBtn').onclick=()=>{
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+};
+document.getElementById('bgSel').onchange=e=>{
+  const v=e.target.value;
+  if(v==='userbg'){                       // abrir selector de foto real
+    if(segFailed || !selfieReady){
+      showStatus('El motor de fondo no cargó; no se puede reemplazar el fondo.',4000);
+      e.target.value=effect; return;
+    }
+    document.getElementById('bgFile').click();
+    e.target.value=effect;                // se cambiará al cargar la foto
+    return;
+  }
+  if(v!=='none' && (segFailed || !selfieReady)){
+    showStatus('El motor de fondo no cargó; se mantiene "Sin efecto".',4000);
+    e.target.value='none'; effect='none'; return;
+  }
+  effect=v;
+};
+document.getElementById('bgFile').onchange=e=>{
+  const f=e.target.files && e.target.files[0]; if(!f) return;
+  const img=new Image();
+  img.onload=()=>{
+    userBg=img; effect='userbg';
+    document.getElementById('bgSel').value='userbg';
+    showStatus('Foto de fondo cargada.',2500);
+  };
+  img.onerror=()=>showStatus('No se pudo cargar esa imagen.',3000);
+  img.src=URL.createObjectURL(f);
+};
+document.getElementById('suitBtn').onclick=()=>{
+  suitOn=!suitOn;
+  document.getElementById('suitBtn').classList.toggle('on',suitOn);
+  document.getElementById('suitPanel').classList.toggle('on',suitOn);
+};
+document.getElementById('suitSize').oninput=e=>suitScale=e.target.value/100;
+document.getElementById('suitVert').oninput=e=>suitY=+e.target.value;
+document.getElementById('suitHorz').oninput=e=>suitX=+e.target.value;
+document.querySelectorAll('#suitPanel .chip').forEach(b=>b.onclick=()=>{
+  suitTie=b.dataset.tie; suitImg=new Image(); suitImg.src=suitDataURI();
+});
+
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('intro').style.display==='none'){
+    if(e.code==='Space'){ e.preventDefault(); togglePlay(); }
+    else if(e.key==='r'||e.key==='R'){ recording?stopRec():startRec(); }
+    else if(e.key==='+'||e.key==='='){ setSpeed(speed+1); }
+    else if(e.key==='-'||e.key==='_'){ setSpeed(speed-1); }
+    else if(e.key==='f'||e.key==='F'){ document.getElementById('fsBtn').click(); }
+  }
+});
+
+window.addEventListener('resize',()=>{ if(!scrolling) inner.style.transform='translateY('+(prompter.clientHeight*0.28 - offset)+'px)'; });
+</script>
+</body>
+</html>

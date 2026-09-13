@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.pyo
+*.zip
+*.tmp
+~$*
+.DS_Store
+Thumbs.db
+PyWhatKit_DB.txt

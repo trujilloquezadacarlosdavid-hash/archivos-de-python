@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faltantes de Recepción · Bodega 1110 (CEDI)</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2230; --line:#2a3240;
+    --tx:#e6edf3; --tx2:#9aa7b4; --tx3:#6b7684;
+    --azul:#3b82f6; --azul2:#1f3a5f;
+    --verde:#22c55e; --verdebg:#0e2a1a;
+    --rojo:#ef4444; --rojobg:#2a1414;
+    --amar:#f59e0b; --amarbg:#2a2110;
+    --morado:#a855f7;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.5;padding:28px;max-width:1180px;margin:0 auto}
+  h1{font-size:24px;font-weight:700;letter-spacing:-.3px}
+  .sub{color:var(--tx2);font-size:13px;margin-top:4px}
+  .tag{display:inline-block;background:var(--azul2);color:#cfe0ff;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;margin-right:6px}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:22px}
+  .grid{display:grid;gap:14px}
+  .kpis{grid-template-columns:repeat(4,1fr);margin-bottom:26px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden}
+  .kpi .n{font-size:30px;font-weight:800;line-height:1}
+  .kpi .l{color:var(--tx2);font-size:12px;margin-top:8px;font-weight:500}
+  .kpi .r{color:var(--tx3);font-size:11px;margin-top:3px}
+  .kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
+  .kpi.k1::before{background:var(--rojo)} .kpi.k2::before{background:var(--azul)}
+  .kpi.k3::before{background:var(--amar)} .kpi.k4::before{background:var(--verde)}
+  h2{font-size:16px;font-weight:700;margin:26px 0 12px;display:flex;align-items:center;gap:9px}
+  h2 .dot{width:9px;height:9px;border-radius:50%}
+  .sem{grid-template-columns:repeat(5,1fr)}
+  .prov{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+  .prov .name{font-weight:700;font-size:14px}
+  .prov .badge{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:20px;margin:9px 0 7px}
+  .prov .info{color:var(--tx2);font-size:11px;line-height:1.45}
+  .ok{background:var(--verdebg);border-color:#1c3a28}
+  .ok .badge{background:var(--verde);color:#04240f}
+  .bad{background:var(--rojobg);border-color:#3a1c1c}
+  .bad .badge{background:var(--rojo);color:#2a0808}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:12.5px}
+  thead th{background:var(--azul2);color:#dbe9ff;text-align:left;padding:10px 12px;font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.3px}
+  tbody td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+  tbody tr:hover{background:var(--panel2)}
+  .mono{font-family:'Consolas','Courier New',monospace;font-size:12px;color:#a9c7ff}
+  .num{text-align:center;font-weight:700;font-size:14px}
+  .pill{display:inline-block;font-size:10px;font-weight:700;padding:1px 8px;border-radius:20px}
+  .pill.si{background:var(--verde);color:#04240f}
+  .pill.no{background:#30363d;color:var(--tx2)}
+  .center{text-align:center}
+  .obs{color:var(--tx2);font-size:11.5px}
+  .totalrow td{background:var(--panel2);font-weight:700;border-top:2px solid var(--azul)}
+  .alert{background:var(--amarbg);border:1px solid #4a3a12;border-left:4px solid var(--amar);border-radius:10px;padding:13px 16px;margin-top:12px}
+  .alert.crit{background:var(--rojobg);border-color:#4a1c1c;border-left-color:var(--rojo)}
+  .alert b{color:var(--tx)}
+  .alert .h{font-weight:700;font-size:13px;margin-bottom:3px}
+  .alert p{color:var(--tx2);font-size:12px}
+  footer{margin-top:30px;padding-top:16px;border-top:1px solid var(--line);color:var(--tx3);font-size:11px;line-height:1.6}
+  .rojo{color:var(--rojo)} .verde{color:var(--verde)} .amar{color:var(--amar)}
+  @media print{body{padding:0;max-width:none} .kpi,.prov,table,.alert{break-inside:avoid}}
+  @media(max-width:860px){.kpis{grid-template-columns:repeat(2,1fr)}.sem{grid-template-columns:repeat(2,1fr)}body{padding:14px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Faltantes de Recepción — Bodega 1110 (CEDI)</h1>
+  <div class="sub">
+    <span class="tag">recepciones@ariumcorp.com</span>
+    <span class="tag">16 – 27 jul 2026</span>
+    Producto <b>no recibido físico</b> → ingreso a bodega virtual y traslado a <b>Bodega de Diferencias</b>.
+    Fuente: reportes <b>FSD</b> (REPORTE_DESCARGAS.pdf) por cita — dato tomado de la columna <i>Faltante</i>, no del cuerpo del correo.
+  </div>
+</header>
+
+<div class="grid kpis">
+  <div class="kpi k1"><div class="n rojo">12</div><div class="l">Faltantes de TUS 5 proveedores</div><div class="r">Solo Mondelez · 2 cajas + 10 unidades · 3 citas</div></div>
+  <div class="kpi k2"><div class="n">44</div><div class="l">Faltantes totales de recepción</div><div class="r">8 citas · todos los proveedores del CEDI</div></div>
+  <div class="kpi k3"><div class="n amar">1<span style="font-size:16px;color:var(--tx3)"> / 5</span></div><div class="l">De tus 5, con faltante</div><div class="r">3M · KRAFT · BAT · ALEN = sin faltante</div></div>
+  <div class="kpi k4"><div class="n">7</div><div class="l">Casos a mover a Diferencias</div><div class="r">+1 conflicto por revisar (maquila)</div></div>
+</div>
+
+<h2><span class="dot" style="background:var(--rojo)"></span>Tus 5 proveedores — semáforo</h2>
+<div class="grid sem">
+  <div class="prov bad">
+    <div class="name">MONDELEZ</div>
+    <div class="badge">CON FALTANTE</div>
+    <div class="info">3 citas · <b>12</b> cajas/unid<br>Ver tabla abajo</div>
+  </div>
+  <div class="prov ok">
+    <div class="name">3M</div>
+    <div class="badge">SIN FALTANTE</div>
+    <div class="info">Solo como producto en maquila TR4700023378. Recibido completo (dif. 0)</div>
+  </div>
+  <div class="prov ok">
+    <div class="name">KRAFT</div>
+    <div class="badge">SIN FALTANTE</div>
+    <div class="info">Cita 3003457 (16/07)<br>5 cajas dañadas · Faltante 0</div>
+  </div>
+  <div class="prov ok">
+    <div class="name">BAT</div>
+    <div class="badge">SIN FALTANTE</div>
+    <div class="info">Citas 3003458 / 3003464<br>Solo dañadas · +2 sobrante</div>
+  </div>
+  <div class="prov ok">
+    <div class="name">ALEN</div>
+    <div class="badge">SIN FALTANTE</div>
+    <div class="info">Ingreso 80 cajas CLORALEX MAX · sin reporte FSD</div>
+  </div>
+</div>
+
+<h2><span class="dot" style="background:var(--rojo)"></span>Faltantes MONDELEZ (tus 5) — para ingresar y mover</h2>
+<table>
+  <thead><tr><th>Fecha</th><th>Casa</th><th>Cita</th><th>OC / ST</th><th>SKU</th><th>Producto</th><th>Falt.</th><th>Unid</th><th>Destino</th></tr></thead>
+  <tbody>
+    <tr><td>16/07/2026</td><td>Mondelez Guatemala</td><td class="mono">3003455</td><td class="mono">OC4400003811</td><td class="mono">A0010001309</td><td>HALLS 9S EXTRA STRONG 24.75GX12UNX30BS</td><td class="num rojo">1</td><td class="center">Caja</td><td>Diferencias</td></tr>
+    <tr><td>22/07/2026</td><td>Mondelez Guatemala</td><td class="mono">3003543</td><td class="mono">OC4400003811</td><td class="mono">A0000002532</td><td>HALLS 9S MORA AZUL 25.2GX12UNX30PQ</td><td class="num rojo">1</td><td class="center">Caja</td><td>Diferencias</td></tr>
+    <tr><td>25/07/2026</td><td>Mondelez International</td><td class="mono">3003597</td><td class="mono">ST4700023432</td><td class="mono">A0010004023</td><td>MILKA ALPINE MILK 90GX25UN</td><td class="num rojo">10</td><td class="center">Unid</td><td>111I</td></tr>
+    <tr class="totalrow"><td colspan="6" style="text-align:right">TOTAL Mondelez</td><td class="num">12</td><td colspan="2" class="obs">2 cajas + 10 unidades</td></tr>
+  </tbody>
+</table>
+
+<h2><span class="dot" style="background:var(--amar)"></span>Otros proveedores con faltante (fuera de tus 5) — por si los manejas</h2>
+<table>
+  <thead><tr><th>Fecha</th><th>Casa</th><th>Cita</th><th>OC / ST</th><th>SKU</th><th>Producto</th><th>Falt.</th><th>Unid</th><th>Observación</th></tr></thead>
+  <tbody>
+    <tr><td>16/07/2026</td><td>CMI — Ind. Nac. Alimenticia (El Frutal)</td><td class="mono">3003456</td><td class="mono">OC4400003877</td><td class="mono">A0010003989</td><td>ALIMAX ADULTO 100LB</td><td class="num amar">10</td><td class="center">Caja</td><td class="obs">Faltante de origen</td></tr>
+    <tr><td>20/07/2026</td><td>CMI — El Frutal</td><td class="mono">3003510</td><td class="mono">OC4400003712</td><td class="mono">A0030000802</td><td>ALIMIAU ADULTO 420GX12UN</td><td class="num amar">1</td><td class="center">Caja</td><td class="obs">+97 rechazadas por falta de OC</td></tr>
+    <tr><td>21/07/2026</td><td>GRUMA — Derivados de Maíz</td><td class="mono">3003526</td><td class="mono">OC4400003857</td><td class="mono">A0000001798</td><td>BOCA2 JALAPEÑO FRITURA 107GX30BX</td><td class="num amar">1</td><td class="center">Caja</td><td class="obs">Correo rotulado "DEMAGUSA"; casa real GRUMA</td></tr>
+    <tr><td>22/07/2026</td><td>KERRY Guatemala (Tecnispice)</td><td class="mono">3003557</td><td class="mono">OC4400003665</td><td class="mono">MP0..002 / 007</td><td>HAN RAN Costilla (1) + Mariscada (16)</td><td class="num amar">17</td><td class="center">Caja</td><td class="obs">2 SKU distintos</td></tr>
+    <tr><td>25/07/2026</td><td>CMI — El Frutal</td><td class="mono">3003595</td><td class="mono">OC4400003921</td><td class="mono">A0010003988</td><td>ALIMAX ADULTO 44LB</td><td class="num amar">3</td><td class="center">Unid</td><td class="obs">Código incorrecto; +1 RUFO faltante origen</td></tr>
+    <tr class="totalrow"><td colspan="6" style="text-align:right">TOTAL otros</td><td class="num">32</td><td colspan="2" class="obs">El Frutal 14 · GRUMA 1 · Kerry 17</td></tr>
+  </tbody>
+</table>
+
+<h2><span class="dot" style="background:var(--amar)"></span>Pendientes y alertas</h2>
+<div class="alert crit">
+  <div class="h">⚠ Conflicto — Maquila TR4700023192 (Cita 3003468, 16/07)</div>
+  <p>El correo dice <b>"2 cajas con faltante"</b>, pero el reporte FSD de esa cita marca <b>Faltante 0</b> (solo 1 dañada). No lo ingresé como faltante: <b>hay que revisarlo con maquila</b> antes de mover algo.</p>
+</div>
+<div class="alert">
+  <div class="h">📁 Junio no está en la bandeja</div>
+  <p>El buzón <b>recepciones@ariumcorp.com</b> arrancó ~16-jul-2026; antes los FSD los firmaban personas. Además la bandeja está archivada: entre 1-jun y 15-jul solo quedan 57 correos. <b>Para cubrir junio hay que buscar en las carpetas archivadas / remitentes individuales.</b></p>
+</div>
+<div class="alert">
+  <div class="h">↔ Abasto (no es recepción CEDI)</div>
+  <p>El 15/07, traslado a sucursal <b>TR4700022890 (ruta CHIMAL)</b>: OREO ROLLO 30 u + GRISSLY GOMAS (Colombina) 36 u faltantes. Es flujo de <b>abasto</b>, distinto al de recepción — se incluye solo como referencia.</p>
+</div>
+
+<footer>
+  <b>Método:</b> lectura de la bandeja vía Outlook + extracción de la columna <i>Faltante</i> de cada REPORTE_DESCARGAS.pdf por cita (pdftotext). Se distinguió <b>faltante</b> (no recibido) de <b>dañado / rechazado / fuera de OC</b>, que no van a Diferencias.<br>
+  <b>Confidencial — uso interno Distribuidora Me Llega.</b> Los reportes por casa contienen información confidencial entre proveedores. Generado 27/07/2026.
+</footer>
+</body>
+</html>

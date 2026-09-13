@@ -1,0 +1,73 @@
+============================================
+  INSTRUCCIONES DE CONFIGURACIÓN
+  Reporte Diario CD El Frutal
+============================================
+
+ARCHIVOS QUE DEBES GUARDAR EN TU PC:
+─────────────────────────────────────
+1. generar_reporte_frutal.py   → El script principal (Python)
+2. GENERAR_REPORTE.bat         → Doble clic para generar manualmente
+3. CONSOLIDADO_FRANKY.xlsx     → Tu archivo de datos (ya lo tienes)
+
+Guarda los 3 archivos juntos en una misma carpeta, por ejemplo:
+   C:\Users\trujillo.c\Downloads\ReporteFrutal\
+
+
+PASO 1 - AJUSTAR RUTAS EN EL SCRIPT
+─────────────────────────────────────
+Abre generar_reporte_frutal.py con el Bloc de notas y edita:
+
+   EXCEL_INPUT  = r"C:\Users\trujillo.c\Downloads\CONSOLIDADO_FRANKY.xlsx"
+   HTML_OUTPUT  = r"C:\Users\trujillo.c\Downloads\reporte_elfrutal.html"
+
+Cambia las rutas según donde tengas tus archivos.
+
+
+PASO 2 - INSTALAR PYTHON (si no lo tienes)
+─────────────────────────────────────────────
+1. Ve a https://python.org/downloads
+2. Descarga Python 3.x e instala
+3. IMPORTANTE: marca "Add Python to PATH" durante la instalación
+
+
+PASO 3 - PROBAR CON DOBLE CLIC
+─────────────────────────────────
+1. Haz doble clic en GENERAR_REPORTE.bat
+2. Se abrirá una ventana negra y generará el reporte
+3. El HTML se abrirá automáticamente en tu navegador
+
+
+PASO 4 - TAREA PROGRAMADA (automático cada día)
+─────────────────────────────────────────────────
+Para que se ejecute solo todos los días:
+
+1. Abre el buscador de Windows y escribe: "Programador de tareas"
+2. Haz clic en "Crear tarea básica..." (panel derecho)
+3. Nombre: "Reporte El Frutal"
+4. Descripción: "Genera el reporte HTML diario de CD El Frutal"
+5. Haz clic en Siguiente
+6. Frecuencia: Diariamente
+7. Hora de inicio: elige la hora que prefieras (ej: 7:00 AM)
+8. Acción: "Iniciar un programa"
+9. Programa/script: Escribe la ruta completa a tu .bat, por ejemplo:
+       C:\Users\trujillo.c\Downloads\ReporteFrutal\GENERAR_REPORTE.bat
+10. Haz clic en Finalizar
+
+¡Listo! Cada día a la hora programada se generará el reporte 
+automáticamente con los datos actualizados del Excel.
+
+
+FLUJO DE TRABAJO RECOMENDADO:
+──────────────────────────────
+1. Actualizas CONSOLIDADO_FRANKY.xlsx como siempre
+2. El reporte se genera solo (o haces doble clic al .bat)
+3. Abres reporte_elfrutal.html en el navegador
+4. Seleccionas la fecha que quieres ver ✓
+
+
+SOPORTE:
+─────────
+Si el script da error, asegúrate de que:
+- La ruta al Excel en EXCEL_INPUT es correcta
+- Python está instalado (escribe "python --version" en cmd)
+- Las librerías están instaladas (el .bat las instala automáticamente)

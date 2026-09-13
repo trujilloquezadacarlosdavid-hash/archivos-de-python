@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analisis Asistencia - Reporte Identity</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--surface:#1a1a19;--surface-2:#242423;--surface-3:#2e2e2d;
+--text-1:#ffffff;--text-2:#c3c2b7;--text-3:#8a897e;
+--blue:#3987e5;--orange:#d95926;--aqua:#199e70;--red:#e66767;
+--yellow:#c98500;--magenta:#d55181;--green:#008300;
+--border:#3a3a38;
+font-family:'Segoe UI',system-ui,sans-serif;
+background:var(--surface);color:var(--text-1);
+}
+body{max-width:1200px;margin:0 auto;padding:16px}
+h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.subtitle{color:var(--text-2);font-size:13px;margin-bottom:20px}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px}
+.kpi{background:var(--surface-2);border-radius:8px;padding:16px;border:1px solid var(--border)}
+.kpi-label{font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.kpi-value{font-size:28px;font-weight:600}
+.kpi-delta{font-size:12px;margin-top:2px}
+.kpi-delta.up{color:var(--aqua)}.kpi-delta.down{color:var(--red)}
+.card{background:var(--surface-2);border-radius:8px;padding:20px;border:1px solid var(--border);margin-bottom:16px}
+.card-title{font-size:14px;font-weight:600;margin-bottom:12px}
+.card-subtitle{font-size:12px;color:var(--text-3);margin-bottom:16px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:768px){.grid-2{grid-template-columns:1fr}}
+canvas{width:100%!important;height:auto!important}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:8px 10px;color:var(--text-3);font-weight:500;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.3px}
+td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text-2)}
+tr:hover td{background:var(--surface-3)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500}
+.badge-red{background:rgba(230,103,103,.15);color:var(--red)}
+.badge-orange{background:rgba(217,89,38,.15);color:var(--orange)}
+.badge-blue{background:rgba(57,135,229,.15);color:var(--blue)}
+.badge-aqua{background:rgba(25,158,112,.15);color:var(--aqua)}
+.rank-bar{height:18px;border-radius:2px 4px 4px 2px;display:inline-block;vertical-align:middle;min-width:4px}
+.section-title{font-size:16px;font-weight:600;margin:28px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.insight{background:var(--surface-3);border-left:3px solid var(--orange);padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:13px;color:var(--text-2);line-height:1.5}
+.insight strong{color:var(--text-1)}
+.footer{text-align:center;color:var(--text-3);font-size:11px;margin-top:32px;padding:16px 0;border-top:1px solid var(--border)}
+.overflow-x{overflow-x:auto}
+</style>
+</head>
+<body>
+
+<h1>Reporte Identity - Analisis de Asistencia</h1>
+<p class="subtitle">Periodo: 30 abril - 29 julio 2026 &bull; 57 dias laborales registrados &bull; Generado: 29/07/2026</p>
+
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="kpi-label">Promedio Diario</div>
+    <div class="kpi-value" style="color:var(--blue)">14.7</div>
+    <div class="kpi-delta">personas/dia</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Dias Registrados</div>
+    <div class="kpi-value">57</div>
+    <div class="kpi-delta">de ~65 laborales</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Tardanzas Identificadas</div>
+    <div class="kpi-value" style="color:var(--orange)">14</div>
+    <div class="kpi-delta down">Uziel lidera con 6</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Ausencias Identificadas</div>
+    <div class="kpi-value" style="color:var(--red)">9</div>
+    <div class="kpi-delta down">Bryan lidera con 3</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Maximo Asistencia</div>
+    <div class="kpi-value" style="color:var(--aqua)">17</div>
+    <div class="kpi-delta up">7/5, 21/5, 29/5, 9/6</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Minimo Asistencia</div>
+    <div class="kpi-value" style="color:var(--red)">12</div>
+    <div class="kpi-delta down">16/5, 13/7, 18/7, 26/7</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Tendencia de Asistencia Diaria</div>
+  <div class="card-subtitle">Personas presentes por dia laboral (reporte de Roderico)</div>
+  <canvas id="chartTrend" height="280"></canvas>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">Ranking de Tardanzas</div>
+    <div class="card-subtitle">Incidentes documentados en el grupo</div>
+    <canvas id="chartLate" height="200"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title">Ranking de Ausencias</div>
+    <div class="card-subtitle">Dias que no se presentaron</div>
+    <canvas id="chartAbsent" height="200"></canvas>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Promedio Mensual de Asistencia</div>
+  <canvas id="chartMonthly" height="180"></canvas>
+</div>
+
+<div class="section-title">Hallazgos Clave</div>
+
+<div class="insight">
+  <strong>UZIEL</strong> es el caso mas critico de tardanza recurrente. Dorcas lo reporto formalmente el 11/7: <em>"por favor tomar en cuenta que Uziel estos ultimos dias ha venido tarde."</em> Roderico confirmo que tiene problemas con una moto prestada. El 26/7 fue suspendido por el IGSS. El 10/7 fue reportado jugando cartas en vez de trabajar junto con Bryan.
+</div>
+<div class="insight">
+  <strong>BRYAN</strong> acumula el mayor numero de incidentes combinados (tardanzas + ausencias). Ausente el 16/7, 20/7 y 26/7. Tarde el 6/7, 10/7 y 28/7. El 8/7, Carlos noto que alguien entro a las 3:15 sin registrarse y Roderico sospecho que era Bryan. El 10/7 fue reportado jugando cartas con Uziel.
+</div>
+<div class="insight">
+  <strong>DORA YOC</strong> tiene tardanzas recurrentes por problemas con su motocicleta (6/7: +30 min, 11/7: vehiculo). Tomo vacaciones el 25-26/7. Es una trabajadora regular pero el transporte le afecta.
+</div>
+<div class="insight">
+  <strong>TELMA</strong> registro 2 ausencias por enfermedad (20/7 y 29/7 con frios y fiebre). No muestra patron de indisciplina.
+</div>
+
+<div class="section-title">Detalle de Incidentes</div>
+<div class="overflow-x">
+<table>
+<thead>
+<tr><th>Fecha</th><th>Persona</th><th>Tipo</th><th>Detalle</th></tr>
+</thead>
+<tbody id="tbIncidents"></tbody>
+</table>
+</div>
+
+<div class="section-title">Registro Diario Completo</div>
+<div class="overflow-x">
+<table>
+<thead>
+<tr><th>Fecha</th><th>Dia</th><th>Presentes</th><th>Observaciones</th></tr>
+</thead>
+<tbody id="tbDaily"></tbody>
+</table>
+</div>
+
+<div class="footer">
+  Datos extraidos automaticamente del grupo WhatsApp "Reporte Identity" por Castro (asistente de Carlos Trujillo)<br>
+  Fuente: mensajes de Roderico &bull; Periodo: 30/04/2026 - 29/07/2026
+</div>
+
+<script>
+const BLUE='#3987e5',ORANGE='#d95926',AQUA='#199e70',RED='#e66767',YELLOW='#c98500',MAGENTA='#d55181';
+const SURFACE2='#242423',TEXT2='#c3c2b7',TEXT3='#8a897e',GRID='#3a3a38';
+
+const dailyData = [
+  {d:'2026-04-30',ct:13,dow:'Jue',obs:''},
+  {d:'2026-05-02',ct:13,dow:'Sab',obs:''},
+  {d:'2026-05-04',ct:14,dow:'Lun',obs:''},
+  {d:'2026-05-06',ct:16,dow:'Mie',obs:''},
+  {d:'2026-05-07',ct:17,dow:'Jue',obs:''},
+  {d:'2026-05-12',ct:14,dow:'Lun',obs:''},
+  {d:'2026-05-13',ct:16,dow:'Mar',obs:'Dora Yoc mencionada'},
+  {d:'2026-05-14',ct:17,dow:'Mie',obs:''},
+  {d:'2026-05-15',ct:16,dow:'Jue',obs:''},
+  {d:'2026-05-16',ct:12,dow:'Vie',obs:'Minimo del mes'},
+  {d:'2026-05-18',ct:15,dow:'Lun',obs:''},
+  {d:'2026-05-19',ct:16,dow:'Mar',obs:''},
+  {d:'2026-05-20',ct:16,dow:'Mie',obs:''},
+  {d:'2026-05-21',ct:17,dow:'Jue',obs:''},
+  {d:'2026-05-25',ct:16,dow:'Lun',obs:''},
+  {d:'2026-05-26',ct:16,dow:'Mar',obs:''},
+  {d:'2026-05-27',ct:16,dow:'Mie',obs:''},
+  {d:'2026-05-29',ct:17,dow:'Jue',obs:''},
+  {d:'2026-05-30',ct:16,dow:'Vie',obs:''},
+  {d:'2026-06-01',ct:16,dow:'Lun',obs:''},
+  {d:'2026-06-02',ct:16,dow:'Mar',obs:''},
+  {d:'2026-06-03',ct:16,dow:'Mie',obs:''},
+  {d:'2026-06-04',ct:16,dow:'Jue',obs:''},
+  {d:'2026-06-05',ct:16,dow:'Vie',obs:''},
+  {d:'2026-06-08',ct:13,dow:'Lun',obs:''},
+  {d:'2026-06-09',ct:17,dow:'Mar',obs:''},
+  {d:'2026-06-12',ct:16,dow:'Vie',obs:''},
+  {d:'2026-06-13',ct:14,dow:'Sab',obs:''},
+  {d:'2026-06-15',ct:15,dow:'Lun',obs:''},
+  {d:'2026-06-16',ct:16,dow:'Mar',obs:''},
+  {d:'2026-06-17',ct:13,dow:'Mie',obs:''},
+  {d:'2026-06-18',ct:13,dow:'Jue',obs:''},
+  {d:'2026-06-19',ct:15,dow:'Vie',obs:''},
+  {d:'2026-06-20',ct:14,dow:'Sab',obs:''},
+  {d:'2026-06-22',ct:15,dow:'Lun',obs:''},
+  {d:'2026-06-23',ct:16,dow:'Mar',obs:''},
+  {d:'2026-06-26',ct:14,dow:'Vie',obs:'Uziel el mas tarde'},
+  {d:'2026-07-06',ct:15,dow:'Lun',obs:'Dora, Uziel, Bryan tarde'},
+  {d:'2026-07-07',ct:15,dow:'Mar',obs:''},
+  {d:'2026-07-08',ct:15,dow:'Mie',obs:'Bryan sospechoso de no registrar hora'},
+  {d:'2026-07-09',ct:13,dow:'Jue',obs:''},
+  {d:'2026-07-10',ct:15,dow:'Vie',obs:'Bryan tarde; Uziel+Bryan jugando cartas'},
+  {d:'2026-07-11',ct:15,dow:'Sab',obs:'Dora y Uziel tarde (vehiculos); Dorcas reporto a Uziel'},
+  {d:'2026-07-13',ct:12,dow:'Lun',obs:''},
+  {d:'2026-07-14',ct:13,dow:'Mar',obs:''},
+  {d:'2026-07-15',ct:15,dow:'Mie',obs:''},
+  {d:'2026-07-16',ct:13,dow:'Jue',obs:'Uziel tarde 15min; Bryan y Luis Gatica ausentes'},
+  {d:'2026-07-17',ct:14,dow:'Vie',obs:''},
+  {d:'2026-07-18',ct:12,dow:'Sab',obs:''},
+  {d:'2026-07-20',ct:14,dow:'Lun',obs:'Telma y Bryan ausentes; nuevo elemento'},
+  {d:'2026-07-21',ct:16,dow:'Mar',obs:''},
+  {d:'2026-07-22',ct:15,dow:'Mie',obs:''},
+  {d:'2026-07-23',ct:16,dow:'Jue',obs:'Amalia tarde (enferma)'},
+  {d:'2026-07-25',ct:15,dow:'Vie',obs:'Dora vacaciones'},
+  {d:'2026-07-26',ct:12,dow:'Sab',obs:'Uziel IGSS, Dora vacaciones, Bryan y Jeferson ausentes'},
+  {d:'2026-07-28',ct:15,dow:'Lun',obs:'Bryan tarde'},
+  {d:'2026-07-29',ct:14,dow:'Mar',obs:'Telma ausente (enferma)'},
+];
+
+const incidents = [
+  {d:'26/06',who:'Uziel',tipo:'Tardanza',det:'El mas tarde en ingresar a bodega'},
+  {d:'06/07',who:'Dora',tipo:'Tardanza',det:'Mas de 30 min tarde, problema con moto'},
+  {d:'06/07',who:'Uziel',tipo:'Tardanza',det:'15 min tarde'},
+  {d:'06/07',who:'Bryan',tipo:'Tardanza',det:'15 min tarde'},
+  {d:'08/07',who:'Bryan',tipo:'Tardanza',det:'Sospecha de no registrar hora correcta'},
+  {d:'10/07',who:'Bryan',tipo:'Tardanza',det:'Tarde (3:26 vs reporte 3:22)'},
+  {d:'10/07',who:'Uziel',tipo:'Indisciplina',det:'Jugando cartas en maravilla con Bryan'},
+  {d:'10/07',who:'Bryan',tipo:'Indisciplina',det:'Jugando cartas en maravilla con Uziel'},
+  {d:'11/07',who:'Dora',tipo:'Tardanza',det:'Tarde por problemas con vehiculo'},
+  {d:'11/07',who:'Uziel',tipo:'Tardanza',det:'Tarde por vehiculo; Dorcas lo reporto formalmente'},
+  {d:'16/07',who:'Uziel',tipo:'Tardanza',det:'15 min tarde'},
+  {d:'16/07',who:'Bryan',tipo:'Ausencia',det:'No se reporto'},
+  {d:'16/07',who:'Luis Gatica',tipo:'Ausencia',det:'No se reporto'},
+  {d:'20/07',who:'Telma',tipo:'Ausencia',det:'No vino'},
+  {d:'20/07',who:'Bryan',tipo:'Ausencia',det:'No vino'},
+  {d:'23/07',who:'Amalia',tipo:'Tardanza',det:'Se desperto tarde, enferma'},
+  {d:'25/07',who:'Dora',tipo:'Ausencia',det:'Vacaciones (autorizada)'},
+  {d:'26/07',who:'Uziel',tipo:'Ausencia',det:'Suspendido por el IGSS'},
+  {d:'26/07',who:'Dora',tipo:'Ausencia',det:'Vacaciones (autorizada)'},
+  {d:'26/07',who:'Bryan',tipo:'Ausencia',det:'No vino'},
+  {d:'26/07',who:'Jeferson',tipo:'Ausencia',det:'No se presento'},
+  {d:'28/07',who:'Bryan',tipo:'Tardanza',det:'Ingreso 16 min despues del reporte'},
+  {d:'29/07',who:'Telma',tipo:'Ausencia',det:'Frios y fiebre'},
+];
+
+const lateRank = [
+  {name:'Uziel',count:6},
+  {name:'Bryan',count:5},
+  {name:'Dora',count:3},
+  {name:'Amalia',count:1},
+];
+
+const absentRank = [
+  {name:'Bryan',count:3},
+  {name:'Dora',count:2},
+  {name:'Telma',count:2},
+  {name:'Uziel',count:1},
+  {name:'Jeferson',count:1},
+  {name:'Luis Gatica',count:1},
+];
+
+// Populate incidents table
+const tbI=document.getElementById('tbIncidents');
+incidents.forEach(i=>{
+  const typeClass = i.tipo==='Tardanza'?'badge-orange':i.tipo==='Ausencia'?'badge-red':'badge-magenta';
+  const typeName = i.tipo==='Indisciplina'?'badge-red':typeClass;
+  tbI.innerHTML+=`<tr><td>${i.d}</td><td style="color:var(--text-1);font-weight:500">${i.who}</td><td><span class="badge ${i.tipo==='Tardanza'?'badge-orange':i.tipo==='Ausencia'?'badge-red':'badge-blue'}">${i.tipo}</span></td><td>${i.det}</td></tr>`;
+});
+
+// Populate daily table
+const tbD=document.getElementById('tbDaily');
+dailyData.forEach(r=>{
+  const dd=r.d.split('-');
+  const dateStr=dd[2]+'/'+dd[1];
+  const color = r.ct<=12?RED:r.ct<=13?ORANGE:r.ct>=17?AQUA:'var(--text-1)';
+  tbD.innerHTML+=`<tr><td>${dateStr}</td><td>${r.dow}</td><td style="color:${color};font-weight:600;font-variant-numeric:tabular-nums">${r.ct}</td><td>${r.obs}</td></tr>`;
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+Chart.defaults.color='#c3c2b7';
+Chart.defaults.borderColor='#3a3a38';
+Chart.defaults.font.family="'Segoe UI',system-ui,sans-serif";
+Chart.defaults.font.size=11;
+
+const labels=dailyData.map(r=>{const p=r.d.split('-');return p[2]+'/'+p[1].replace(/^0/,'')});
+const values=dailyData.map(r=>r.ct);
+
+// Trend chart
+new Chart(document.getElementById('chartTrend'),{
+  type:'line',
+  data:{
+    labels,
+    datasets:[{
+      label:'Personas presentes',
+      data:values,
+      borderColor:'#3987e5',
+      backgroundColor:'rgba(57,135,229,0.08)',
+      fill:true,
+      tension:.3,
+      borderWidth:2,
+      pointRadius:3,
+      pointBackgroundColor:'#3987e5',
+      pointBorderColor:'#1a1a19',
+      pointBorderWidth:2,
+      pointHoverRadius:6,
+    },{
+      label:'Promedio (14.7)',
+      data:Array(values.length).fill(14.7),
+      borderColor:'#8a897e',
+      borderWidth:1,
+      borderDash:[4,4],
+      pointRadius:0,
+      fill:false,
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    interaction:{mode:'index',intersect:false},
+    plugins:{
+      legend:{display:true,labels:{usePointStyle:true,pointStyle:'line',padding:16}},
+      tooltip:{
+        backgroundColor:'#2e2e2d',borderColor:'#3a3a38',borderWidth:1,
+        titleColor:'#fff',bodyColor:'#c3c2b7',
+        callbacks:{
+          afterBody:function(ctx){
+            const i=ctx[0].dataIndex;
+            const obs=dailyData[i].obs;
+            return obs?'\n'+obs:'';
+          }
+        }
+      }
+    },
+    scales:{
+      y:{min:10,max:18,ticks:{stepSize:1},grid:{color:'#2e2e2d'}},
+      x:{ticks:{maxRotation:45,autoSkip:true,maxTicksLimit:20},grid:{display:false}}
+    }
+  }
+});
+
+// Late chart
+new Chart(document.getElementById('chartLate'),{
+  type:'bar',
+  data:{
+    labels:lateRank.map(r=>r.name),
+    datasets:[{
+      data:lateRank.map(r=>r.count),
+      backgroundColor:ORANGE,
+      borderRadius:{topRight:4,bottomRight:4},
+      barThickness:18,
+    }]
+  },
+  options:{
+    indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'#2e2e2d',borderColor:'#3a3a38',borderWidth:1}},
+    scales:{
+      x:{grid:{color:'#2e2e2d'},ticks:{stepSize:1}},
+      y:{grid:{display:false}}
+    }
+  }
+});
+
+// Absent chart
+new Chart(document.getElementById('chartAbsent'),{
+  type:'bar',
+  data:{
+    labels:absentRank.map(r=>r.name),
+    datasets:[{
+      data:absentRank.map(r=>r.count),
+      backgroundColor:RED,
+      borderRadius:{topRight:4,bottomRight:4},
+      barThickness:18,
+    }]
+  },
+  options:{
+    indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'#2e2e2d',borderColor:'#3a3a38',borderWidth:1}},
+    scales:{
+      x:{grid:{color:'#2e2e2d'},ticks:{stepSize:1}},
+      y:{grid:{display:false}}
+    }
+  }
+});
+
+// Monthly chart
+const months=['Mayo','Junio','Julio'];
+const mayDays=dailyData.filter(r=>r.d.startsWith('2026-05'));
+const junDays=dailyData.filter(r=>r.d.startsWith('2026-06'));
+const julDays=dailyData.filter(r=>r.d.startsWith('2026-07'));
+const mayAvg=(mayDays.reduce((s,r)=>s+r.ct,0)/mayDays.length).toFixed(1);
+const junAvg=(junDays.reduce((s,r)=>s+r.ct,0)/junDays.length).toFixed(1);
+const julAvg=(julDays.reduce((s,r)=>s+r.ct,0)/julDays.length).toFixed(1);
+
+new Chart(document.getElementById('chartMonthly'),{
+  type:'bar',
+  data:{
+    labels:months,
+    datasets:[{
+      label:'Promedio de asistencia',
+      data:[mayAvg,junAvg,julAvg],
+      backgroundColor:[BLUE,BLUE,BLUE],
+      borderRadius:4,
+      barThickness:48,
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{backgroundColor:'#2e2e2d',borderColor:'#3a3a38',borderWidth:1},
+    },
+    scales:{
+      y:{min:12,max:17,grid:{color:'#2e2e2d'}},
+      x:{grid:{display:false}}
+    }
+  }
+});
+</script>
+</body>
+</html>

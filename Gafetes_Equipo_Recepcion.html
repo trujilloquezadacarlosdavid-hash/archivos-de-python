@@ -1,0 +1,217 @@
+<meta charset="utf-8">
+<title>Gafetes · Equipo de Recepción — CEDI 1110</title>
+<style>
+  :root{
+    --azul:#0b3d91;        /* banda corporativa */
+    --azul2:#1257c9;
+    --acento:#e8a13a;      /* acento cálido */
+    --tinta:#1a2230;
+    --gris:#5b6675;
+    --linea:#d7dde6;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:"Segoe UI",Roboto,Arial,sans-serif;
+    background:#0f1420;color:#e8edf5;
+  }
+
+  /* ====== BARRA DE CONTROL (solo pantalla) ====== */
+  .barra{
+    position:sticky;top:0;z-index:10;
+    background:#151c2b;border-bottom:1px solid #26324a;
+    padding:14px 20px;display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;
+  }
+  .barra h1{font-size:16px;margin:0 16px 0 0;font-weight:700;letter-spacing:.3px}
+  .barra .sub{font-size:12px;color:#8ea0bd;font-weight:400}
+  .campo{display:flex;flex-direction:column;gap:4px}
+  .campo label{font-size:11px;color:#93a2bd;text-transform:uppercase;letter-spacing:.5px}
+  .campo input{
+    background:#0f1626;border:1px solid #2b3852;color:#e8edf5;
+    border-radius:7px;padding:7px 10px;font-size:13px;min-width:190px;
+  }
+  .campo input:focus{outline:none;border-color:var(--azul2)}
+  .chkbox{display:flex;align-items:center;gap:7px;font-size:13px;color:#c3cfe2;user-select:none}
+  .btns{margin-left:auto;display:flex;gap:10px}
+  button{
+    background:var(--azul2);color:#fff;border:0;border-radius:8px;
+    padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;
+  }
+  button.ghost{background:#22304a}
+  button:hover{filter:brightness(1.08)}
+  .nota{font-size:12px;color:#8ea0bd;padding:10px 22px 0}
+
+  /* ====== HOJAS ====== */
+  #hojas{padding:22px;display:flex;flex-direction:column;align-items:center;gap:22px}
+  .page{
+    width:192mm;background:#fff;color:var(--tinta);
+    padding:0;border-radius:6px;box-shadow:0 8px 40px rgba(0,0,0,.4);
+    display:grid;grid-template-columns:repeat(3,1fr);
+    gap:4mm;padding:6mm;
+  }
+
+  /* ====== GAFETE ====== */
+  .gafete{
+    height:82mm;border:1px dashed #c4ccd8;border-radius:10px;overflow:hidden;
+    display:flex;flex-direction:column;background:#fff;position:relative;
+    break-inside:avoid;page-break-inside:avoid;
+  }
+  .banda{
+    background:linear-gradient(135deg,var(--azul),var(--azul2));
+    color:#fff;height:20mm;padding:5mm 5mm 0;position:relative;flex:none;
+  }
+  .banda .empresa{font-size:12px;font-weight:800;letter-spacing:.4px;line-height:1.15}
+  .banda .depto{font-size:9px;opacity:.9;margin-top:2px;letter-spacing:.6px;text-transform:uppercase}
+  .logo{
+    position:absolute;top:4mm;right:4mm;width:11mm;height:11mm;border-radius:8px;
+    background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);
+    display:flex;align-items:center;justify-content:center;font-size:8px;color:#eaf1ff;text-align:center;line-height:1.1;padding:1mm;
+  }
+  .avatar{
+    width:20mm;height:20mm;border-radius:50%;background:#eef2f8;border:3px solid #fff;
+    margin:-10mm auto 0;box-shadow:0 2px 8px rgba(0,0,0,.15);
+    display:flex;align-items:center;justify-content:center;position:relative;z-index:2;
+  }
+  .avatar svg{width:13mm;height:13mm}
+  .cuerpo{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:2mm 4mm 0}
+  .nombre{font-size:13px;font-weight:800;color:var(--tinta);line-height:1.15;margin-top:1.5mm}
+  .puesto{
+    font-size:10px;font-weight:600;color:var(--azul);margin-top:2mm;
+    border:1px dashed transparent;border-radius:6px;padding:1mm 2mm;min-width:24mm;
+  }
+  .puesto:focus{outline:none;border-color:var(--azul2);background:#f2f6ff}
+  .pie{
+    margin-top:auto;width:100%;border-top:1px solid var(--linea);
+    padding:2mm 4mm;display:flex;align-items:center;justify-content:space-between;
+    font-size:8px;color:var(--gris);
+  }
+  .pie .ubi{letter-spacing:.4px}
+  .sexo-pill{
+    display:none;font-size:8px;font-weight:700;color:#fff;background:var(--gris);
+    border-radius:20px;padding:1mm 2.5mm;letter-spacing:.4px;
+  }
+  body.showsexo .sexo-pill{display:inline-block}
+  .sexo-pill.h{background:var(--azul2)}
+  .sexo-pill.m{background:#b5468a}
+
+  /* ====== IMPRESIÓN ====== */
+  @media print{
+    @page{size:letter;margin:10mm}
+    body{background:#fff}
+    .barra,.nota{display:none!important}
+    #hojas{padding:0;gap:0}
+    .page{
+      width:auto;box-shadow:none;border-radius:0;padding:0;margin:0;
+      break-after:page;page-break-after:always;gap:4mm;
+    }
+    .page:last-child{break-after:auto;page-break-after:auto}
+    .gafete{border:1px dashed #b9c2cf}
+  }
+</style>
+
+<div class="barra">
+  <div>
+    <h1>Gafetes · Equipo de Recepción <span class="sub">CEDI · Bodega 1110</span></h1>
+  </div>
+  <div class="campo">
+    <label>Empresa</label>
+    <input id="in-empresa" value="Distribuidora Me Llega">
+  </div>
+  <div class="campo">
+    <label>Departamento</label>
+    <input id="in-depto" value="Recepción · CEDI 1110">
+  </div>
+  <div class="campo">
+    <label>Puesto por defecto</label>
+    <input id="in-puesto" value="Auxiliar de Recepción">
+  </div>
+  <label class="chkbox"><input type="checkbox" id="chk-sexo"> Mostrar etiqueta Hombre/Mujer</label>
+  <div class="btns">
+    <button class="ghost" onclick="resetPuestos()">Restablecer puestos</button>
+    <button onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+  </div>
+</div>
+<div class="nota">14 colaboradores · el <b>puesto</b> de cada gafete es editable (clic sobre el texto) y se guarda automáticamente. Se imprimen 9 gafetes por hoja con líneas de corte.</div>
+
+<div id="hojas"></div>
+
+<script>
+/* ==== EQUIPO (género deducido del nombre) ==== */
+const EQUIPO = [
+  {n:"Jose Daniel Vasquez",        s:"H"},
+  {n:"Abner Oseas Ortiz",          s:"H"},
+  {n:"Dorcas Castro",              s:"M"},
+  {n:"Veronica Danira Carreto",    s:"M"},
+  {n:"Maria De Los Angeles Valiente", s:"M"},
+  {n:"Wagner Francisco Bautista",  s:"H"},
+  {n:"Celeste Audelia Alvarez",    s:"M"},
+  {n:"Manuel Augusto Hernandez",   s:"H"},
+  {n:"Josue Moises Hernandez",     s:"H"},
+  {n:"Irma Celeste Orellana",      s:"M"},
+  {n:"Brayan Magdiel Lee",         s:"H"},
+  {n:"Carlos Samuel Hurtado",      s:"H"},
+  {n:"Cristian Horacio Ical",      s:"H"},
+  {n:"David Orlando Najarro",      s:"H"},
+];
+
+/* Siluetas SVG */
+const SVG_H = `<svg viewBox="0 0 64 64" fill="#0b3d91" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="21" r="12"/><path d="M32 36c-12 0-21 7-21 17v3h42v-3c0-10-9-17-21-17z"/></svg>`;
+const SVG_M = `<svg viewBox="0 0 64 64" fill="#b5468a" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="20" r="11"/><path d="M32 33c-10 0-18 6-19.5 15L9 60h46l-3.5-12C50 39 42 33 32 33z"/><path d="M20 24c-3 4-4 10-4 14M44 24c3 4 4 10 4 14" stroke="#b5468a" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+
+const KEY = "gafetes_recepcion_1110";
+let puestos = JSON.parse(localStorage.getItem(KEY) || "{}");
+
+const $ = s => document.querySelector(s);
+
+function render(){
+  const empresa = $("#in-empresa").value;
+  const depto   = $("#in-depto").value;
+  const defPue  = $("#in-puesto").value;
+  const hojas = $("#hojas");
+  hojas.innerHTML = "";
+  let page;
+  EQUIPO.forEach((p,i)=>{
+    if(i % 9 === 0){ page = document.createElement("div"); page.className="page"; hojas.appendChild(page); }
+    const puesto = (puestos[p.n] ?? defPue);
+    const esH = p.s === "H";
+    const g = document.createElement("div");
+    g.className = "gafete";
+    g.innerHTML = `
+      <div class="banda">
+        <div class="empresa">${empresa}</div>
+        <div class="depto">${depto}</div>
+        <div class="logo">LOGO</div>
+      </div>
+      <div class="avatar">${esH?SVG_H:SVG_M}</div>
+      <div class="cuerpo">
+        <div class="nombre">${p.n}</div>
+        <div class="puesto" contenteditable="true" data-nombre="${p.n}">${puesto}</div>
+      </div>
+      <div class="pie">
+        <span class="ubi">CEDI · Bodega 1110</span>
+        <span class="sexo-pill ${esH?'h':'m'}">${esH?'Hombre':'Mujer'}</span>
+      </div>`;
+    page.appendChild(g);
+  });
+  // guardar puesto al editar
+  document.querySelectorAll(".puesto").forEach(el=>{
+    el.addEventListener("blur", e=>{
+      puestos[e.target.dataset.nombre] = e.target.innerText.trim();
+      localStorage.setItem(KEY, JSON.stringify(puestos));
+    });
+  });
+}
+
+function resetPuestos(){
+  puestos = {}; localStorage.removeItem(KEY); render();
+}
+
+["in-empresa","in-depto","in-puesto"].forEach(id=>{
+  $("#"+id).addEventListener("input", render);
+});
+$("#chk-sexo").addEventListener("change", e=>{
+  document.body.classList.toggle("showsexo", e.target.checked);
+});
+
+render();
+</script>

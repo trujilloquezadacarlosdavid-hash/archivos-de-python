@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S&OP Kraft Heinz - CD El Frutal 1110</title>
+<style>
+@page { size: landscape; margin: 0; }
+:root {
+  --azul: #0d2a6b; --azul2: #1a3d8f; --azulC: #2a78d6;
+  --dorado: #f5b400; --verde: #0ca30c; --rojo: #d03b3b;
+  --naranja: #eb6834; --serio: #ec835a; --warn: #fab219;
+  --gris1: #f8f9fa; --gris2: #e9ecef; --gris3: #6c757d;
+  --grisL: #e1e0d9; --texto: #0b0b0b; --texto2: #52514e;
+  --muted: #898781; --surface: #fcfcfb;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:#fff; color:var(--texto); font-size:12px; line-height:1.35; }
+
+.page { width:100%; min-height:100vh; display:grid; grid-template-rows:auto 1fr auto; }
+
+.hdr { background:linear-gradient(135deg,var(--azul),var(--azul2)); color:#fff; padding:8px 28px; display:flex; align-items:center; justify-content:space-between; }
+.hdr h1 { font-size:20px; font-weight:800; } .hdr h1 span { color:var(--dorado); }
+.hdr-sub { font-size:10px; opacity:0.6; }
+.hdr-right { text-align:right; font-size:12px; }
+.hdr-right .sub { font-size:9px; opacity:0.5; margin-top:1px; }
+
+.body { padding:8px 20px; display:grid; grid-template-rows:auto auto auto 1fr; gap:7px; }
+
+.flow-bar { display:flex; align-items:center; justify-content:center; background:var(--gris1); border-radius:8px; padding:5px 16px; }
+.fn { text-align:center; padding:8px 12px; border-radius:8px; flex:1; }
+.fn-lb { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.3px; }
+.fn-v { font-size:22px; font-weight:800; line-height:1.1; }
+.fn-s { font-size:9px; opacity:.75; margin-top:1px; }
+.fn-in { background:linear-gradient(135deg,#e8f4e8,#d4edda); border:2px solid #28a745; color:#155724; }
+.fn-st { background:linear-gradient(135deg,#d6e9f8,#bee1f6); border:2px solid var(--azulC); color:var(--azul); }
+.fn-out { background:linear-gradient(135deg,#fde8d0,#fdd9b5); border:2px solid var(--naranja); color:#7c3a10; }
+.fn-rk { background:linear-gradient(135deg,#fde2e2,#f8c8c8); border:2px solid var(--rojo); color:#721c24; }
+.fa { font-size:22px; color:var(--gris3); margin:0 4px; }
+
+.kpis { display:grid; grid-template-columns:repeat(6,1fr); gap:7px; }
+.kp { background:var(--surface); border:1px solid var(--grisL); border-radius:6px; padding:5px 10px; border-left:3px solid var(--azul); }
+.kp-lb { font-size:9px; font-weight:600; text-transform:uppercase; color:var(--muted); }
+.kp-v { font-size:17px; font-weight:800; }
+.kp-s { font-size:9px; color:var(--texto2); }
+
+.grid4 { display:grid; grid-template-columns:1.8fr 1fr 1.2fr; grid-template-rows:auto auto; gap:7px; }
+.g-span2 { grid-row: span 2; }
+
+.card { background:var(--surface); border:1px solid var(--grisL); border-radius:8px; padding:8px 14px; }
+.card-t { font-size:10px; font-weight:700; color:var(--azul); text-transform:uppercase; letter-spacing:.3px; margin-bottom:6px; }
+
+.rbar { display:flex; height:18px; border-radius:4px; overflow:hidden; gap:2px; margin:4px 0 6px; }
+.rseg { display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:700; color:#fff; }
+
+.rl { font-size:10px; line-height:1.6; }
+.rl-r { display:flex; justify-content:space-between; padding:1px 0; border-bottom:1px solid var(--gris2); }
+.rl-r:last-child { border:none; }
+.dot { display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:4px; vertical-align:-1px; }
+
+.ch-r { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+.ch-n { font-size:10px; font-weight:600; width:65px; }
+.ch-bar { flex:1; height:14px; background:var(--gris2); border-radius:3px; overflow:hidden; }
+.ch-fill { height:100%; border-radius:3px 0 0 3px; display:flex; align-items:center; padding-left:6px; font-size:8px; font-weight:700; color:#fff; }
+.ch-p { font-size:10px; font-weight:700; width:44px; text-align:right; color:var(--texto2); }
+
+.mt { width:100%; border-collapse:separate; border-spacing:0; font-size:10px; }
+.mt th { background:var(--azul); color:#fff; padding:3px 6px; text-align:left; font-size:9px; font-weight:600; }
+.mt th:first-child { border-radius:4px 0 0 0; } .mt th:last-child { border-radius:0 4px 0 0; }
+.mt td { padding:3px 6px; border-bottom:1px solid var(--gris2); }
+.mt tr:nth-child(even) td { background:var(--gris1); }
+.hl td { background:#fff3cd!important; font-weight:600; }
+
+.ins { font-size:9px; line-height:1.4; }
+.ins-r { padding:2.5px 0; border-bottom:1px solid var(--gris2); }
+.ins-r:last-child { border:none; }
+.tag { display:inline-block; padding:1px 5px; border-radius:3px; font-size:8px; font-weight:700; color:#fff; margin-right:4px; vertical-align:1px; }
+
+.callout { background:#fff3cd; border-radius:4px; padding:5px 8px; font-size:10px; border-left:3px solid var(--warn); margin-top:4px; }
+
+.p34-cards { display:flex; gap:8px; margin-bottom:6px; }
+.p34-c { flex:1; border-radius:6px; padding:6px 10px; text-align:center; }
+.p34-c .pc-lb { font-size:9px; font-weight:600; }
+.p34-c .pc-v { font-size:18px; font-weight:800; }
+.p34-c .pc-s { font-size:9px; }
+
+.ftr { background:var(--azul); color:rgba(255,255,255,.6); padding:6px 28px; font-size:9px; display:flex; justify-content:space-between; }
+
+@media print { .page { min-height:auto; } }
+</style>
+</head>
+<body>
+<div class="page">
+<div class="hdr">
+  <div><h1>S&OP <span>Kraft Heinz</span> — CD El Frutal 1110</h1><div class="hdr-sub">Sales & Operations Planning · Solo producto Kraft Heinz · Bodega 1110A001 · Me Llega, S.A.</div></div>
+  <div class="hdr-right"><div style="font-weight:700">Periodo: @@PERIODO@@</div><div class="sub">Corte de datos: @@CORTE@@ · en CAJAS</div><div class="sub">K&ouml;rber WMS · SQL 172.16.5.43/IN_E</div></div>
+</div>
+
+<div class="body">
+  <!-- FLOW -->
+  <div class="flow-bar">
+    <div class="fn fn-in"><div class="fn-lb">Enviado por Heinz 2026</div><div class="fn-v">@@RECIBIDO@@</div><div class="fn-s">cajas · recibido <b>@@RECIBIDO_REAL@@</b> (@@FILL_RECEP@@%)</div></div>
+    <div class="fa">&#10145;</div>
+    <div class="fn fn-st"><div class="fn-lb">Stock Actual</div><div class="fn-v">@@STOCK@@</div><div class="fn-s">cajas · <b>@@VAL_TOTAL@@</b> · @@STOCK_LPS@@ LPs</div></div>
+    <div class="fa">&#10145;</div>
+    <div class="fn fn-out"><div class="fn-lb">Despachado 2026</div><div class="fn-v">@@DESP@@</div><div class="fn-s">cajas embarcadas YTD</div></div>
+    <div class="fa">&#10145;</div>
+    <div class="fn fn-rk"><div class="fn-lb">En Riesgo Vencimiento</div><div class="fn-v">@@RIESGO@@</div><div class="fn-s"><b>@@RIESGO_Q@@</b> · vencido + vencer 90d</div></div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpis">
+    <div class="kp" style="border-left-color:var(--verde)"><div class="kp-lb">Disponible (A)</div><div class="kp-v">@@DISPO@@</div><div class="kp-s">@@DISPO_PCT@@% · cajas</div></div>
+    <div class="kp" style="border-left-color:var(--rojo)"><div class="kp-lb">Bloqueado (H)</div><div class="kp-v">@@BLOQ@@</div><div class="kp-s">@@BLOQ_PCT@@% · cajas</div></div>
+    <div class="kp" style="border-left-color:var(--azulC)"><div class="kp-lb">Despacho Diario</div><div class="kp-v">@@DESP_DIARIO@@</div><div class="kp-s">cajas/d&iacute;a promedio</div></div>
+    <div class="kp" style="border-left-color:var(--dorado)"><div class="kp-lb">Rotaci&oacute;n</div><div class="kp-v">@@DIAS_INV@@ d&iacute;as</div><div class="kp-s">stock / desp. diario</div></div>
+    <div class="kp" style="border-left-color:var(--naranja)"><div class="kp-lb">Planeaci&oacute;n &rarr; CDDs</div><div class="kp-v">@@PLNER@@</div><div class="kp-s">cajas · <b>@@PLNER_Q@@</b> (PLNER)</div></div>
+    <div class="kp" style="border-left-color:var(--rojo)"><div class="kp-lb">Vencido</div><div class="kp-v">@@VENCIDO@@</div><div class="kp-s">@@VENCIDO_PCT@@% · <b>@@VENCIDO_Q@@</b></div></div>
+  </div>
+
+  <!-- COMPOSICION 100% -->
+  <div class="card" style="border-left:3px solid var(--azul)">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+      <div class="card-t" style="margin:0">Composici&oacute;n del Inventario — &iquest;d&oacute;nde est&aacute; el producto? (100%)</div>
+      <div style="font-size:13px;font-weight:800;color:var(--azul)">Valor total: @@VAL_TOTAL@@</div>
+    </div>
+    <div style="display:flex;height:24px;border-radius:5px;overflow:hidden;gap:2px;margin-bottom:7px">
+      <div style="width:@@CD_W@@%;background:var(--verde);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700">Disponible @@CD_P@@%</div>
+      <div style="width:@@CP_W@@%;background:var(--naranja);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700">Planeaci&oacute;n @@CP_P@@%</div>
+      <div style="width:@@CV_W@@%;background:var(--rojo);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700">Merma @@CV_P@@%</div>
+      <div style="width:@@CC_W@@%;background:var(--warn)" title="Cuarentena"></div>
+      <div style="width:@@CO_W@@%;background:var(--gris3)" title="Otros"></div>
+    </div>
+    <div style="display:flex;gap:12px;align-items:stretch">
+      <div style="flex:0 0 26%;background:#e8f7ec;border:1px solid var(--verde);border-radius:6px;padding:7px 12px;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-size:10px;font-weight:700;color:#155724;text-transform:uppercase">Disponible (vendible)</div>
+        <div style="font-size:20px;font-weight:800;color:var(--verde);line-height:1.1">@@CD_C@@</div>
+        <div style="font-size:10px;color:#155724">cajas · @@CD_P@@% · <b>@@CD_Q@@</b></div>
+      </div>
+      <div style="flex:1">
+        <div style="font-size:10px;font-weight:700;color:var(--rojo);text-transform:uppercase;margin-bottom:2px">Producto comprometido (bloqueado): @@COMP_C@@ cajas · @@COMP_P@@% · @@COMP_Q@@ — &iquest;hacia d&oacute;nde presionar?</div>
+        <table class="mt" style="font-size:10px">
+          <tr><th>D&oacute;nde est&aacute; (bloqueo)</th><th style="text-align:right">Cajas</th><th style="text-align:right">%</th><th style="text-align:right">Valor Q</th><th>Acci&oacute;n</th></tr>
+          <tr class="hl"><td><span class="dot" style="background:var(--naranja)"></span>Planeaci&oacute;n (PLNER)</td><td style="text-align:right">@@CP_C@@</td><td style="text-align:right">@@CP_P@@%</td><td style="text-align:right"><b>@@CP_Q@@</b></td><td>Salida a CDDs por corrugado da&ntilde;ado</td></tr>
+          <tr><td><span class="dot" style="background:var(--rojo)"></span>Bodega Vencido (BDVE)</td><td style="text-align:right">@@BDVE_C@@</td><td style="text-align:right">@@BDVE_P@@%</td><td style="text-align:right"><b>@@BDVE_Q@@</b></td><td>Merma / baja / devoluci&oacute;n</td></tr>
+          <tr><td><span class="dot" style="background:#a02;"></span>CD Vencido (BDCDV)</td><td style="text-align:right">@@BDCDV_C@@</td><td style="text-align:right">@@BDCDV_P@@%</td><td style="text-align:right"><b>@@BDCDV_Q@@</b></td><td>Merma en CD / disposici&oacute;n final</td></tr>
+          <tr><td><span class="dot" style="background:var(--warn)"></span>Cuarentena / Bloqueo cliente (BDCU)</td><td style="text-align:right">@@CC_C@@</td><td style="text-align:right">@@CC_P@@%</td><td style="text-align:right"><b>@@CC_Q@@</b></td><td>Liberar QA / resolver con cliente</td></tr>
+          <tr><td><span class="dot" style="background:var(--gris3)"></span>QA / Scrap / Unidades sueltas</td><td style="text-align:right">@@CO_C@@</td><td style="text-align:right">@@CO_P@@%</td><td style="text-align:right"><b>@@CO_Q@@</b></td><td>Depurar (calidad, scrap, sueltos)</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="grid4">
+
+    <!-- Chart: Flujo mensual (spans 2 rows) -->
+    <div class="card g-span2">
+      <div class="card-t">Flujo Mensual Heinz 2026 — Recibido vs Despachado (cajas)</div>
+      <svg viewBox="0 0 480 220" style="width:100%;height:auto">@@SVG@@</svg>
+    </div>
+
+    <!-- Vencimiento -->
+    <div class="card">
+      <div class="card-t">Riesgo de Vencimiento (por fecha de expiraci&oacute;n)</div>
+      <div class="rbar">
+        <div class="rseg" style="width:@@P_VIG@@%;background:var(--verde)">Vigente @@P_VIG@@%</div>
+        <div class="rseg" style="width:@@P_VEN@@%;background:var(--rojo)">Venc @@P_VEN@@%</div>
+        <div class="rseg" style="width:@@P_V30@@%;background:var(--warn)"></div>
+        <div class="rseg" style="width:@@P_V90@@%;background:var(--naranja)"></div>
+      </div>
+      <div class="rl">
+        <div class="rl-r"><span><span class="dot" style="background:var(--verde)"></span>Vigente (&gt;90d)</span><span style="font-weight:700">@@VIGENTE@@</span></div>
+        <div class="rl-r"><span><span class="dot" style="background:var(--rojo)"></span>Vencido</span><span style="font-weight:700;color:var(--rojo)">@@VENCIDO@@</span></div>
+        <div class="rl-r"><span><span class="dot" style="background:var(--warn)"></span>Vence &le;30d</span><span style="font-weight:700;color:#a67c00">@@V30@@</span></div>
+        <div class="rl-r"><span><span class="dot" style="background:var(--naranja)"></span>Vence 31-90d</span><span style="font-weight:700;color:var(--naranja)">@@V90@@</span></div>
+      </div>
+      <div class="callout"><strong>Impacto:</strong> @@RIESGO@@ cajas en riesgo = <strong>@@RIESGO_PCT@@%</strong> del stock Heinz. A ritmo actual = <strong>~@@RIESGO_DIAS@@ d&iacute;as</strong> de despacho.</div>
+    </div>
+
+    <!-- Canales -->
+    <div class="card">
+      <div class="card-t">Despacho Heinz por Canal 2026 (cajas)</div>
+      <div class="ch-r"><div class="ch-n">Moderno</div><div class="ch-bar"><div class="ch-fill" style="width:@@CH_MOD_W@@%;background:var(--azulC)">@@CH_MOD@@</div></div><div class="ch-p">@@CH_MOD_P@@%</div></div>
+      <div class="ch-r"><div class="ch-n">CEDIS</div><div class="ch-bar"><div class="ch-fill" style="width:@@CH_CED_W@@%;background:var(--naranja)">@@CH_CED@@</div></div><div class="ch-p">@@CH_CED_P@@%</div></div>
+      <div class="ch-r"><div class="ch-n">Mayoreo</div><div class="ch-bar"><div class="ch-fill" style="width:@@CH_MAY_W@@%;background:#1baf7a">@@CH_MAY@@</div></div><div class="ch-p">@@CH_MAY_P@@%</div></div>
+      <div class="ch-r"><div class="ch-n">Top Stores</div><div class="ch-bar"><div class="ch-fill" style="width:@@CH_TOP_W@@%;background:#4a3aa7"></div></div><div class="ch-p">@@CH_TOP_P@@%</div></div>
+      <div style="border-top:1px solid var(--grisL);margin-top:8px;padding-top:6px">
+        <div class="card-t" style="margin-bottom:5px">Top SKUs Heinz en Stock (cajas)</div>
+        <table class="mt">
+          <tr><th>Producto</th><th style="text-align:right">Cajas</th></tr>
+          @@TOP_STOCK@@
+        </table>
+      </div>
+    </div>
+
+    <!-- Planeacion -->
+    <div class="card">
+      <div class="card-t">Producto en Planeaci&oacute;n &rarr; CDDs (corrugado da&ntilde;ado)</div>
+      <div class="p34-cards">
+        <div class="p34-c" style="background:#fff3cd;color:#856404"><div class="pc-lb">STATUS PLANEACI&Oacute;N (PLNER)</div><div class="pc-v">@@PLNER@@</div><div class="pc-s">cajas · @@PLNER_SKUS@@ SKUs · @@PLNER_LPS@@ LPs</div></div>
+        <div class="p34-c" style="background:#fde2e2;color:#721c24"><div class="pc-lb">VENCIDO (a merma/CDDs)</div><div class="pc-v">@@VENCIDO@@</div><div class="pc-s">cajas · @@VENCIDO_SKUS@@ SKUs</div></div>
+      </div>
+      <div class="card-t" style="margin-bottom:5px">Top SKUs Vencidos Heinz (cajas)</div>
+      <table class="mt">
+        <tr><th>Producto</th><th style="text-align:right">Cajas</th><th>Vence</th></tr>
+        @@TOP_VENC@@
+      </table>
+    </div>
+
+    <!-- Insights -->
+    <div class="card" style="border-left:3px solid var(--azul)">
+      <div class="card-t">Hallazgos Clave para Comercial</div>
+      <div class="ins">
+        <div class="ins-r"><span class="tag" style="background:var(--azulC)">ROTACI&Oacute;N</span> @@DIAS_INV@@ d&iacute;as — se despachan <strong>@@DESP_DIARIO@@ cajas/d&iacute;a</strong> de Heinz. Es la cobertura del stock actual.</div>
+        <div class="ins-r"><span class="tag" style="background:var(--rojo)">VENCIMIENTO</span> <strong>@@RIESGO_PCT@@% del stock</strong> (@@RIESGO@@ cajas) vencido o por vencer en 90d. Riesgo alto.</div>
+        <div class="ins-r"><span class="tag" style="background:var(--naranja)">PLANEACI&Oacute;N</span> <strong>@@PLNER@@ cajas</strong> (@@PLNER_SKUS@@ SKUs) en PLNER listas para CDDs por corrugado da&ntilde;ado.</div>
+        <div class="ins-r"><span class="tag" style="background:var(--verde)">RECEPCI&Oacute;N</span> <strong>@@FILL_RECEP@@% recibido</strong> (@@RECIBIDO_REAL@@ de @@RECIBIDO@@ enviadas) · faltante @@FALTANTE_RECEP@@ cajas &rarr; diferencias.</div>
+        <div class="ins-r"><span class="tag" style="background:var(--dorado);color:var(--azul)">CANAL</span> <strong>Moderno lidera</strong> con @@CH_MOD_P@@% del despacho Heinz. CEDIS @@CH_CED_P@@%. Mayoreo @@CH_MAY_P@@%.</div>
+        <div class="ins-r"><span class="tag" style="background:var(--rojo)">ALERTA</span> Hay lotes <strong>vencidos de anos anteriores</strong> a&uacute;n en stock — priorizar depuraci&oacute;n.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="ftr">
+  <span>Me Llega, S.A. · CD El Frutal · Bodega 1110A001 · Proveedor: KRAFT HEINZ</span>
+  <span>Cajas = factor oficial K&ouml;rber (Uom CJ) · Despacho = Shipping Detail (Trx 341) · verificado vs descarga manual</span>
+  <span>Generado: @@CORTE@@</span>
+</div>
+</div>
+</body>
+</html>

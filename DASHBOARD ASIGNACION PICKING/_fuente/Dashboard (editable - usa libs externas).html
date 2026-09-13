@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Asignación Picking</title>
+<script src="chart.umd.js"></script>
+<script src="html2canvas.min.js"></script>
+<script src="xlsx.full.min.js"></script>
+<script src="pedidos_data.js"></script>
+<script src="estatus_data.js"></script>
+<script src="miguel_data.js"></script>
+<style>
+  :root{
+    --bg:#0b1220; --panel:#141d2e; --panel2:#1b2740; --line:#26344b;
+    --txt:#eaf1f9; --muted:#8ea3bd; --accent:#3b82f6; --accent2:#2563eb;
+    --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444; --purple:#a855f7; --teal:#22d3ee; --pink:#ec4899;
+    --chip:#22324a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--txt);font-size:14px}
+  header{background:linear-gradient(135deg,#16294a,#0b1220);border-bottom:1px solid var(--line);padding:14px 24px;position:sticky;top:0;z-index:20}
+  .htop{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  h1{font-size:18px;margin:0;font-weight:600;letter-spacing:.3px}
+  h1 small{color:var(--muted);font-weight:400;font-size:12px;display:block;margin-top:2px}
+  .wrap{padding:20px 24px;max-width:1560px;margin:0 auto}
+  .btn{background:var(--accent2);color:#fff;border:none;padding:8px 14px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:500;transition:.15s}
+  .btn:hover{background:var(--accent)}
+  .btn.mail{background:#0e9f6e}.btn.mail:hover{background:#13b97f}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--txt)}
+  .btn.ghost:hover{background:var(--panel2)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  select,input[type=date],input[type=text],input[type=email]{background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px}
+  .spacer{flex:1}
+
+  #drop{border:2px dashed var(--line);border-radius:16px;padding:46px;text-align:center;color:var(--muted);cursor:pointer;transition:.2s;background:var(--panel)}
+  #drop.drag{border-color:var(--accent);background:#16243b;color:var(--txt)}
+  #drop b{color:var(--txt)} #drop .big{font-size:42px;margin-bottom:10px}
+
+  .grid-kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;position:relative;overflow:hidden}
+  .kpi::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+  .kpi.ok::after{background:var(--ok)} .kpi.warn::after{background:var(--warn)} .kpi.bad::after{background:var(--bad)}
+  .kpi .lbl{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  .kpi .val{font-size:30px;font-weight:800;margin-top:4px;line-height:1}
+  .kpi .sub{font-size:11px;color:var(--muted);margin-top:5px}
+  .kpi.ok .val{color:var(--ok)} .kpi.warn .val{color:var(--warn)} .kpi.bad .val{color:var(--bad)}
+  .kpi.big .val{font-size:34px}
+
+  .chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px;margin-top:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:16px}
+  .card h2{font-size:14px;margin:0 0 12px;font-weight:600;display:flex;align-items:center;gap:8px}
+  .card h2 .tag{font-size:11px;color:var(--muted);font-weight:400}
+  .chart-box{position:relative;height:230px}
+  .chart-box.tall{height:280px}
+
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  th.l,td.l{text-align:left}
+  thead th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;user-select:none;position:sticky;top:0;background:var(--panel);z-index:1}
+  thead th:hover{color:var(--txt)}
+  tbody tr:hover{background:var(--panel2)}
+  .scroll{max-height:520px;overflow:auto;border-radius:10px;border:1px solid var(--line)}
+
+  .badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+  .b-ok{background:#0e2a1a;color:var(--ok)} .b-warn{background:#2a210c;color:var(--warn)} .b-bad{background:#2a1212;color:var(--bad)}
+  .b-otros{background:#3a2a52;color:#c4b5fd}
+  .bar{height:8px;border-radius:6px;background:var(--panel2);overflow:hidden;min-width:64px;display:inline-block;vertical-align:middle}
+  .bar > span{display:block;height:100%;border-radius:6px}
+  .fillcell{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+  .fillcell b{min-width:46px;text-align:right}
+
+  .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+  .filters input[type=text]{min-width:210px}
+  .pill{background:var(--chip);border:1px solid var(--line);color:var(--muted);padding:5px 11px;border-radius:20px;font-size:12px;cursor:pointer}
+  .pill.on{background:var(--accent2);color:#fff;border-color:var(--accent2)}
+
+  .hidden{display:none!important}
+  .muted{color:var(--muted)} .small{font-size:12px}
+  .warnbox{background:#2a210c;border:1px solid #5a4410;border-radius:10px;padding:10px 14px;color:#fcd34d;font-size:13px;margin-bottom:14px}
+  .errbox{background:#2a1212;border:1px solid #5a1a1a;border-radius:10px;padding:10px 14px;color:#fca5a5;font-size:13px;margin-bottom:14px}
+  .mailbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:16px}
+  .mailbar .lbl{color:var(--muted);font-size:12px}
+  footer{color:var(--muted);font-size:11px;text-align:center;padding:24px}
+
+  .otros-com{width:100%;min-width:220px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:5px 8px;font-size:12px;font-family:inherit;resize:vertical}
+  .otros-com:focus{border-color:var(--accent);outline:none}
+
+  /* ---- Reporte imprimible por canal (tema claro) ---- */
+  #printArea{display:none}
+  body.printing-prep{overflow:hidden}
+  body.printing-prep #printArea{display:block;position:fixed;inset:0;z-index:9999;overflow:auto;background:#fff;color:#16202e;padding:26px 32px;font-family:"Segoe UI",system-ui,sans-serif}
+  #printArea .pr-head{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #16294a;padding-bottom:10px;margin-bottom:18px}
+  #printArea h1{font-size:21px;color:#16294a;margin:0}
+  #printArea .pr-sub{color:#555;font-size:13px;margin-top:3px}
+  #printArea .pr-section{margin-bottom:30px}
+  #printArea h2{font-size:17px;color:#16294a}
+  #printArea h3{font-size:14px;color:#16294a;margin:16px 0 8px;border-left:4px solid #2563eb;padding-left:8px}
+  #printArea .pr-kpis{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+  #printArea .pr-kpi{border:1px solid #e2e2e2;border-radius:10px;padding:8px 14px;min-width:120px}
+  #printArea .pr-kpi .l{font-size:10px;color:#777;text-transform:uppercase;letter-spacing:.4px}
+  #printArea .pr-kpi .v{font-size:20px;font-weight:800;color:#16294a;margin-top:2px}
+  #printArea .pr-charts{display:flex;gap:18px;flex-wrap:wrap;margin:10px 0 4px}
+  #printArea .pr-chart{flex:1;min-width:260px;height:210px;position:relative}
+  #printArea table{width:100%;border-collapse:collapse;font-size:12px;color:#222;margin-bottom:6px}
+  #printArea th,#printArea td{border:1px solid #ccc;padding:5px 8px;text-align:right;white-space:nowrap}
+  #printArea th{background:#16294a;color:#fff;text-align:center;font-size:11px}
+  #printArea td.l,#printArea th.l{text-align:left;white-space:normal}
+  #printArea .pr-close{background:#16294a;color:#fff;border:none;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:13px}
+  @media print{
+    .no-print{display:none!important}
+    body.printing-prep>*:not(#printArea){display:none!important}
+    body.printing-prep #printArea{position:static;padding:0;overflow:visible}
+    #printArea .pr-section+.pr-section{page-break-before:always}
+    #printArea .pr-close{display:none}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="htop">
+    <h1>📦 Dashboard de Asignación de Picking
+      <small>Plan de Miguel vs Asignación Körber · Fill rate por canal · Motivos de corte</small></h1>
+    <div class="spacer"></div>
+    <div class="htop no-print" style="gap:8px">
+      <label class="small muted">Día:</label>
+      <select id="histSel" title="Días guardados"></select>
+      <button class="btn ghost" id="btnNew">＋ Cargar Excel</button>
+      <button class="btn" id="btnSave" disabled>💾 Guardar</button>
+      <button class="btn ghost" id="btnExport" disabled>⬇ Excel</button>
+      <a class="btn" id="btnConfirmPlan" href="confirmarplan:go" style="background:#16a34a;border-color:#16a34a;color:#fff;text-decoration:none;display:inline-flex;align-items:center" title="Responder a todos el correo de Planner confirmando que la planeación se auditó y va al 100% (abre un borrador para que lo revises y envíes)">✅ Confirmar planeación 100%</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="dropWrap">
+    <div id="drop">
+      <div class="big">📥</div>
+      <b>Arrastra aquí el archivo "Estatus de Picking [fecha].xlsx"</b><br>
+      <span class="small">o haz clic para seleccionarlo · si corriste el .bat hoy, se carga automático</span>
+      <input type="file" id="file" accept=".xlsx,.xlsm" class="hidden">
+    </div>
+  </div>
+
+  <div id="status"></div>
+
+  <div id="dash" class="hidden">
+    <div class="htop" style="margin-bottom:12px">
+      <div class="small muted">Archivo: <b id="fname" style="color:var(--txt)"></b> · Fecha del registro:
+        <input type="date" id="snapDate"></div>
+      <div class="spacer"></div>
+      <div class="small muted" id="liveTag"></div>
+    </div>
+
+    <!-- BARRA DE CORREO -->
+    <div class="mailbar no-print">
+      <span class="lbl">📧 Enviar reporte:</span>
+      <select id="mailGroup" title="Grupo de destinatarios (rellena Para y CC)"><option value="">Destinatarios…</option><option>Moderno</option><option>CEDIS</option><option>Maquila</option></select>
+      <input type="email" id="mailTo" placeholder="Para:" style="min-width:190px">
+      <input type="text" id="mailCc" placeholder="CC:" style="min-width:150px">
+      <select id="mailCanal" title="Alcance del correo"></select>
+      <input type="text" id="mailSubj" placeholder="Asunto" style="min-width:190px">
+      <button class="btn mail" id="btnMail" disabled>✉️ Generar correo (Outlook)</button>
+      <button class="btn ghost" id="btnImg" disabled>🖼 Descargar imagen</button>
+      <span class="small muted" id="mailHint"></span>
+    </div>
+
+    <!-- BARRA DE IMPRESIÓN POR CANAL -->
+    <div class="mailbar no-print">
+      <span class="lbl">🖨 Imprimir / PDF por canal:</span>
+      <select id="printCanal"></select>
+      <button class="btn" id="btnPrintRep" disabled>🖨 Generar reporte</button>
+      <span class="small muted">incluye gráficos + detalle completo de SKU cortados</span>
+    </div>
+
+    <!-- ZONA CAPTURABLE (lo que va en la imagen del correo) -->
+    <div id="capture" class="mod-only" style="background:var(--bg);padding:4px 4px 12px">
+      <div id="capTitle" class="hidden" style="padding:8px 4px 14px;font-size:16px;font-weight:700"></div>
+
+      <div class="grid-kpi" id="kpis"></div>
+
+      <div class="chart-grid">
+        <div class="card"><h2>📊 Fill rate por canal <span class="tag">unidades</span></h2><div class="chart-box"><canvas id="chCanal"></canvas></div></div>
+        <div class="card"><h2>🎯 Estado de órdenes</h2><div class="chart-box"><canvas id="chEstado"></canvas></div></div>
+        <div class="card"><h2>✂️ Motivos de corte <span class="tag">SKU del plan</span></h2><div class="chart-box"><canvas id="chMot"></canvas></div></div>
+        <div class="card"><h2>🚨 Top órdenes pendientes <span class="tag">unidades sin asignar</span></h2><div class="chart-box"><canvas id="chPend"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- PROGRAMACION DEL DIA (maestro consolidado) -->
+    <div class="card">
+      <h2>📋 Programación del día — consolidada <span class="tag">(Moderno + CEDIS + Maquila · auto desde la hoja, para tu doble check)</span></h2>
+      <div class="small muted" id="progResumen" style="margin-bottom:10px"></div>
+      <div id="progWarn"></div>
+      <div class="scroll" style="max-height:440px">
+        <table id="tblProg">
+          <thead><tr>
+            <th class="l">Prioridad</th><th class="l">Cliente</th><th class="l">OLA</th><th class="l">Orden / Vehículo</th><th class="l">Tipo</th>
+            <th>Cajas asig</th><th>Cajas pend</th><th>Líneas asig</th><th>Líneas pend</th><th>Avance</th><th class="l">En Körber</th>
+          </tr></thead><tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- VERIFICAR PEDIDOS POR CORREO -->
+    <div class="card">
+      <h2>📨 Verificar pedidos por correo <span class="tag">(pega el correo o el nº de TR/ST/OV — te marca lo que NO se agregó)</span></h2>
+      <textarea id="pedidosTxt" placeholder="Pega aquí el texto del correo o los números de orden (ej. TR4700021891, ST4700021697, OVG106171128). Funciona aunque sea un solo número suelto." style="width:100%;min-height:72px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;resize:vertical"></textarea>
+      <div style="margin:8px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <button class="btn" id="btnVerif">🔎 Verificar</button>
+        <span class="small muted" id="pedResumen"></span>
+      </div>
+      <div class="small muted" style="margin:-2px 0 8px">💡 Para traerlos solos desde Outlook: ejecuta <b>BUSCAR PEDIDOS DE CORREO.bat</b> (con Outlook abierto) — aparecen aquí automáticamente.</div>
+      <div id="pedAlert"></div>
+      <div id="reqSection"></div>
+      <div id="pedExtra"></div>
+      <div class="scroll" style="max-height:300px">
+        <table id="tblPed"><thead><tr>
+          <th class="l">Orden</th><th class="l">Tipo</th><th class="l">¿En programación?</th><th class="l">¿En Körber (asignado)?</th><th class="l">Estado</th><th class="l">Nota / Comentario</th>
+        </tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+
+    <!-- ORDENES CON FECHA ESPECIFICA / COMENTARIO -->
+    <div class="card">
+      <h2>📅 Órdenes con solicitud para fecha específica <span class="tag">(las que piden para un día puntual, o que tienen comentario)</span></h2>
+      <div class="small muted" style="margin-bottom:8px">Se llenan solas con lo que trae el correo (fecha planificada) y con los comentarios que escribes en la tabla de arriba. Sirve para responderle a quien pidió producto para una fecha concreta.</div>
+      <div id="fechasSection"></div>
+    </div>
+
+    <!-- POR CANAL (tabla) -->
+    <div class="card mod-only">
+      <h2>📋 Detalle por canal <span class="tag">(pedido vs asignado · unidades / cajas / líneas)</span></h2>
+      <table id="tblCanal">
+        <thead><tr>
+          <th class="l">Canal</th><th>Órdenes</th>
+          <th>Ped. Unid</th><th>Asig. Unid</th><th>Fill Unid</th>
+          <th>Ped. Cajas</th><th>Asig. Cajas</th><th>Fill Cajas</th>
+          <th>Líneas Ped</th><th>Líneas Asig</th><th>Fill Líneas</th>
+        </tr></thead><tbody></tbody><tfoot></tfoot>
+      </table>
+      <div class="small muted" style="margin-top:8px">* Cajas pedidas estimadas con la relación unidades/caja por SKU de Körber/Motivo de corte.</div>
+    </div>
+
+    <!-- CONFIRMACION -->
+    <div class="card mod-only">
+      <h2>✅ Confirmación de órdenes <span class="tag">(¿se asignaron todas las del plan de Miguel?)</span></h2>
+      <div class="filters no-print">
+        <input type="text" id="ordSearch" placeholder="Buscar orden, OLA, cliente…">
+        <span class="pill on" data-est="all">Todas</span>
+        <span class="pill" data-est="Pendiente">✗ Pendientes</span>
+        <span class="pill" data-est="Parcial">⚠ Parciales</span>
+        <span class="pill" data-est="Completa">✓ Completas</span>
+        <span id="canalPills"></span>
+      </div>
+      <div class="scroll">
+        <table id="tblOrd">
+          <thead><tr>
+            <th class="l">Estado</th><th class="l">Orden</th><th class="l">Canal</th>
+            <th class="l">Vehículo</th><th class="l">OLA</th><th class="l">Cliente</th>
+            <th>Ped. Unid</th><th>Asig. Unid</th><th>Fill</th>
+            <th>SKU ped</th><th>SKU asig</th><th>Cortados</th><th class="l">Motivos</th>
+          </tr></thead><tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MOTIVOS / OTROS -->
+    <div class="card mod-only">
+      <h2>🔍 Revisión manual — SKU con motivo "Otros"</h2>
+      <div id="otrosWarn"></div>
+      <div class="scroll" style="max-height:340px">
+        <table id="tblOtros">
+          <thead><tr>
+            <th class="l">Orden</th><th class="l">En plan hoy</th><th class="l">SKU</th><th class="l">Descripción</th>
+            <th>Cant. planeada</th><th class="l">Estatus</th><th class="l">Razón bloqueo</th><th class="l">Motivo retenida</th><th class="l">Comentario (revisión manual)</th>
+          </tr></thead><tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TENDENCIA -->
+    <div class="card no-print">
+      <h2>📈 Tendencia de fill rate por día <span class="tag">(días guardados)</span></h2>
+      <div class="chart-box tall"><canvas id="chTrend"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div id="printArea"></div>
+<div id="mailCap" style="position:absolute;left:-10000px;top:0;width:900px"></div>
+
+<footer>Dashboard de Asignación de Picking · procesamiento 100% local · historial guardado en este navegador</footer>
+
+<script>
+/* ===================== UTILIDADES ===================== */
+const $ = s=>document.querySelector(s), $$ = s=>Array.from(document.querySelectorAll(s));
+const LS_KEY="picking_dash_snapshots_v1";
+const MAIL_DOMAIN="@ariumcorp.com";
+const RECIP_GROUPS={
+ "Moderno":{to:"casasola.ad;casasola.a;bauer.a;espana.a;yaeggy.a;autoconsumo;trujillo.c;mejia.c;moreno.d;paiz.d;samayoa.d;valladares.d;ramirez.df;despachos.bat;despachos.moderno;escobar.d;palomo.d;llamas.d;marroquin.d;lopez.eg;aguilar.e;castillo.ef;amezquita.g;marroquin.h;laparra.h;tohon.h;ricci.i;garcia.i;mendoza.j;villatoro.jm;tuquer.j;ramirez.j;fernandez.j;orellana.jj;sandoval.j;sian.j;moreno.j;roman.j;catalan.j;mazariegos.jd;andicoechea.j;peralta.j;veliz.l;paxan.l;cruz.l;barreda.l;ramirez.m;contreras.m;martinez.m;valenzuela.m;reyes.ms;mendoza.m;escobar.m;perez.m;recinos.mn;lozano.m;juarez.m;fuentes.m;gudiel.n;montejo.n;garzaro.n;ayapan.o;gutierrez.r;flores.s;aristondo.s;schildknecht.s;rosales.v;bolanos.v;morales.v;toapanta.y",cc:""},
+ "CEDIS":{to:"salguero.c;franco.a;diaz.as;yaeggy.a;moran.b;trujillo.c;mejia.c;despachos.bat;devolucionesc01;palomo.d;lopez.e;deleon.f;medrano.f;ochoa.g;mendez.g;avila.jj;vasquez.j;tuquer.j;hernandez.jd;cruz.l;valenzuela.m;perez.m;lozano.m;ayapan.o;pop.r;rodriguez.s;morales.v",cc:"laparra.h;ramirez.j;peralta.j;toapanta.y;ramirez.d;moreno.j;urraca.m"},
+ "Maquila":{to:"gonzalez.ja;ochoa.am",cc:"ayapan.o;perez.m;trujillo.c;cruz.l"}
+};
+function expandEmails(s){return (s||"").split(";").map(x=>x.trim()).filter(Boolean).map(x=>x.includes("@")?x:x+MAIL_DOMAIN).join("; ");}
+const norm=s=>(s==null?"":String(s)).trim();
+const normU=s=>norm(s).toUpperCase().replace(/\s+/g,"");
+const stripAcc=s=>norm(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const numv=v=>{if(v==null||v==="")return 0;const n=parseFloat(String(v).replace(/,/g,""));return isNaN(n)?0:n;};
+const fmt=(n,d=0)=>(n==null||isNaN(n))?"–":n.toLocaleString("es-GT",{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct=n=>(n==null||isNaN(n))?"–":(n*100).toFixed(1)+"%";
+function fillColor(p){if(p>=0.999)return"#22c55e";if(p>=0.85)return"#84cc16";if(p>=0.6)return"#f59e0b";return"#ef4444";}
+function fillCell(p){const c=fillColor(p),w=Math.min(100,Math.max(0,(p||0)*100));return `<div class="fillcell"><div class="bar"><span style="width:${w}%;background:${c}"></span></div><b style="color:${c}">${pct(p)}</b></div>`;}
+function estadoBadge(e){if(e==="Completa")return'<span class="badge b-ok">✓ Completa</span>';if(e==="Parcial")return'<span class="badge b-warn">⚠ Parcial</span>';return'<span class="badge b-bad">✗ Pendiente</span>';}
+function colIndex(h,c){const H=h.map(x=>stripAcc(x));for(const k of c){const i=H.indexOf(stripAcc(k));if(i>=0)return i;}for(const k of c){const i=H.findIndex(x=>x.includes(stripAcc(k)));if(i>=0)return i;}return -1;}
+function findSheet(wb,c){for(const k of c){const t=stripAcc(k).replace(/\s+/g,"");const h=wb.SheetNames.find(n=>stripAcc(n).replace(/\s+/g,"").includes(t));if(h)return wb.Sheets[h];}return null;}
+function sheetRows(ws){return ws?XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null}):[];}
+function sheetTokens(ws){const rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null}).slice(0,4);const t=new Set();rows.forEach(r=>(r||[]).forEach(c=>{const s=stripAcc(c).replace(/\s+/g,' ').trim();if(s)t.add(s);}));return t;}
+function detectSheets(wb){const S=(wb.SheetNames||[]).map(n=>({ws:wb.Sheets[n],t:sheetTokens(wb.Sheets[n])}));const pk=fn=>{const x=S.find(fn);return x?x.ws:null;};const H=(s,k)=>s.t.has(k);
+  return {log:pk(s=>H(s,'order_number')&&H(s,'item_number')),
+    mig:pk(s=>H(s,'numero de orden')&&(H(s,'fuerza de venta')||H(s,'vehiculo'))),
+    mot:pk(s=>H(s,'motivo de corte')),
+    kor:pk(s=>H(s,'orden')&&H(s,'codigo')&&(H(s,'ola')||H(s,'cajas'))),
+    prog:pk(s=>H(s,'cliente')&&H(s,'ola')&&(H(s,'asignadas')||H(s,'prioridad')||H(s,'tr / st / ov')))};}
+
+/* ===================== CÁLCULO (verificado) ===================== */
+function computeModel(wb,fileName){
+  const warnings=[];
+  const det=detectSheets(wb);
+  const wsMig=det.mig||findSheet(wb,["Data Miguel","Data Migue","Migue"]);
+  const wsLog=det.log||findSheet(wb,["LOGISTICA V_HJ_t_order_detail","LOGISTICA V","order_detail"]);
+  const wsKor=det.kor||findSheet(wb,["Base de datos Korber","Korber"]);
+  const wsMot=det.mot||findSheet(wb,["Motivo de corte"]);
+  const wsProg=det.prog||findSheet(wb,["Programacion del dia","Programacion del día","Programacion"]);
+  const _have=(wb.SheetNames||[]).join(", ");
+  if(!wsKor && !wsProg) throw new Error("No reconocí las hojas necesarias en este archivo. Tiene: ["+_have+"]. Necesito al menos la base de Körber (columnas Orden/Codigo/Cantidad) y/o la Programación del día (Cliente/OLA). Verifica que sea el Estatus de Picking correcto.");
+  if(!wsKor)warnings.push("No se encontró la base de Körber (lo asignado) — la verificación de pedidos quedará limitada.");
+  if(!wsLog)warnings.push("Sin hoja LOGISTICA V: no se calcula fill rate vs lo pedido (este archivo solo trae lo asignado / la Programación del día).");
+  if(!wsMig)warnings.push("Sin hoja de Miguel: se omite el análisis específico de Moderno por orden. La Programación del día y la verificación sí funcionan.");
+  if(!wsMot)warnings.push("Sin 'Motivo de corte': sin análisis de cortes.");
+
+  const ordenes={},korberDates=[],miguelDates=[],migVeh=new Set();
+  if(wsMig){
+    const mig=sheetRows(wsMig),mH=mig[0]||[];
+    const ci={orden:colIndex(mH,["Numero de Orden","Número de Orden","Orden"]),canal:colIndex(mH,["Fuerza de Venta","Canal"]),
+      veh:colIndex(mH,["Vehiculo","Vehículo"]),cli:colIndex(mH,["Nombre Facturacion","Nombre Facturación","Cliente"]),
+      fsol:colIndex(mH,["Fecha Solicitada"])};
+    if(ci.orden<0){warnings.push("La hoja de Miguel existe pero no tiene columna 'Numero de Orden' — se omite el análisis de Moderno.");}
+    else{
+      if(ci.canal<0)warnings.push("'Data Miguel' sin columna 'Fuerza de Venta'. Se agrupará como 'Sin canal'.");
+      for(let r=1;r<mig.length;r++){const row=mig[r];if(!row)continue;const oraw=norm(row[ci.orden]);if(!oraw)continue;
+        if(ci.veh>=0){const vv=normU(row[ci.veh]);if(vv)migVeh.add(vv);}
+        const key=normU(oraw).startsWith("OV")?normU(oraw):("OV"+normU(oraw));if(ordenes[key])continue;
+        let fsol=ci.fsol>=0?row[ci.fsol]:null;if(fsol instanceof Date)miguelDates.push(fsol);
+        ordenes[key]={key,ordenRaw:oraw,canal:ci.canal>=0?(norm(row[ci.canal])||"Sin canal"):"Sin canal",
+          veh:ci.veh>=0?norm(row[ci.veh]):"",cliente:ci.cli>=0?norm(row[ci.cli]):"",
+          fechaSol:fsol instanceof Date?fsol.toISOString().slice(0,10):norm(fsol),
+          ola:"",items:{},pedU:0,asigU:0,pedCajas:0,asigCajas:0,pedCajasAprox:false,
+          lineasPed:0,lineasAsig:0,skusCortados:0,motivos:{},estado:"Pendiente",fill:0};}
+    }
+  }
+  const keys=new Set(Object.keys(ordenes)),planCount=keys.size;
+
+  const logvOrdSet=new Set();
+  if(wsLog){
+    const log=sheetRows(wsLog),lH=log[0]||[];
+    const li={orden:colIndex(lH,["order_number"]),item:colIndex(lH,["item_number"]),cant:colIndex(lH,["Cantidad_Orden"])};
+    if(li.orden<0||li.item<0||li.cant<0){warnings.push("LOGISTICA V sin las columnas esperadas — se omite el pedido.");}
+    else for(let r=1;r<log.length;r++){const row=log[r];if(!row)continue;const k=normU(row[li.orden]);if(k)logvOrdSet.add(k);if(!keys.has(k))continue;
+      const item=norm(row[li.item]);if(!item)continue;const o=ordenes[k];if(!o.items[item])o.items[item]={ped:0,asig:0,cajasAsig:0};
+      o.items[item].ped+=numv(row[li.cant]);}
+  }
+
+  const ratioByItem={},itemDesc={},korOlaSet=new Set(),korOrdSet=new Set(),korOlaOrders={};
+  if(wsKor){
+    const kor=sheetRows(wsKor),kH=kor[0]||[];
+    const ki={ola:colIndex(kH,["Ola","OLA"]),orden:colIndex(kH,["Orden"]),item:colIndex(kH,["Codigo","Código"]),
+      cant:colIndex(kH,["Cantidad"]),cajas:colIndex(kH,["Cajas"]),cli:colIndex(kH,["Cliente"]),desc:colIndex(kH,["Descripcion","Descripción"])};
+    if(ki.orden<0||ki.item<0||ki.cant<0){warnings.push("Base de Körber sin columnas Orden/Codigo/Cantidad — se omite.");}
+    else for(let r=1;r<kor.length;r++){const row=kor[r];if(!row)continue;const k=normU(row[ki.orden]),item=norm(row[ki.item]);
+      const cant=numv(row[ki.cant]),cajas=ki.cajas>=0?numv(row[ki.cajas]):0;
+      if(ki.ola>=0&&row[ki.ola]!=null)korOlaSet.add(normU(row[ki.ola]));
+      if(k)korOrdSet.add(k);
+      if(k&&ki.ola>=0&&row[ki.ola]!=null){const _o=normU(row[ki.ola]);(korOlaOrders[_o]=korOlaOrders[_o]||new Set()).add(k);}
+      if(item){if(!ratioByItem[item])ratioByItem[item]={u:0,c:0};ratioByItem[item].u+=cant;ratioByItem[item].c+=cajas;
+        if(ki.desc>=0&&!itemDesc[item]){const d=norm(row[ki.desc]);if(d)itemDesc[item]=d;}}
+      if(!keys.has(k)||!item)continue;const o=ordenes[k];if(!o.items[item])o.items[item]={ped:0,asig:0,cajasAsig:0};
+      o.items[item].asig+=cant;o.items[item].cajasAsig+=cajas;
+      if(ki.ola>=0&&!o.ola)o.ola=norm(row[ki.ola]);if(ki.cli>=0&&!o.cliente)o.cliente=norm(row[ki.cli]);}
+  }
+
+  const motByMotivo={},otros=[],cutMotivo={};
+  if(wsMot){const mot=sheetRows(wsMot),oH=mot[0]||[];
+    const oi={orden:colIndex(oH,["Numero de Orden","Número de Orden"]),item:colIndex(oH,["Numero del Articulo","Número del Artículo","item_number"]),
+      motivo:colIndex(oH,["Motivo de Corte"]),est:colIndex(oH,["Estatus"]),cant:colIndex(oH,["Cantidad Planeada"]),
+      caja:colIndex(oH,["Planned Qty Box"]),desc:colIndex(oH,["Description","Descripcion"]),
+      rbloq:colIndex(oH,["Razon de bloqueo","Razón de bloqueo"]),mret:colIndex(oH,["Motivo Orden Retenida"])};
+    for(let r=1;r<mot.length;r++){const row=mot[r];if(!row)continue;const k=normU(row[oi.orden]),item=norm(row[oi.item]);
+      const motivo=oi.motivo>=0?(norm(row[oi.motivo])||"(sin motivo)"):"(sin motivo)";
+      const cant=oi.cant>=0?numv(row[oi.cant]):0,caja=oi.caja>=0?numv(row[oi.caja]):0;
+      const dsc=oi.desc>=0?norm(row[oi.desc]):"";
+      if(item&&dsc&&!itemDesc[item])itemDesc[item]=dsc;
+      if(item&&caja>0&&(!ratioByItem[item]||ratioByItem[item].c===0))ratioByItem[item]={u:cant,c:caja};
+      if(item){const ck=k+"||"+item;if(!cutMotivo[ck])cutMotivo[ck]=new Set();cutMotivo[ck].add(motivo);}
+      const inPlan=keys.has(k);
+      if(!motByMotivo[motivo])motByMotivo[motivo]={n:0,u:0,nPlan:0,uPlan:0};
+      motByMotivo[motivo].n++;motByMotivo[motivo].u+=cant;
+      if(inPlan){motByMotivo[motivo].nPlan++;motByMotivo[motivo].uPlan+=cant;const o=ordenes[k];o.motivos[motivo]=(o.motivos[motivo]||0)+1;}
+      if(stripAcc(motivo)==="otros")otros.push({key:k,canal:inPlan?ordenes[k].canal:"",orden:norm(row[oi.orden]),inPlan,item,desc:dsc,
+        cant,estatus:oi.est>=0?norm(row[oi.est]):"",rbloq:oi.rbloq>=0?norm(row[oi.rbloq]):"",mret:oi.mret>=0?norm(row[oi.mret]):"",comentario:""});}}
+
+  function uPerBox(item){const r=ratioByItem[item];return(r&&r.c>0)?r.u/r.c:null;}
+  Object.values(ordenes).forEach(o=>{let pedU=0,asigU=0,pedC=0,asigC=0,lped=0,lasig=0,scut=0,aprox=false;o.cortes=[];
+    Object.entries(o.items).forEach(([item,v])=>{pedU+=v.ped;asigU+=v.asig;asigC+=v.cajasAsig;
+      if(v.ped>0)lped++;if(v.asig>0)lasig++;
+      if(v.ped-v.asig>0.0001){scut++;const ck=o.key+"||"+item;const mot=cutMotivo[ck]?[...cutMotivo[ck]].join(", "):"";
+        o.cortes.push({item,desc:itemDesc[item]||"",ped:v.ped,asig:v.asig,falt:v.ped-v.asig,cajasAsig:v.cajasAsig,motivo:mot});}
+      const upb=uPerBox(item);if(v.ped>0){if(upb)pedC+=v.ped/upb;else aprox=true;}});
+    o.cortes.sort((a,b)=>b.falt-a.falt);
+    o.pedU=pedU;o.asigU=asigU;o.pedCajas=pedC;o.asigCajas=asigC;o.lineasPed=lped;o.lineasAsig=lasig;o.skusCortados=scut;o.pedCajasAprox=aprox;
+    o.fill=pedU>0?asigU/pedU:(asigU>0?1:0);o.estado=asigU<=0?"Pendiente":(o.fill>=0.999?"Completa":"Parcial");});
+  const ordList=Object.values(ordenes).sort((a,b)=>a.estado.localeCompare(b.estado)||a.canal.localeCompare(b.canal)||a.fill-b.fill);
+
+  const canalMap={};ordList.forEach(o=>{const c=o.canal;if(!canalMap[c])canalMap[c]={canal:c,ordenes:0,pedU:0,asigU:0,pedC:0,asigC:0,lped:0,lasig:0};
+    const m=canalMap[c];m.ordenes++;m.pedU+=o.pedU;m.asigU+=o.asigU;m.pedC+=o.pedCajas;m.asigC+=o.asigCajas;m.lped+=o.lineasPed;m.lasig+=o.lineasAsig;});
+  const canales=Object.values(canalMap).sort((a,b)=>b.pedU-a.pedU);
+  const T={pedU:0,asigU:0,pedC:0,asigC:0,lped:0,lasig:0};
+  ordList.forEach(o=>{T.pedU+=o.pedU;T.asigU+=o.asigU;T.pedC+=o.pedCajas;T.asigC+=o.asigCajas;T.lped+=o.lineasPed;T.lasig+=o.lineasAsig;});
+  const nComp=ordList.filter(o=>o.estado==="Completa").length,nParc=ordList.filter(o=>o.estado==="Parcial").length,nPend=ordList.filter(o=>o.estado==="Pendiente").length;
+
+  // --- Programación del día (maestro consolidado: Moderno + CEDIS + Maquila) ---
+  const programacion=[];const progT={cajA:0,cajPe:0,linA:0,linPe:0};
+  if(wsProg){const pr=sheetRows(wsProg);let hr=-1,cC=-1;
+    for(let i=0;i<pr.length&&hr<0;i++){const idx=(pr[i]||[]).findIndex(v=>stripAcc(v)==="cliente");if(idx>=0){hr=i;cC=idx;}}
+    if(hr>=0)for(let r=hr+1;r<pr.length;r++){const row=pr[r];if(!row)continue;
+      const cli=norm(row[cC]);const olaN=parseInt(String(row[cC+1]==null?"":row[cC+1]).replace(/\D/g,""),10);
+      if(!cli||!olaN||olaN<10000)continue;
+      const orden=norm(row[cC+2]);
+      const tipo=/^C\d/i.test(orden)?"Moderno":(stripAcc(cli).includes("maquila")?"Maquila":"CEDIS");
+      const p={cliente:cli,ola:String(olaN),orden,tipo,cajA:numv(row[cC+3]),cajPe:numv(row[cC+5]),linA:numv(row[cC+6]),linPe:numv(row[cC+8]),avance:numv(row[cC+9]),prioridad:norm(row[cC+10]),enKorber:korOlaSet.has(normU(olaN))};
+      programacion.push(p);progT.cajA+=p.cajA;progT.cajPe+=p.cajPe;progT.linA+=p.linA;progT.linPe+=p.linPe;}
+  }
+  const _progOlas=new Set(programacion.map(p=>normU(p.ola)));
+  const korDayOrders=[...new Set([].concat(...[..._progOlas].map(ol=>[...(korOlaOrders[ol]||[])])))];
+  const progVeh=new Set(programacion.filter(p=>p.tipo==="Moderno").map(p=>normU(p.orden)));
+  const camionesMiguelSinProg=[...migVeh].filter(v=>!progVeh.has(v));
+
+  let snapDate=parseDateFromName(fileName);
+  if(!snapDate&&korberDates.length)snapDate=korberDates.sort((a,b)=>b-a)[0].toISOString().slice(0,10);
+  if(!snapDate){const mx=miguelDates.sort((a,b)=>b-a)[0];if(mx)snapDate=mx.toISOString().slice(0,10);}
+  if(!snapDate)snapDate=new Date().toISOString().slice(0,10);
+
+  return {fileName,snapDate,savedAt:new Date().toISOString(),warnings,
+    kpi:{planCount,nComp,nParc,nPend,fillU:T.pedU>0?T.asigU/T.pedU:0,fillC:T.pedC>0?T.asigC/T.pedC:0,fillL:T.lped>0?T.lasig/T.lped:0,T},
+    canales,ordList,motivos:Object.entries(motByMotivo).map(([k,v])=>({motivo:k,...v})).sort((a,b)=>b.uPlan-a.uPlan||b.u-a.u),otros,
+    programacion,progT,camionesMiguelSinProg,korDayOrders,korOrders:[...korOrdSet],logvOrders:[...logvOrdSet]};
+}
+function parseDateFromName(name){const m=(name||"").match(/(\d{1,2})[._\-\/](\d{1,2})[._\-\/](\d{4})/);if(m)return `${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`;return null;}
+
+/* ===================== RENDER ===================== */
+let MODEL=null, ordFilter={est:"all",canal:"all",q:""}, charts={};
+function destroyCharts(){Object.values(charts).forEach(c=>{try{c.destroy();}catch(e){}});charts={};}
+
+function render(model){
+  MODEL=model;
+  $("#dropWrap").classList.add("hidden");$("#dash").classList.remove("hidden");
+  ["btnSave","btnExport","btnMail","btnImg","btnPrintRep"].forEach(id=>$("#"+id).disabled=false);
+  $("#printCanal").innerHTML=`<option value="all">Todos los canales</option>`+model.canales.map(c=>`<option value="${c.canal}">${c.canal}</option>`).join("");
+  $("#mailCanal").innerHTML=`<option value="all">Correo global (todos)</option>`+model.canales.map(c=>`<option value="${c.canal}">Solo ${c.canal}</option>`).join("");
+  $("#fname").textContent=model.fileName||"(historial)";
+  $("#snapDate").value=model.snapDate;
+  $("#liveTag").innerHTML=model._fromHistory?'📂 Visualizando registro guardado':'🟢 Datos cargados — recuerda <b>Guardar</b>';
+  if(!$("#mailSubj").value)$("#mailSubj").value=`Reporte Asignación Picking ${model.snapDate}`;
+  let st="";
+  if(model.kpi.nPend>0){const pl=model.ordList.filter(o=>o.estado==="Pendiente").map(o=>`${o.ordenRaw} <span style="opacity:.7">(${o.canal})</span>`).join(" · ");
+    st+=`<div class="errbox" style="font-size:14px">🚨 <b>${model.kpi.nPend} orden(es) del plan de Miguel SIN asignar todavía</b> — revísalas para que no se queden fuera:<br>${pl}</div>`;}
+  (model.warnings||[]).forEach(w=>st+=`<div class="warnbox">⚠ ${w}</div>`);$("#status").innerHTML=st;
+  const hasMod=(model.ordList||[]).length>0;
+  $$('.mod-only').forEach(el=>el.style.display=hasMod?'':'none');
+  if(hasMod){renderKPIs(model);renderCharts(model);renderCanal(model);renderCanalPills(model);renderOrdenes(model);renderMotivos(model);}
+  else{destroyCharts();}
+  renderProgramacion(model);renderTrend();
+  let _ped=getPedidos(model.snapDate);
+  const _emb=window.__EMBEDDED_PEDIDOS__;
+  if(!_ped&&_emb&&_emb.texto&&(!_emb.fecha||_emb.fecha===model.snapDate))_ped=_emb.texto;
+  $("#pedidosTxt").value=_ped;verificarPedidos();renderRequerimientos();renderFechas();
+}
+function fillKpiCls(p){return p>=0.999?"ok":(p>=0.85?"":(p>=0.6?"warn":"bad"));}
+function renderKPIs(m){const k=m.kpi;const cards=[
+  {lbl:"Fill rate · Unidades",val:pct(k.fillU),sub:`${fmt(k.T.asigU)} / ${fmt(k.T.pedU)}`,cls:fillKpiCls(k.fillU),big:1},
+  {lbl:"Fill rate · Cajas",val:pct(k.fillC),sub:`${fmt(k.T.asigC)} / ${fmt(k.T.pedC)}*`,cls:fillKpiCls(k.fillC),big:1},
+  {lbl:"Fill rate · Líneas",val:pct(k.fillL),sub:`${fmt(k.T.lasig)} / ${fmt(k.T.lped)} SKU`,cls:fillKpiCls(k.fillL),big:1},
+  {lbl:"Órdenes del plan",val:fmt(k.planCount),sub:"Data Miguel",cls:""},
+  {lbl:"Completas",val:fmt(k.nComp),sub:"100% asignado",cls:"ok"},
+  {lbl:"Parciales",val:fmt(k.nParc),sub:"incompletas",cls:"warn"},
+  {lbl:"Pendientes",val:fmt(k.nPend),sub:"sin asignar",cls:"bad"}];
+  $("#kpis").innerHTML=cards.map(c=>`<div class="kpi ${c.cls} ${c.big?'big':''}"><div class="lbl">${c.lbl}</div><div class="val">${c.val}</div><div class="sub">${c.sub}</div></div>`).join("");
+}
+
+/* ===================== VERIFICAR PEDIDOS POR CORREO ===================== */
+const PED_KEY="picking_pedidos_v1";
+function getPedidos(date){try{return (JSON.parse(localStorage.getItem(PED_KEY))||{})[date]||"";}catch(e){return"";}}
+function setPedidos(date,txt){let s;try{s=JSON.parse(localStorage.getItem(PED_KEY))||{};}catch(e){s={};}if(txt&&txt.trim())s[date]=txt;else delete s[date];localStorage.setItem(PED_KEY,JSON.stringify(s));}
+const ORD_COMM_KEY="picking_ord_comments_v1";
+function getOrdComments(date){try{return(JSON.parse(localStorage.getItem(ORD_COMM_KEY))||{})[date]||{};}catch(e){return{};}}
+function setOrdComment(date,orden,val){let s;try{s=JSON.parse(localStorage.getItem(ORD_COMM_KEY))||{};}catch(e){s={};}if(!s[date])s[date]={};if(val&&val.trim())s[date][orden]=val.trim();else delete s[date][orden];localStorage.setItem(ORD_COMM_KEY,JSON.stringify(s));}
+function extractOrders(txt){const out=[];let m;
+  const re=/\b(OVG|OV|TR|ST|RTC|DV)\s*-?\s*(\d{6,})\b/gi;while((m=re.exec(txt)))out.push((m[1]+m[2]).toUpperCase());
+  const re2=/\bG\s*-?\s*(\d{6,})\b/gi;while((m=re2.exec(txt)))out.push("OVG"+m[1]);
+  const re3=/\b(4700\d{6})\b/g;while((m=re3.exec(txt)))out.push(m[1]);   // serial suelto (sin prefijo)
+  return out;}
+function odigits(s){return String(s).replace(/\D/g,"");}
+function tipoPedido(o){return /^OVG?/.test(o)?"Moderno":(/^ST/.test(o)?"CEDIS (ST)":(/^TR/.test(o)?"Traslado (TR)":"otro"));}
+function verificarPedidos(){
+  if(!MODEL)return;const txt=$("#pedidosTxt").value;setPedidos(MODEL.snapDate,txt);
+  const found=extractOrders(txt);
+  // mapas por dígitos (para cruzar números con o sin prefijo) + orden completa para mostrar
+  const korD=new Set(),logD=new Set(),progD=new Set(),full={};
+  (MODEL.logvOrders||[]).forEach(o=>{const d=odigits(o);if(d){logD.add(d);if(!full[d])full[d]=String(o).toUpperCase();}});
+  (MODEL.programacion||[]).forEach(p=>{const d=odigits(p.orden);if(d){progD.add(d);if(!full[d])full[d]=normU(p.orden);}});
+  (MODEL.korOrders||[]).forEach(o=>{const d=odigits(o);if(d){korD.add(d);full[d]=String(o).toUpperCase();}});
+  const seen=new Set(),rows=[];
+  found.forEach(o=>{const d=odigits(o);if(!d||seen.has(d))return;seen.add(d);
+    const inKor=korD.has(d),inProg=progD.has(d),inLog=logD.has(d);
+    const disp=(/^\d+$/.test(o)&&full[d])?full[d]:o;   // si vino sin prefijo, mostrar la orden completa del sistema
+    const estado=inKor?"ok":(inProg?"plan":(inLog?"falta":"noexiste"));
+    rows.push({orden:disp,tipo:tipoPedido(disp),inKor,inProg,inLog,estado});});
+  renderPedidos(rows);
+  // --- ordenes "de mas": programadas por Planner pero que nadie pidio ---
+  const ex=$("#pedExtra");
+  if(ex){
+    if(txt&&txt.trim()){
+      const reqD=new Set();extractOrders(txt).forEach(o=>reqD.add(odigits(o)));
+      (MODEL.ordList||[]).forEach(o=>reqD.add(odigits(o.key)));
+      const prog=[...(MODEL.korDayOrders||[])];
+      (MODEL.programacion||[]).forEach(p=>{if(/^(TR|ST|OVG)/i.test(p.orden))prog.push(String(p.orden).toUpperCase());});
+      const extras=[],sx=new Set();
+      prog.forEach(o=>{const d=odigits(o);if(!d||sx.has(d))return;sx.add(d);if(!reqD.has(d))extras.push(String(o).toUpperCase());});
+      ex.innerHTML=extras.length?`<div class="warnbox">➕ <b>${extras.length} orden(es) en la programación de Planner que NO se pidieron por correo</b> (revisa si sobran): ${extras.join(", ")}</div>`:'<div class="small" style="color:var(--ok);margin-bottom:6px">✓ Sin órdenes de más: todo lo programado fue pedido.</div>';
+    } else { ex.innerHTML='<div class="small muted" style="margin-bottom:6px">Para detectar órdenes "de más", carga los correos (pega arriba o usa el .bat).</div>'; }
+  }
+}
+function renderRequerimientos(){
+  const el=$("#reqSection");if(!el)return;
+  const emb=window.__EMBEDDED_PEDIDOS__;
+  const reqs=(emb&&emb.requerimientos)||[];
+  if(!reqs.length){el.innerHTML='';return;}
+  const tagColor={'URGENTE':'#ef4444','TEMPERATURA':'#22d3ee','REQUERIMIENTO':'#a855f7','MARTES':'#f59e0b','LUNES':'#f59e0b','MIERCOLES':'#f59e0b','JUEVES':'#f59e0b','VIERNES':'#f59e0b','SABADO':'#f59e0b','DOMINGO':'#f59e0b'};
+  function tagChip(t){const col=Object.keys(tagColor).find(k=>t.toUpperCase().includes(k));const c=col?tagColor[col]:'#3b82f6';return `<span style="background:${c}22;color:${c};border:1px solid ${c}55;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:700;margin-right:4px">${t}</span>`;}
+  let html=`<div style="margin:14px 0 6px"><b style="font-size:13px">📋 Correos con requerimientos / sin nº de orden aún</b> <span class="small muted">(${reqs.length} correo(s) de los últimos días)</span></div>`;
+  reqs.forEach(r=>{
+    const tags=r.tags?r.tags.split('|').map(t=>tagChip(t.trim())).join(''):'';
+    html+=`<div style="background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+        ${tags}
+        <span class="small muted">${r.fecha}</span>
+        <b style="font-size:13px">${r.asunto}</b>
+        <span class="small muted">— ${r.de}</span>
+      </div>
+      <details><summary style="cursor:pointer;font-size:12px;color:var(--accent);list-style:none">ver cuerpo del correo</summary>
+        <div style="font-size:12px;color:var(--muted);margin-top:6px;white-space:normal;line-height:1.5">${r.cuerpo}</div>
+      </details>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+// ---- Parseo de fechas en español (para tag PLANIFICADO: del correo) ----
+const _MESES={enero:0,febrero:1,marzo:2,abril:3,mayo:4,junio:5,julio:6,agosto:7,septiembre:8,octubre:9,noviembre:10,diciembre:11};
+function parseSpanishDate(s){
+  if(!s)return null;
+  const m=s.match(/(\d{1,2})\s+de\s+(\w+)(?:\s+(?:de\s+)?(\d{4}))?/i);
+  if(!m)return null;
+  const mes=_MESES[m[2].toLowerCase()];
+  if(mes===undefined)return null;
+  const yr=m[3]?parseInt(m[3]):new Date().getFullYear();
+  return new Date(yr,mes,parseInt(m[1]));
+}
+function getPlanInfo(ctxRaw){
+  const pm=ctxRaw.match(/PLANIFICADO:\s*([^|\]]+)/i);
+  if(!pm)return null;
+  const pd=parseSpanishDate(pm[1].trim());
+  if(!pd)return null;
+  const today=new Date();today.setHours(0,0,0,0);
+  const diff=Math.round((pd-today)/(1000*60*60*24));
+  const dias=['Dom','Lun','Mar','Mie','Jue','Vie','Sab'];
+  const meses=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const short=dias[pd.getDay()]+' '+pd.getDate()+' '+meses[pd.getMonth()];
+  return{diff,short};
+}
+
+// ---- Órdenes con solicitud para fecha específica o con comentario ----
+function fechasPedidos(){
+  const ctxMap=(window.__EMBEDDED_PEDIDOS__&&window.__EMBEDDED_PEDIDOS__.contextos)||{};
+  const comms=MODEL?getOrdComments(MODEL.snapDate):{};
+  const rows=[],seen=new Set();
+  Object.entries(ctxMap).forEach(([orden,ctx])=>{
+    const pi=getPlanInfo(ctx);const comm=comms[orden]||'';
+    if(!pi&&!comm)return;                              // solo con fecha o comentario
+    const d=odigits(orden);if(d&&seen.has(d))return;if(d)seen.add(d);
+    rows.push({orden,pi,comm,solicitud:ctx.replace(/^\[[^\]]+\]\s*/,'')});
+  });
+  Object.entries(comms).forEach(([orden,comm])=>{        // comentarios sueltos sin correo
+    if(!comm)return;const d=odigits(orden);if(d&&seen.has(d))return;if(d)seen.add(d);
+    rows.push({orden,pi:null,comm,solicitud:''});
+  });
+  rows.sort((a,b)=>(a.pi?a.pi.diff:9999)-(b.pi?b.pi.diff:9999));
+  return rows;
+}
+function renderFechas(){
+  const el=$("#fechasSection");if(!el)return;
+  const rows=fechasPedidos();
+  if(!rows.length){el.innerHTML='<div class="small muted">Sin órdenes con fecha específica ni comentarios por ahora.</div>';return;}
+  const korD=new Set(),progD=new Set();
+  (MODEL&&MODEL.korOrders||[]).forEach(o=>korD.add(odigits(o)));
+  (MODEL&&MODEL.programacion||[]).forEach(p=>progD.add(odigits(p.orden)));
+  const body=rows.map(r=>{
+    const d=odigits(r.orden),enKor=korD.has(d),enProg=progD.has(d);
+    const estado=enKor?'<span class="badge b-ok">✓ Asignada</span>':(enProg?'<span class="badge b-warn">⚠ En plan, sin asignar</span>':'<span class="badge b-bad">🚨 No aparece</span>');
+    let fecha='<span class="muted">—</span>';
+    if(r.pi){
+      const lbl=r.pi.diff===0?'HOY':(r.pi.diff===1?'MAÑANA':r.pi.short+(r.pi.diff>1?` (en ${r.pi.diff} días)`:` (hace ${-r.pi.diff} d)`));
+      const col=r.pi.diff===0?'#f59e0b':(r.pi.diff>0?'#60a5fa':'#9ca3af');
+      fecha=`<b style="color:${col}">📅 ${lbl}</b>`;
+    }
+    const sol=(r.solicitud||'').replace(/</g,'&lt;').slice(0,220);
+    return `<tr><td class="l"><b>${r.orden}</b></td><td class="l">${fecha}</td><td class="l">${estado}</td><td class="l">${(r.comm||'').replace(/</g,'&lt;')||'<span class="muted">—</span>'}</td><td class="l" style="font-size:11px;color:var(--muted);max-width:360px">${sol||'<span class="muted">—</span>'}</td></tr>`;
+  }).join('');
+  el.innerHTML=`<div class="scroll" style="max-height:320px"><table><thead><tr><th class="l">Orden</th><th class="l">Fecha solicitada</th><th class="l">Estado</th><th class="l">Comentario</th><th class="l">Solicitud (correo)</th></tr></thead><tbody>${body}</tbody></table></div>`;
+}
+function renderPedidos(rows){
+  const tb=$("#tblPed tbody");if(!tb)return;tb.innerHTML="";
+  const ctxMap=(window.__EMBEDDED_PEDIDOS__&&window.__EMBEDDED_PEDIDOS__.contextos)||{};
+  function getCtx(orden){return ctxMap[orden]||(()=>{const d=odigits(orden);return Object.entries(ctxMap).find(([k])=>odigits(k)===d&&d)?.[1]||'';})();}
+
+  const falta=rows.filter(r=>r.estado==="falta"||r.estado==="noexiste");
+  const faltaHoy=falta.filter(r=>{const pi=getPlanInfo(getCtx(r.orden));return !pi||pi.diff<=0;});
+  const faltaFutura=falta.filter(r=>{const pi=getPlanInfo(getCtx(r.orden));return pi&&pi.diff>0;});
+
+  $("#pedResumen").innerHTML=rows.length?
+    `${rows.length} detectadas · <b style="color:var(--ok)">${rows.filter(r=>r.estado==='ok').length} agregadas</b> · <b style="color:var(--bad)">${faltaHoy.length} pendientes hoy</b>${faltaFutura.length?` · <b style="color:#60a5fa">${faltaFutura.length} planeadas a futuro</b>`:''}`:
+    'Pega texto / números y pulsa Verificar.';
+
+  const alertParts=[];
+  if(faltaHoy.length)alertParts.push(`<div class="errbox">🚨 <b>${faltaHoy.length} orden(es) de HOY no agregadas</b>: ${faltaHoy.map(r=>r.orden).join(", ")}</div>`);
+  if(faltaFutura.length)alertParts.push(`<div class="warnbox">📅 <b>${faltaFutura.length} orden(es) para dias futuros</b> (aun no es su dia): ${faltaFutura.map(r=>r.orden).join(", ")}</div>`);
+  if(!alertParts.length&&rows.length)alertParts.push('<div class="small" style="color:var(--ok);margin-bottom:8px">✓ Todas las órdenes pegadas están en la programación o en Körber.</div>');
+  $("#pedAlert").innerHTML=alertParts.join('');
+
+  const E={ok:'<span class="badge b-ok">✓ Agregada</span>',plan:'<span class="badge b-warn">⚠ En programación, sin asignar</span>',falta:'<span class="badge b-bad">🚨 NO agregada</span>',noexiste:'<span class="badge b-bad">🚨 No aparece (revisar nº)</span>'};
+  const comms=MODEL?getOrdComments(MODEL.snapDate):{};
+  if(!rows.length){tb.innerHTML=`<tr><td colspan="6" class="muted" style="text-align:center;padding:16px">— pega los pedidos arriba —</td></tr>`;return;}
+  rows.forEach(r=>{
+    const tr=document.createElement('tr');
+    const comm=(comms[r.orden]||'').replace(/"/g,'&quot;');
+    const ctxRaw=getCtx(r.orden);
+
+    // Fecha especifica de este TR segun tabla del correo
+    const planInfo=getPlanInfo(ctxRaw);
+    const planDiff=planInfo?planInfo.diff:null;
+    const planShort=planInfo?planInfo.short:'';
+
+    // Badge de estado: override si la orden tiene fecha futura asignada
+    let estadoBadge=E[r.estado];
+    if((r.estado==='noexiste'||r.estado==='plan')&&planDiff!==null){
+      if(planDiff===0){
+        estadoBadge='<span class="badge b-warn">⚡ Planificado para HOY - agregar</span>';
+      } else if(planDiff===1){
+        estadoBadge='<span class="badge" style="background:#0e1f3a;color:#60a5fa;border:1px solid #2d4a7a">📅 Se planea manana</span>';
+      } else if(planDiff>1){
+        estadoBadge=`<span class="badge" style="background:#0e1f3a;color:#60a5fa;border:1px solid #2d4a7a">📅 Se planea ${planShort} (en ${planDiff} dias)</span>`;
+      }
+    }
+
+    // Tag visual con chip de fecha coloreado segun proximidad
+    const tagMatch=ctxRaw.match(/^\[([^\]]+)\]/);
+    let tagHtml='';
+    if(tagMatch){
+      let tagTxt=tagMatch[1];
+      if(planDiff!==null){
+        const chipColor=planDiff===0?'#f59e0b':(planDiff>0?'#60a5fa':'#9ca3af');
+        const chipBg=planDiff===0?'#2a1f0c':(planDiff>0?'#0e1f3a':'#1e1e2a');
+        const chipLbl=planDiff===0?'HOY':(planDiff===1?'MANANA':planShort.toUpperCase());
+        tagTxt=tagTxt.replace(/PLANIFICADO:\s*[^|]*/i,`<span style="background:${chipBg};color:${chipColor};border-radius:3px;padding:0 5px">📅 ${chipLbl}</span>`);
+      }
+      tagHtml=`<span style="background:#3a2a0a;color:#fcd34d;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700;margin-right:4px;white-space:normal;display:inline-block">${tagTxt}</span>`;
+    }
+    const ctxHtml=ctxRaw?`<details style="margin-top:3px"><summary style="cursor:pointer;font-size:11px;color:var(--accent);list-style:none">${tagHtml}ver solicitud del correo</summary><div style="font-size:11px;color:var(--muted);margin-top:3px;white-space:normal;max-width:420px">${ctxRaw.replace(/^\[[^\]]+\]\s*/,'')}</div></details>`:'';
+    tr.innerHTML=`<td class="l"><b>${r.orden}</b>${ctxHtml}</td><td class="l">${r.tipo}</td><td class="l">${r.inProg?'Sí':'<span class="muted">no</span>'}</td><td class="l">${r.inKor?'Sí':'<span class="muted">no</span>'}</td><td class="l">${estadoBadge}</td><td class="l"><input type="text" placeholder="Ej: Esperando confirmacion de Amanda..." value="${comm}" data-orden="${r.orden.replace(/"/g,'&quot;')}" style="width:100%;min-width:160px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:4px 8px;font-size:12px"></td>`;
+    tb.appendChild(tr);
+    tr.querySelector('input').oninput=function(){if(MODEL)setOrdComment(MODEL.snapDate,this.dataset.orden,this.value);renderFechas();};
+  });
+}
+function renderProgramacion(m){
+  const tb=$("#tblProg tbody");if(!tb)return;tb.innerHTML="";
+  const prog=m.programacion||[];
+  const cnt={Moderno:0,CEDIS:0,Maquila:0,Otro:0};prog.forEach(p=>cnt[p.tipo]=(cnt[p.tipo]||0)+1);
+  let warn="";
+  if((m.camionesMiguelSinProg||[]).length)warn+=`<div class="errbox">🚨 Camión(es) que Miguel pidió y NO aparecen en la programación del día: <b>${m.camionesMiguelSinProg.join(", ")}</b> — revísalos para que no se queden fuera.</div>`;
+  const sinAsig=prog.filter(p=>p.cajA<=0&&p.linA<=0);
+  if(sinAsig.length)warn+=`<div class="warnbox">⚠ ${sinAsig.length} OLA(s) de la programación con 0 asignado: ${sinAsig.map(p=>p.cliente+" ("+p.ola+")").join(" · ")}</div>`;
+  if(!prog.length)warn=`<div class="warnbox">No se encontró la hoja "Programación del día" (o sin OLAs). Se omite esta vista.</div>`;
+  $("#progWarn").innerHTML=warn;
+  $("#progResumen").innerHTML=prog.length?`<b>${prog.length}</b> OLAs &nbsp;·&nbsp; Moderno: <b>${cnt.Moderno}</b> · CEDIS: <b>${cnt.CEDIS}</b> · Maquila: <b>${cnt.Maquila}</b>${cnt.Otro?' · Otro: '+cnt.Otro:''} &nbsp;·&nbsp; Líneas asignadas <b>${fmt(m.progT.linA)}</b> / pendientes <b>${fmt(m.progT.linPe)}</b> · Cajas asignadas <b>${fmt(m.progT.cajA)}</b>`:"";
+  const tcol={Moderno:"#3b82f6",CEDIS:"#22d3ee",Maquila:"#a855f7",Otro:"#8ea3bd"};
+  prog.forEach(p=>{const av=p.avance>1?p.avance/100:p.avance;
+    tb.innerHTML+=`<tr><td class="l">${p.prioridad||"–"}</td><td class="l"><b>${p.cliente}</b></td><td class="l">${p.ola}</td><td class="l">${p.orden||"–"}</td>
+    <td class="l"><span class="badge" style="background:${tcol[p.tipo]}26;color:${tcol[p.tipo]}">${p.tipo}</span></td>
+    <td>${fmt(p.cajA)}</td><td>${p.cajPe>0?'<b style="color:var(--warn)">'+fmt(p.cajPe)+'</b>':'0'}</td>
+    <td>${fmt(p.linA)}</td><td>${p.linPe>0?'<b style="color:var(--warn)">'+fmt(p.linPe)+'</b>':'0'}</td>
+    <td>${fillCell(av)}</td><td class="l">${p.enKorber?'<span class="badge b-ok">✓</span>':'<span class="badge b-bad">no</span>'}</td></tr>`;});
+  if(!prog.length)tb.innerHTML=`<tr><td colspan="11" class="muted" style="text-align:center;padding:20px">— sin datos —</td></tr>`;
+}
+function renderCharts(m){
+  destroyCharts();
+  const grid="rgba(255,255,255,.06)", tick="#8ea3bd";
+  Chart.defaults.color=tick;Chart.defaults.font.family='"Segoe UI",system-ui,sans-serif';Chart.defaults.font.size=12;Chart.defaults.animation=false;
+
+  // Fill por canal
+  const cl=m.canales;
+  charts.canal=new Chart($("#chCanal"),{type:"bar",
+    data:{labels:cl.map(c=>c.canal),datasets:[{data:cl.map(c=>c.pedU>0?+(100*c.asigU/c.pedU).toFixed(1):0),
+      backgroundColor:cl.map(c=>fillColor(c.pedU>0?c.asigU/c.pedU:0)),borderRadius:8,maxBarThickness:70}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>{const c=cl[ctx.dataIndex];return [` Fill: ${ctx.parsed.y}%`,` Asig: ${fmt(c.asigU)} / ${fmt(c.pedU)} u`,` ${c.ordenes} órdenes`];}}}},
+      scales:{y:{beginAtZero:true,max:100,grid:{color:grid},ticks:{callback:v=>v+"%"}},x:{grid:{display:false}}}},
+    plugins:[valueTop(v=>v+"%")]});
+
+  // Estado donut
+  const k=m.kpi;
+  charts.estado=new Chart($("#chEstado"),{type:"doughnut",
+    data:{labels:["Completas","Parciales","Pendientes"],datasets:[{data:[k.nComp,k.nParc,k.nPend],
+      backgroundColor:["#22c55e","#f59e0b","#ef4444"],borderColor:"#141d2e",borderWidth:3}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:"62%",plugins:{legend:{position:"bottom",labels:{boxWidth:12,padding:14}}}},
+    plugins:[centerText(`${k.planCount}`,"órdenes")]});
+
+  // Motivos donut
+  const mp=m.motivos.filter(x=>x.nPlan>0);const palette={Bloqueo:"#a855f7",Fecha:"#3b82f6",Inventario:"#22d3ee",Otros:"#f59e0b"};
+  if(mp.length){charts.mot=new Chart($("#chMot"),{type:"doughnut",
+    data:{labels:mp.map(x=>x.motivo),datasets:[{data:mp.map(x=>x.nPlan),
+      backgroundColor:mp.map(x=>palette[x.motivo]||"#64748b"),borderColor:"#141d2e",borderWidth:3}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:"55%",plugins:{legend:{position:"bottom",labels:{boxWidth:12,padding:12}},
+      tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ${ctx.parsed} SKU`}}}}});
+  }else{ $("#chMot").parentElement.innerHTML='<div class="muted small" style="text-align:center;padding:40px">Sin cortes en el plan de hoy 👍</div>'; }
+
+  // Top pendientes (faltante por orden)
+  const pend=m.ordList.map(o=>({n:o.ordenRaw,canal:o.canal,falt:o.pedU-o.asigU})).filter(o=>o.falt>0).sort((a,b)=>b.falt-a.falt).slice(0,8);
+  charts.pend=new Chart($("#chPend"),{type:"bar",
+    data:{labels:pend.map(o=>o.n),datasets:[{data:pend.map(o=>Math.round(o.falt)),
+      backgroundColor:"#ef4444",borderRadius:6,maxBarThickness:22}]},
+    options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>` ${fmt(ctx.parsed.x)} u sin asignar`,afterLabel:ctx=>" "+pend[ctx.dataIndex].canal}}},
+      scales:{x:{beginAtZero:true,grid:{color:grid},ticks:{callback:v=>fmt(v)}},y:{grid:{display:false}}}}});
+}
+function valueTop(fmtFn){return{id:"vt",afterDatasetsDraw(c){const{ctx}=c;ctx.save();ctx.font="700 13px Segoe UI";ctx.fillStyle="#eaf1f9";ctx.textAlign="center";
+  c.getDatasetMeta(0).data.forEach((b,i)=>{const v=c.data.datasets[0].data[i];ctx.fillText(fmtFn(v),b.x,b.y-6);});ctx.restore();}};}
+function centerText(big,small){return{id:"ct",afterDraw(c){const{ctx,chartArea}=c;if(!chartArea)return;const x=(chartArea.left+chartArea.right)/2,y=(chartArea.top+chartArea.bottom)/2;
+  ctx.save();ctx.textAlign="center";ctx.fillStyle="#eaf1f9";ctx.font="800 28px Segoe UI";ctx.fillText(big,x,y-2);
+  ctx.fillStyle="#8ea3bd";ctx.font="400 12px Segoe UI";ctx.fillText(small,x,y+18);ctx.restore();}};}
+
+function renderCanal(m){const tb=$("#tblCanal tbody");tb.innerHTML="";
+  m.canales.forEach(c=>{const fu=c.pedU>0?c.asigU/c.pedU:0,fc=c.pedC>0?c.asigC/c.pedC:0,fl=c.lped>0?c.lasig/c.lped:0;
+    tb.innerHTML+=`<tr><td class="l"><b>${c.canal}</b></td><td>${fmt(c.ordenes)}</td>
+      <td>${fmt(c.pedU)}</td><td>${fmt(c.asigU)}</td><td>${fillCell(fu)}</td>
+      <td>${fmt(c.pedC)}</td><td>${fmt(c.asigC)}</td><td>${fillCell(fc)}</td>
+      <td>${fmt(c.lped)}</td><td>${fmt(c.lasig)}</td><td>${fillCell(fl)}</td></tr>`;});
+  const k=m.kpi;$("#tblCanal tfoot").innerHTML=`<tr style="font-weight:700;border-top:2px solid var(--line)">
+    <td class="l">TOTAL</td><td>${fmt(k.planCount)}</td><td>${fmt(k.T.pedU)}</td><td>${fmt(k.T.asigU)}</td><td>${fillCell(k.fillU)}</td>
+    <td>${fmt(k.T.pedC)}</td><td>${fmt(k.T.asigC)}</td><td>${fillCell(k.fillC)}</td>
+    <td>${fmt(k.T.lped)}</td><td>${fmt(k.T.lasig)}</td><td>${fillCell(k.fillL)}</td></tr>`;}
+function renderCanalPills(m){const wrap=$("#canalPills");const cs=[...new Set(m.ordList.map(o=>o.canal))];
+  wrap.innerHTML=cs.map(c=>`<span class="pill" data-canal="${c}">${c}</span>`).join("");
+  $$("#canalPills .pill").forEach(p=>p.onclick=()=>{ordFilter.canal=(ordFilter.canal===p.dataset.canal)?"all":p.dataset.canal;
+    $$("#canalPills .pill").forEach(x=>x.classList.toggle("on",x.dataset.canal===ordFilter.canal));renderOrdenes(MODEL);});}
+function renderOrdenes(m){const tb=$("#tblOrd tbody");tb.innerHTML="";const q=stripAcc(ordFilter.q);
+  const rows=m.ordList.filter(o=>{if(ordFilter.est!=="all"&&o.estado!==ordFilter.est)return false;
+    if(ordFilter.canal!=="all"&&o.canal!==ordFilter.canal)return false;
+    if(q&&!stripAcc(o.ordenRaw+" "+o.ola+" "+o.cliente+" "+o.veh+" "+o.canal).includes(q))return false;return true;});
+  rows.forEach(o=>{const mot=Object.entries(o.motivos).map(([k,v])=>`<span class="badge ${stripAcc(k)==="otros"?"b-otros":"b-warn"}" style="margin:1px">${k}${v>1?" ·"+v:""}</span>`).join(" ");
+    tb.innerHTML+=`<tr><td class="l">${estadoBadge(o.estado)}</td><td class="l"><b>${o.ordenRaw}</b></td><td class="l">${o.canal}</td>
+      <td class="l">${o.veh||"–"}</td><td class="l">${o.ola||'<span class="muted">—</span>'}</td>
+      <td class="l" title="${o.cliente}">${(o.cliente||"").slice(0,26)||"–"}</td>
+      <td>${fmt(o.pedU)}</td><td>${fmt(o.asigU)}</td><td>${fillCell(o.fill)}</td>
+      <td>${fmt(o.lineasPed)}</td><td>${fmt(o.lineasAsig)}</td>
+      <td>${o.skusCortados>0?`<b style="color:var(--bad)">${fmt(o.skusCortados)}</b>`:"0"}</td>
+      <td class="l">${mot||'<span class="muted">—</span>'}</td></tr>`;});
+  if(!rows.length)tb.innerHTML=`<tr><td colspan="13" class="muted" style="text-align:center;padding:24px">Sin órdenes con estos filtros.</td></tr>`;}
+function renderMotivos(m){const otrosPlan=m.otros.filter(o=>o.inPlan).length;
+  $("#otrosWarn").innerHTML=m.otros.length?`<div class="warnbox">🔍 Hay <b>${m.otros.length}</b> SKU con motivo <b>"Otros"</b> (${otrosPlan} del plan de hoy) que requieren <b>revisión manual</b>. Escribe el comentario y viajará consolidado en el correo, el reporte por canal y el Excel.</div>`:`<div class="small muted" style="margin-bottom:8px">No hay SKU con motivo "Otros". 👍</div>`;
+  const tb=$("#tblOtros tbody");tb.innerHTML="";
+  m.otros.sort((a,b)=>(b.inPlan-a.inPlan)||(b.cant-a.cant));
+  m.otros.forEach((o,i)=>{o.comentario=getCom(m.snapDate,o.key,o.item)||o.comentario||"";
+    tb.innerHTML+=`<tr><td class="l"><b>${o.orden}</b></td>
+    <td class="l">${o.inPlan?'<span class="badge b-ok">Sí</span>':'<span class="muted">no</span>'}</td><td class="l">${o.item}</td>
+    <td class="l" title="${o.desc}">${(o.desc||"").slice(0,30)}</td><td>${fmt(o.cant)}</td>
+    <td class="l">${o.estatus||"–"}</td><td class="l">${o.rbloq||"–"}</td><td class="l">${o.mret||"–"}</td>
+    <td class="l"><textarea class="otros-com" data-i="${i}" rows="1" placeholder="Motivo real / comentario…">${(o.comentario||"").replace(/</g,"&lt;")}</textarea></td></tr>`;});
+  if(!m.otros.length)tb.innerHTML=`<tr><td colspan="9" class="muted" style="text-align:center;padding:20px">— ninguno —</td></tr>`;
+  $$("#tblOtros .otros-com").forEach(t=>t.oninput=e=>{const o=MODEL.otros[+e.target.dataset.i];o.comentario=e.target.value;setCom(MODEL.snapDate,o.key,o.item,e.target.value);});}
+function renderTrend(){const snaps=loadSnaps();const dates=Object.keys(snaps).sort();
+  if(charts.trend){try{charts.trend.destroy();}catch(e){}charts.trend=null;}
+  const box=document.querySelector(".card.no-print .chart-box.tall");
+  if(!box)return;
+  if(!dates.length){box.innerHTML='<div class="muted small" style="text-align:center;padding:50px">Aún no hay días guardados. Usa "💾 Guardar".</div>';return;}
+  box.innerHTML='<canvas id="chTrend"></canvas>';
+  charts.trend=new Chart($("#chTrend"),{type:"line",
+    data:{labels:dates.map(d=>d.slice(5)),datasets:[{label:"Fill unidades",data:dates.map(d=>+((snaps[d].kpi.fillU||0)*100).toFixed(1)),
+      borderColor:"#3b82f6",backgroundColor:"rgba(59,130,246,.15)",fill:true,tension:.3,pointRadius:4,pointBackgroundColor:"#3b82f6"}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>" "+ctx.parsed.y+"%"}}},
+      scales:{y:{beginAtZero:true,max:100,grid:{color:"rgba(255,255,255,.06)"},ticks:{callback:v=>v+"%"}},x:{grid:{display:false}}}}});}
+
+/* ===================== PERSISTENCIA ===================== */
+function loadSnaps(){try{return JSON.parse(localStorage.getItem(LS_KEY))||{};}catch(e){return{};}}
+function saveSnaps(o){localStorage.setItem(LS_KEY,JSON.stringify(o));}
+function saveCurrent(){if(!MODEL)return;const date=$("#snapDate").value||MODEL.snapDate;const snaps=loadSnaps();
+  const copy=JSON.parse(JSON.stringify(MODEL));delete copy._fromHistory;delete copy.logvOrders;copy.snapDate=date;copy.savedAt=new Date().toISOString();
+  snaps[date]=copy;saveSnaps(snaps);refreshHist(date);renderTrend();flash(`Registro del ${date} guardado ✓`);}
+function refreshHist(sel){const snaps=loadSnaps();const dates=Object.keys(snaps).sort((a,b)=>b.localeCompare(a));
+  $("#histSel").innerHTML=`<option value="">— día actual —</option>`+dates.map(d=>`<option value="${d}">${d}</option>`).join("");if(sel)$("#histSel").value=sel;}
+function loadFromHist(date){if(!date)return;const m=loadSnaps()[date];if(!m)return;m._fromHistory=true;render(m);}
+function flash(msg){const d=document.createElement("div");d.textContent=msg;
+  d.style.cssText="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#22c55e;color:#04210f;padding:10px 18px;border-radius:10px;font-weight:600;z-index:99";
+  document.body.appendChild(d);setTimeout(()=>d.remove(),2400);}
+
+/* ===================== COMENTARIOS (Otros) ===================== */
+const COM_KEY="picking_comentarios_v1";
+function loadCom(){try{return JSON.parse(localStorage.getItem(COM_KEY))||{};}catch(e){return{};}}
+function comKey(date,key,item){return `${date}||${key}||${item}`;}
+function getCom(date,key,item){return loadCom()[comKey(date,key,item)]||"";}
+function setCom(date,key,item,val){const s=loadCom();const ck=comKey(date,key,item);if(val&&val.trim())s[ck]=val.trim();else delete s[ck];localStorage.setItem(COM_KEY,JSON.stringify(s));}
+
+/* ===================== EXPORT EXCEL ===================== */
+function exportExcel(){if(!MODEL)return;const wb=XLSX.utils.book_new();
+  const a1=[["Canal","Ordenes","Ped_Unid","Asig_Unid","Fill_Unid","Ped_Cajas","Asig_Cajas","Fill_Cajas","Lineas_Ped","Lineas_Asig","Fill_Lineas"]];
+  MODEL.canales.forEach(c=>a1.push([c.canal,c.ordenes,Math.round(c.pedU),Math.round(c.asigU),c.pedU>0?+(c.asigU/c.pedU).toFixed(4):0,Math.round(c.pedC),Math.round(c.asigC),c.pedC>0?+(c.asigC/c.pedC).toFixed(4):0,c.lped,c.lasig,c.lped>0?+(c.lasig/c.lped).toFixed(4):0]));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(a1),"Fill rate por canal");
+  const a2=[["Estado","Orden","Canal","Vehiculo","OLA","Cliente","Ped_Unid","Asig_Unid","Fill","SKU_ped","SKU_asig","SKU_cortados","Motivos"]];
+  MODEL.ordList.forEach(o=>a2.push([o.estado,o.ordenRaw,o.canal,o.veh,o.ola,o.cliente,Math.round(o.pedU),Math.round(o.asigU),+o.fill.toFixed(4),o.lineasPed,o.lineasAsig,o.skusCortados,Object.keys(o.motivos).join(", ")]));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(a2),"Confirmacion ordenes");
+  const a3=[["Motivo","SKU_en_plan","SKU_total","Unid_en_plan","Unid_total"]];
+  MODEL.motivos.forEach(x=>a3.push([x.motivo,x.nPlan,x.n,Math.round(x.uPlan),Math.round(x.u)]));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(a3),"Motivos de corte");
+  const a4=[["Orden","En_plan","SKU","Descripcion","Cant_planeada","Estatus","Razon_bloqueo","Motivo_retenida","Comentario"]];
+  MODEL.otros.forEach(o=>a4.push([o.orden,o.inPlan?"Si":"no",o.item,o.desc,Math.round(o.cant),o.estatus,o.rbloq,o.mret,getCom(MODEL.snapDate,o.key,o.item)||o.comentario||""]));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(a4),"Revision OTROS");
+  const a5=[["Canal","Orden","SKU","Descripcion","Pedido","Asignado","Faltante","Cajas_asig","Motivo","Comentario"]];
+  MODEL.ordList.forEach(o=>o.cortes.forEach(ct=>a5.push([o.canal,o.ordenRaw,ct.item,ct.desc,Math.round(ct.ped),Math.round(ct.asig),Math.round(ct.falt),Math.round(ct.cajasAsig),ct.motivo,getCom(MODEL.snapDate,o.key,ct.item)||""])));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(a5),"Detalle SKU cortados");
+  if(MODEL.programacion&&MODEL.programacion.length){const ap=[["Prioridad","Cliente","OLA","Orden_Vehiculo","Tipo","Cajas_asig","Cajas_pend","Lineas_asig","Lineas_pend","Avance","En_Korber"]];
+    MODEL.programacion.forEach(p=>ap.push([p.prioridad,p.cliente,p.ola,p.orden,p.tipo,Math.round(p.cajA),Math.round(p.cajPe),p.linA,p.linPe,+((p.linA+p.linPe)>0?p.linA/(p.linA+p.linPe):0).toFixed(4),p.enKorber?"Si":"no"]));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ap),"Programacion del dia");}
+  XLSX.writeFile(wb,`Asignacion Picking ${MODEL.snapDate}.xlsx`);}
+
+/* ===================== CORREO (.eml con imagen incrustada) ===================== */
+// Barra de fill rate en HTML/CSS puro (renderiza en cualquier Outlook, no depende de imagen)
+function fillBarRow(canal,fu){
+  const p=Math.max(0,Math.min(100,Math.round(fu*100)));
+  const col=fu>=0.99?'#0a8a3a':(fu>=0.6?'#b8860b':'#c0392b');
+  return `<tr>
+    <td style="padding:3px 10px 3px 0;font:13px Segoe UI,Arial;white-space:nowrap">${canal}</td>
+    <td style="padding:3px 0">
+      <table cellpadding="0" cellspacing="0" width="240" style="border-collapse:collapse;background:#e5e7eb;border-radius:4px"><tr>
+        <td width="${p}%" style="background:${col};height:15px;line-height:15px;font-size:0;border-radius:4px">&nbsp;</td>
+        <td width="${100-p}%" style="font-size:0">&nbsp;</td>
+      </tr></table>
+    </td>
+    <td style="padding:3px 0 3px 10px;font:bold 13px Segoe UI,Arial;color:${col};white-space:nowrap">${p}%</td>
+  </tr>`;
+}
+function barsBlock(m){
+  if(!m.canales||!m.canales.length)return"";
+  const rows=m.canales.map(c=>fillBarRow(c.canal,c.pedU>0?c.asigU/c.pedU:0)).join("");
+  return `<h3 style="font-size:14px;color:#16294a;margin:14px 0 6px">Fill rate por canal (unidades)</h3>
+    <table style="border-collapse:collapse;margin-bottom:8px">${rows}</table>`;
+}
+// Tabla de órdenes con fecha específica / comentario para el correo
+function fechasEmailTable(){
+  if(!MODEL)return"";
+  const rows=fechasPedidos();
+  if(!rows.length)return"";
+  const korD=new Set(),progD=new Set();
+  (MODEL.korOrders||[]).forEach(o=>korD.add(odigits(o)));
+  (MODEL.programacion||[]).forEach(p=>progD.add(odigits(p.orden)));
+  const body=rows.map(r=>{
+    const d=odigits(r.orden),enKor=korD.has(d),enProg=progD.has(d);
+    const est=enKor?'<span style="color:#0a8a3a">✓ Asignada</span>':(enProg?'<span style="color:#b8860b">⚠ En plan, sin asignar</span>':'<span style="color:#c0392b">🚨 No aparece</span>');
+    let f='—';
+    if(r.pi){const lbl=r.pi.diff===0?'HOY':(r.pi.diff===1?'MAÑANA':r.pi.short+(r.pi.diff>1?` (en ${r.pi.diff} d)`:''));f=`<b>${lbl}</b>`;}
+    return `<tr><td style="padding:5px 8px;border:1px solid #ddd">${r.orden}</td><td style="padding:5px 8px;border:1px solid #ddd">${f}</td><td style="padding:5px 8px;border:1px solid #ddd">${est}</td><td style="padding:5px 8px;border:1px solid #ddd;background:${r.comm?'#fff8e1':'#fff'}">${(r.comm||'').replace(/</g,'&lt;')||'—'}</td></tr>`;
+  }).join("");
+  return `<h3 style="font-size:14px;color:#16294a;margin:14px 0 6px">📅 Órdenes con solicitud para fecha específica / comentario (${rows.length})</h3>
+    <table style="border-collapse:collapse;font-size:12px;margin-bottom:14px"><thead><tr style="background:#16294a;color:#fff"><th style="padding:6px 8px;border:1px solid #ddd">Orden</th><th style="padding:6px 8px;border:1px solid #ddd">Fecha solicitada</th><th style="padding:6px 8px;border:1px solid #ddd">Estado</th><th style="padding:6px 8px;border:1px solid #ddd">Comentario</th></tr></thead><tbody>${body}</tbody></table>`;
+}
+function resumenHTMLChannel(m,canal){
+  const co=m.canales.find(c=>c.canal===canal)||{ordenes:0,pedU:0,asigU:0,pedC:0,asigC:0,lped:0,lasig:0};
+  const ords=m.ordList.filter(o=>o.canal===canal);
+  const comp=ords.filter(o=>o.estado==="Completa").length,parc=ords.filter(o=>o.estado==="Parcial").length,pend=ords.filter(o=>o.estado==="Pendiente").length;
+  const fu=co.pedU>0?co.asigU/co.pedU:0,fc=co.pedC>0?co.asigC/co.pedC:0,fl=co.lped>0?co.lasig/co.lped:0;
+  const pendList=ords.filter(o=>o.estado==="Pendiente").map(o=>o.ordenRaw).join(", ")||"ninguna";
+  const motCanal={};ords.forEach(o=>Object.entries(o.motivos).forEach(([k,v])=>motCanal[k]=(motCanal[k]||0)+v));
+  const motStr=Object.entries(motCanal).map(([k,v])=>`${k}: ${v}`).join(" · ")||"sin cortes";
+  const cuts=[];ords.forEach(o=>o.cortes.forEach(ct=>cuts.push({orden:o.ordenRaw,...ct,com:getCom(m.snapDate,o.key,ct.item)})));
+  cuts.sort((a,b)=>b.falt-a.falt);
+  const cutRows=cuts.map(ct=>`<tr><td style="padding:4px 8px;border:1px solid #ddd">${ct.orden}</td><td style="padding:4px 8px;border:1px solid #ddd">${ct.item}</td><td style="padding:4px 8px;border:1px solid #ddd">${(ct.desc||"").replace(/</g,"&lt;")}</td><td style="padding:4px 8px;border:1px solid #ddd;text-align:right">${fmt(ct.ped)}</td><td style="padding:4px 8px;border:1px solid #ddd;text-align:right">${fmt(ct.asig)}</td><td style="padding:4px 8px;border:1px solid #ddd;text-align:right">${fmt(ct.falt)}</td><td style="padding:4px 8px;border:1px solid #ddd">${ct.motivo||"—"}</td><td style="padding:4px 8px;border:1px solid #ddd;background:${ct.com?'#fff8e1':'#fff'}">${(ct.com||"").replace(/</g,"&lt;")}</td></tr>`).join("");
+  const cutTable=cuts.length?`<h3 style="font-size:14px;color:#16294a;margin:14px 0 6px">Detalle de SKU cortados — ${canal} (${cuts.length})</h3><table style="border-collapse:collapse;font-size:12px"><thead><tr style="background:#16294a;color:#fff"><th style="padding:6px 8px;border:1px solid #ddd">Orden</th><th style="padding:6px 8px;border:1px solid #ddd">SKU</th><th style="padding:6px 8px;border:1px solid #ddd">Descripción</th><th style="padding:6px 8px;border:1px solid #ddd">Pedido</th><th style="padding:6px 8px;border:1px solid #ddd">Asignado</th><th style="padding:6px 8px;border:1px solid #ddd">Faltante</th><th style="padding:6px 8px;border:1px solid #ddd">Motivo</th><th style="padding:6px 8px;border:1px solid #ddd">Comentario</th></tr></thead><tbody>${cutRows}</tbody></table>`:`<p style="color:#0a8a3a">Sin SKU cortados en este canal 👍</p>`;
+  return `<div style="font-family:Segoe UI,Arial,sans-serif;color:#222;font-size:14px">
+    <h2 style="margin:0 0 4px">Reporte de Asignación de Picking — ${canal} — ${m.snapDate}</h2>
+    <p style="margin:0 0 12px;color:#666">Plan de Miguel vs asignación Körber (canal ${canal}).</p>
+    <ul style="margin:0 0 12px;padding-left:18px;line-height:1.7">
+      <li><b>Órdenes:</b> ${co.ordenes} → <span style="color:#0a8a3a">${comp} completas</span>, <span style="color:#b8860b">${parc} parciales</span>, <span style="color:#c0392b">${pend} pendientes</span></li>
+      <li><b>Fill rate:</b> ${pct(fu)} unidades · ${pct(fc)} cajas · ${pct(fl)} líneas (${fmt(co.asigU)} / ${fmt(co.pedU)} u)</li>
+      <li><b>Órdenes pendientes:</b> ${pendList}</li>
+      <li><b>Motivos de corte:</b> ${motStr}</li>
+    </ul>
+    <table style="border-collapse:collapse;margin:6px 0 8px">${fillBarRow(canal,fu)}</table>
+    ${cutTable}
+    <p style="margin:12px 0 0;color:#666;font-size:12px">📎 Se adjunta la imagen del dashboard (<b>dashboard.png</b>).</p>
+    <p style="margin:8px 0 0;color:#999;font-size:11px">Generado automáticamente desde el Dashboard de Asignación de Picking.</p>
+  </div>`;
+}
+function resumenHTML(m,scope){if(scope&&scope!=="all")return resumenHTMLChannel(m,scope);const k=m.kpi;
+  const canalRows=m.canales.map(c=>{const fu=c.pedU>0?100*c.asigU/c.pedU:0;
+    return `<tr><td style="padding:5px 10px;border:1px solid #ddd">${c.canal}</td><td style="padding:5px 10px;border:1px solid #ddd;text-align:center">${c.ordenes}</td>
+    <td style="padding:5px 10px;border:1px solid #ddd;text-align:right">${fmt(c.pedU)}</td><td style="padding:5px 10px;border:1px solid #ddd;text-align:right">${fmt(c.asigU)}</td>
+    <td style="padding:5px 10px;border:1px solid #ddd;text-align:right;font-weight:bold;color:${fu>=99?'#0a8a3a':fu>=60?'#b8860b':'#c0392b'}">${fu.toFixed(1)}%</td></tr>`;}).join("");
+  const pend=m.ordList.filter(o=>o.estado==="Pendiente").map(o=>o.ordenRaw).join(", ")||"ninguna";
+  const mot=m.motivos.filter(x=>x.nPlan>0).map(x=>`${x.motivo}: ${x.nPlan}`).join(" · ")||"sin cortes";
+  const otrosPlan=m.otros.filter(o=>o.inPlan).length;
+  const otrosList=m.otros.slice().sort((a,b)=>(b.inPlan-a.inPlan)||(b.cant-a.cant));
+  const otrosRows=otrosList.map(o=>{const com=getCom(m.snapDate,o.key,o.item)||o.comentario||"";
+    return `<tr><td style="padding:5px 8px;border:1px solid #ddd">${o.orden}</td><td style="padding:5px 8px;border:1px solid #ddd">${o.item}</td><td style="padding:5px 8px;border:1px solid #ddd">${(o.desc||"").replace(/</g,"&lt;")}</td><td style="padding:5px 8px;border:1px solid #ddd;text-align:right">${fmt(o.cant)}</td><td style="padding:5px 8px;border:1px solid #ddd">${o.estatus||""}</td><td style="padding:5px 8px;border:1px solid #ddd;background:${com?'#fff8e1':'#fff'}">${com?com.replace(/</g,"&lt;"):'<i style="color:#bbb">— sin comentario —</i>'}</td></tr>`;}).join("");
+  const otrosBlock=otrosList.length?`<h3 style="font-size:14px;color:#16294a;margin:14px 0 6px">SKU en motivo "Otros" — revisión manual (${otrosList.length})</h3><table style="border-collapse:collapse;font-size:12px;margin-bottom:14px"><thead><tr style="background:#7a5b18;color:#fff"><th style="padding:6px 8px;border:1px solid #ddd;text-align:left">Orden</th><th style="padding:6px 8px;border:1px solid #ddd;text-align:left">SKU</th><th style="padding:6px 8px;border:1px solid #ddd;text-align:left">Descripción</th><th style="padding:6px 8px;border:1px solid #ddd">Cant.</th><th style="padding:6px 8px;border:1px solid #ddd;text-align:left">Estatus</th><th style="padding:6px 8px;border:1px solid #ddd;text-align:left">Comentario</th></tr></thead><tbody>${otrosRows}</tbody></table>`:"";
+  return `<div style="font-family:Segoe UI,Arial,sans-serif;color:#222;font-size:14px">
+    <h2 style="margin:0 0 4px">Reporte de Asignación de Picking — ${m.snapDate}</h2>
+    <p style="margin:0 0 12px;color:#666">Plan de Miguel vs asignación Körber. Resumen del día:</p>
+    <ul style="margin:0 0 12px;padding-left:18px;line-height:1.7">
+      <li><b>Órdenes del plan:</b> ${k.planCount} → <span style="color:#0a8a3a">${k.nComp} completas</span>, <span style="color:#b8860b">${k.nParc} parciales</span>, <span style="color:#c0392b">${k.nPend} pendientes</span></li>
+      <li><b>Fill rate:</b> ${pct(k.fillU)} unidades · ${pct(k.fillC)} cajas · ${pct(k.fillL)} líneas (${fmt(k.T.asigU)} / ${fmt(k.T.pedU)} u)</li>
+      <li><b>Órdenes pendientes de asignar:</b> ${pend}</li>
+      <li><b>Motivos de corte (plan):</b> ${mot}${otrosPlan?` · <b style="color:#b8860b">${otrosPlan} "Otros" por revisar manual</b>`:""}</li>
+    </ul>
+    <table style="border-collapse:collapse;font-size:13px;margin-bottom:14px">
+      <thead><tr style="background:#16294a;color:#fff"><th style="padding:6px 10px;border:1px solid #ddd;text-align:left">Canal</th><th style="padding:6px 10px;border:1px solid #ddd">Órd.</th><th style="padding:6px 10px;border:1px solid #ddd">Pedido</th><th style="padding:6px 10px;border:1px solid #ddd">Asignado</th><th style="padding:6px 10px;border:1px solid #ddd">Fill</th></tr></thead>
+      <tbody>${canalRows}</tbody></table>
+    ${barsBlock(m)}
+    ${otrosBlock}
+    ${fechasEmailTable()}
+    <p style="margin:12px 0 0;color:#666;font-size:12px">📎 Se adjunta la imagen completa del dashboard (<b>dashboard.png</b>) con las gráficas.</p>
+    <p style="margin:8px 0 0;color:#999;font-size:11px">Generado automáticamente desde el Dashboard de Asignación de Picking.</p>
+  </div>`;}
+
+function b64wrap(b64){return b64.replace(/.{76}/g,"$&\r\n");}
+function utf8b64(str){return btoa(unescape(encodeURIComponent(str)));}
+
+async function captureImg(scope){
+  if(scope&&scope!=="all")return channelCaptureImg(scope);
+  const el=$("#capture");$("#capTitle").textContent=`Asignación Picking — ${MODEL.snapDate}`;$("#capTitle").classList.remove("hidden");
+  const canvas=await html2canvas(el,{backgroundColor:"#0b1220",scale:2,logging:false,useCORS:true});
+  $("#capTitle").classList.add("hidden");
+  return canvas.toDataURL("image/png");
+}
+function capKpi(l,v,c){return `<div style="background:#141d2e;border:1px solid #26344b;border-radius:10px;padding:8px 14px;min-width:92px"><div style="font-size:10px;color:#8ea3bd;text-transform:uppercase;letter-spacing:.4px">${l}</div><div style="font-size:22px;font-weight:800;color:${c}">${v}</div></div>`;}
+async function channelCaptureImg(canal){
+  const m=MODEL;
+  const co=m.canales.find(c=>c.canal===canal)||{ordenes:0,pedU:0,asigU:0,pedC:0,asigC:0,lped:0,lasig:0};
+  const ords=m.ordList.filter(o=>o.canal===canal);
+  const comp=ords.filter(o=>o.estado==="Completa").length,parc=ords.filter(o=>o.estado==="Parcial").length,pend=ords.filter(o=>o.estado==="Pendiente").length;
+  const fu=co.pedU>0?co.asigU/co.pedU:0,fc=co.pedC>0?co.asigC/co.pedC:0,fl=co.lped>0?co.lasig/co.lped:0;
+  const cap=$("#mailCap");
+  cap.innerHTML=`<div style="background:#0b1220;color:#eaf1f9;font-family:Segoe UI,sans-serif;padding:18px 20px;border-radius:12px">
+    <div style="font-size:17px;font-weight:800;margin-bottom:12px">Asignación Picking — ${canal} — ${m.snapDate}</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+      ${capKpi('Órdenes',fmt(co.ordenes),'#3b82f6')}${capKpi('Fill Unid',pct(fu),fillColor(fu))}${capKpi('Fill Cajas',pct(fc),fillColor(fc))}${capKpi('Fill Líneas',pct(fl),fillColor(fl))}${capKpi('Pendientes',fmt(pend),'#ef4444')}
+    </div>
+    <div style="display:flex;gap:16px">
+      <div style="flex:1;background:#141d2e;border:1px solid #26344b;border-radius:12px;padding:12px;height:230px"><canvas id="mc_est"></canvas></div>
+      <div style="flex:1;background:#141d2e;border:1px solid #26344b;border-radius:12px;padding:12px;height:230px"><canvas id="mc_pa"></canvas></div>
+    </div></div>`;
+  const c1=new Chart($("#mc_est"),{type:"doughnut",data:{labels:["Completas","Parciales","Pendientes"],datasets:[{data:[comp,parc,pend],backgroundColor:["#22c55e","#f59e0b","#ef4444"],borderColor:"#141d2e",borderWidth:3}]},options:{responsive:true,maintainAspectRatio:false,animation:false,cutout:"58%",plugins:{legend:{position:"bottom",labels:{color:"#8ea3bd",boxWidth:12}},title:{display:true,text:"Estado de órdenes",color:"#eaf1f9"}}}});
+  const c2=new Chart($("#mc_pa"),{type:"bar",data:{labels:["Pedido","Asignado"],datasets:[{data:[Math.round(co.pedU),Math.round(co.asigU)],backgroundColor:["#185fa5","#1d9e75"],borderRadius:6,maxBarThickness:80}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},title:{display:true,text:"Pedido vs Asignado (u)",color:"#eaf1f9"}},scales:{y:{beginAtZero:true,grid:{color:"rgba(255,255,255,.06)"},ticks:{color:"#8ea3bd"}},x:{grid:{display:false},ticks:{color:"#8ea3bd"}}}}});
+  await new Promise(r=>setTimeout(r,300));
+  const canvas=await html2canvas(cap.firstElementChild,{backgroundColor:"#0b1220",scale:2,logging:false});
+  try{c1.destroy();c2.destroy();}catch(e){}
+  cap.innerHTML="";
+  return canvas.toDataURL("image/png");
+}
+async function buildEml(){
+  const scope=$("#mailCanal").value||"all";
+  const subj=($("#mailSubj").value||`Reporte Asignacion Picking ${MODEL.snapDate}`).replace(/[\r\n]/g,"");
+  const to=($("#mailTo").value||"").replace(/[\r\n]/g,"");
+  const cc=($("#mailCc").value||"").replace(/[\r\n]/g,"");
+  let pngB64="";try{const dataUrl=await captureImg(scope);pngB64=dataUrl.split(",")[1];}catch(e){console.error(e);}
+  const bodyHtml=resumenHTML(MODEL,scope);
+  const B="=_picking_"+Date.now()+"_=";
+  let eml="";
+  eml+=`To: ${to}\r\n`;
+  if(cc)eml+=`Cc: ${cc}\r\n`;
+  eml+=`Subject: =?UTF-8?B?${utf8b64(subj)}?=\r\n`;
+  eml+=`X-Unsent: 1\r\n`;
+  eml+=`MIME-Version: 1.0\r\n`;
+  eml+=`Content-Type: multipart/related; boundary="${B}"\r\n\r\n`;
+  eml+=`--${B}\r\n`;
+  eml+=`Content-Type: text/html; charset="utf-8"\r\n`;
+  eml+=`Content-Transfer-Encoding: base64\r\n\r\n`;
+  eml+=b64wrap(utf8b64(bodyHtml))+`\r\n\r\n`;
+  if(pngB64){
+    eml+=`--${B}\r\n`;
+    eml+=`Content-Type: image/png; name="dashboard.png"\r\n`;
+    eml+=`Content-Transfer-Encoding: base64\r\n`;
+    eml+=`Content-Disposition: attachment; filename="dashboard.png"\r\n\r\n`;
+    eml+=b64wrap(pngB64)+`\r\n\r\n`;
+  }
+  eml+=`--${B}--\r\n`;
+  const blob=new Blob([eml],{type:"message/rfc822"});
+  const tag=scope==="all"?"":scope.replace(/[^\wáéíóúñ]+/gi,"_")+" ";
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`Reporte Picking ${tag}${MODEL.snapDate}.eml`;
+  document.body.appendChild(a);a.click();a.remove();
+  $("#mailHint").innerHTML=`✅ Correo ${scope==="all"?"global":"de "+scope} generado — abriéndolo en <b>Outlook de escritorio</b>… <span class="muted">(si no abre solo, corre <b>REGISTRAR BOTON CONFIRMAR.bat</b> una vez, o abre el .eml de Descargas)</span>`;
+  setTimeout(()=>{try{window.location.href="pickingmail:go";}catch(e){}},1300);
+}
+async function downloadImg(){try{const scope=$("#mailCanal").value||"all";const dataUrl=await captureImg(scope);const tag=scope==="all"?"":scope.replace(/[^\wáéíóúñ]+/gi,"_")+" ";const a=document.createElement("a");a.href=dataUrl;a.download=`Dashboard Picking ${tag}${MODEL.snapDate}.png`;document.body.appendChild(a);a.click();a.remove();}catch(e){alert("No se pudo generar la imagen: "+e.message);}}
+
+/* ===================== REPORTE IMPRIMIBLE POR CANAL ===================== */
+let printCharts=[];
+function destroyPrintCharts(){printCharts.forEach(c=>{try{c.destroy();}catch(e){}});printCharts=[];}
+function closePrint(){$("#printArea").style.display="";document.body.classList.remove("printing-prep");destroyPrintCharts();}
+function buildPrintReport(scope){
+  if(!MODEL)return;const m=MODEL;
+  const channels=scope==="all"?m.canales.map(c=>c.canal):[scope];
+  let html=`<div class="pr-head"><div><h1>Reporte de Asignación de Picking</h1><div class="pr-sub">Fecha ${m.snapDate} · ${scope==="all"?"Todos los canales":scope} · Plan de Miguel vs Körber</div></div><button class="pr-close no-print" onclick="closePrint()">✕ Cerrar</button></div>`;
+  channels.forEach((canal,idx)=>{
+    const co=m.canales.find(c=>c.canal===canal)||{ordenes:0,pedU:0,asigU:0,pedC:0,asigC:0,lped:0,lasig:0};
+    const ords=m.ordList.filter(o=>o.canal===canal);
+    const comp=ords.filter(o=>o.estado==="Completa").length,parc=ords.filter(o=>o.estado==="Parcial").length,pend=ords.filter(o=>o.estado==="Pendiente").length;
+    const fu=co.pedU>0?co.asigU/co.pedU:0,fc=co.pedC>0?co.asigC/co.pedC:0,fl=co.lped>0?co.lasig/co.lped:0;
+    const cuts=[];ords.forEach(o=>o.cortes.forEach(ct=>cuts.push({orden:o.ordenRaw,...ct,com:getCom(m.snapDate,o.key,ct.item)})));
+    cuts.sort((a,b)=>b.falt-a.falt);
+    const ordRows=ords.map(o=>`<tr><td class="l">${o.estado}</td><td class="l">${o.ordenRaw}</td><td class="l">${o.ola||"—"}</td><td class="l">${(o.cliente||"").slice(0,28)}</td><td>${fmt(o.pedU)}</td><td>${fmt(o.asigU)}</td><td>${pct(o.fill)}</td><td>${o.skusCortados}</td></tr>`).join("");
+    const cutRows=cuts.length?cuts.map(ct=>`<tr><td class="l">${ct.orden}</td><td class="l">${ct.item}</td><td class="l">${(ct.desc||"").slice(0,36)}</td><td>${fmt(ct.ped)}</td><td>${fmt(ct.asig)}</td><td>${fmt(ct.falt)}</td><td class="l">${ct.motivo||"—"}</td><td class="l" style="background:${ct.com?'#fff8e1':'#fff'}">${(ct.com||"").replace(/</g,"&lt;")}</td></tr>`).join(""):`<tr><td colspan="8" class="l" style="text-align:center;color:#777">Sin SKU cortados en este canal 👍</td></tr>`;
+    html+=`<div class="pr-section">
+      <h2>Canal: ${canal}</h2>
+      <div class="pr-kpis">
+        <div class="pr-kpi"><div class="l">Órdenes</div><div class="v">${co.ordenes}</div></div>
+        <div class="pr-kpi"><div class="l">Compl / Parc / Pend</div><div class="v" style="font-size:16px">${comp} / ${parc} / ${pend}</div></div>
+        <div class="pr-kpi"><div class="l">Fill Unidades</div><div class="v">${pct(fu)}</div></div>
+        <div class="pr-kpi"><div class="l">Fill Cajas</div><div class="v">${pct(fc)}</div></div>
+        <div class="pr-kpi"><div class="l">Fill Líneas</div><div class="v">${pct(fl)}</div></div>
+        <div class="pr-kpi"><div class="l">Pedido / Asig (u)</div><div class="v" style="font-size:15px">${fmt(co.pedU)} / ${fmt(co.asigU)}</div></div>
+      </div>
+      <div class="pr-charts">
+        <div class="pr-chart"><canvas id="prc_est_${idx}"></canvas></div>
+        <div class="pr-chart"><canvas id="prc_pa_${idx}"></canvas></div>
+      </div>
+      <h3>Órdenes del canal (${ords.length})</h3>
+      <table><thead><tr><th class="l">Estado</th><th class="l">Orden</th><th class="l">OLA</th><th class="l">Cliente</th><th>Pedido</th><th>Asignado</th><th>Fill</th><th>SKU cort.</th></tr></thead><tbody>${ordRows}</tbody></table>
+      <h3>Detalle de SKU cortados (${cuts.length})</h3>
+      <table><thead><tr><th class="l">Orden</th><th class="l">SKU</th><th class="l">Descripción</th><th>Pedido</th><th>Asignado</th><th>Faltante</th><th class="l">Motivo</th><th class="l">Comentario</th></tr></thead><tbody>${cutRows}</tbody></table>
+    </div>`;
+  });
+  const area=$("#printArea");area.innerHTML=html;
+  document.body.classList.add("printing-prep");area.style.display="block";
+  destroyPrintCharts();
+  channels.forEach((canal,idx)=>{
+    const co=m.canales.find(c=>c.canal===canal)||{};const ords=m.ordList.filter(o=>o.canal===canal);
+    const comp=ords.filter(o=>o.estado==="Completa").length,parc=ords.filter(o=>o.estado==="Parcial").length,pend=ords.filter(o=>o.estado==="Pendiente").length;
+    const est=document.getElementById("prc_est_"+idx),pa=document.getElementById("prc_pa_"+idx);
+    if(est)printCharts.push(new Chart(est,{type:"doughnut",data:{labels:["Completas","Parciales","Pendientes"],datasets:[{data:[comp,parc,pend],backgroundColor:["#1d9e75","#ef9f27","#e24b4a"],borderColor:"#fff",borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,animation:false,cutout:"55%",plugins:{legend:{position:"bottom",labels:{color:"#333",boxWidth:12,font:{size:11}}},title:{display:true,text:"Estado de órdenes",color:"#16294a",font:{size:13}}}}}));
+    if(pa)printCharts.push(new Chart(pa,{type:"bar",data:{labels:["Pedido","Asignado"],datasets:[{data:[Math.round(co.pedU||0),Math.round(co.asigU||0)],backgroundColor:["#185fa5","#1d9e75"],borderRadius:6,maxBarThickness:90}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},title:{display:true,text:"Pedido vs Asignado (unidades)",color:"#16294a",font:{size:13}}},scales:{y:{beginAtZero:true,grid:{color:"#eee"},ticks:{color:"#555"}},x:{grid:{display:false},ticks:{color:"#555"}}}}}));
+  });
+  setTimeout(()=>{window.print();},450);
+}
+window.addEventListener("afterprint",()=>{if(document.body.classList.contains("printing-prep"))closePrint();});
+
+/* ===================== CARGA / EVENTOS ===================== */
+function handleFile(file){if(!file)return;
+  $("#status").innerHTML=`<div class="warnbox">⏳ Procesando <b>${file.name}</b>… (la hoja LOGISTICA V es grande, puede tardar unos segundos)</div>`;
+  const reader=new FileReader();
+  reader.onload=e=>{try{const wb=XLSX.read(new Uint8Array(e.target.result),{type:"array",cellDates:true});render(computeModel(wb,file.name));}
+    catch(err){$("#status").innerHTML=`<div class="errbox">❌ Error: ${err.message}</div>`;$("#dropWrap").classList.remove("hidden");$("#dash").classList.add("hidden");console.error(err);}};
+  reader.onerror=()=>{$("#status").innerHTML=`<div class="errbox">❌ No se pudo leer el archivo.</div>`;};
+  reader.readAsArrayBuffer(file);}
+const drop=$("#drop"),fileInput=$("#file");
+drop.onclick=()=>fileInput.click();$("#btnNew").onclick=()=>fileInput.click();fileInput.onchange=e=>handleFile(e.target.files[0]);
+["dragover","dragenter"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("drag");}));
+["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("drag");}));
+drop.addEventListener("drop",e=>{if(e.dataTransfer.files.length)handleFile(e.dataTransfer.files[0]);});
+window.addEventListener("dragover",e=>e.preventDefault());
+window.addEventListener("drop",e=>{if(e.target.closest("#drop"))return;e.preventDefault();if(e.dataTransfer.files.length)handleFile(e.dataTransfer.files[0]);});
+$("#btnSave").onclick=saveCurrent;$("#btnExport").onclick=exportExcel;
+$("#btnMail").onclick=()=>{$("#mailHint").textContent="⏳ Generando imagen y correo…";buildEml();};
+$("#btnImg").onclick=downloadImg;
+$("#btnPrintRep").onclick=()=>buildPrintReport($("#printCanal").value||"all");
+$("#btnVerif").onclick=verificarPedidos;
+$("#pedidosTxt").oninput=()=>{if(MODEL)setPedidos(MODEL.snapDate,$("#pedidosTxt").value);};
+$("#mailCanal").onchange=e=>{const s=e.target.value;if(MODEL)$("#mailSubj").value=(s==="all"?`Reporte Asignación Picking ${MODEL.snapDate}`:`Reporte Picking ${s} ${MODEL.snapDate}`);};
+$("#mailGroup").onchange=e=>{const g=RECIP_GROUPS[e.target.value];if(g){$("#mailTo").value=expandEmails(g.to);$("#mailCc").value=expandEmails(g.cc);$("#mailHint").innerHTML=`👥 Destinatarios <b>${e.target.value}</b> cargados (${expandEmails(g.to).split(';').length} en Para${g.cc?', '+expandEmails(g.cc).split(';').length+' en CC':''}).`;}};
+$("#histSel").onchange=e=>{if(e.target.value)loadFromHist(e.target.value);};
+$("#ordSearch").oninput=e=>{ordFilter.q=e.target.value;renderOrdenes(MODEL);};
+$$('.filters .pill[data-est]').forEach(p=>p.onclick=()=>{ordFilter.est=p.dataset.est;
+  $$('.filters .pill[data-est]').forEach(x=>x.classList.toggle("on",x.dataset.est===ordFilter.est));renderOrdenes(MODEL);});
+refreshHist();
+
+// Auto-carga desde correos (Estatus de Picking de Planner + Reporte de Carga de Miguel)
+(function(){
+  const today=new Date().toISOString().slice(0,10);
+  const e=window.__EMBEDDED_ESTATUS__;
+  const m=window.__EMBEDDED_MIGUEL__;
+  const hayEst=e&&e.b64&&e.fecha===today;
+  const hayMig=m&&m.b64&&m.fecha===today;
+  if(!hayEst&&!hayMig)return;
+  const nombres=[hayEst?e.filename:'',hayMig?m.filename:''].filter(Boolean).join(' + ');
+  $("#status").innerHTML=`<div class="warnbox">📨 Auto-cargando: <b>${nombres}</b>…</div>`;
+  function b64buf(s){const b=atob(s);const u=new Uint8Array(b.length);for(let k=0;k<b.length;k++)u[k]=b.charCodeAt(k);return u;}
+  setTimeout(()=>{
+    try{
+      // Workbook base: Estatus de Picking (tiene Körber + Programación del día)
+      let wb, fname;
+      if(hayEst){
+        wb=XLSX.read(b64buf(e.b64),{type:'array',cellDates:true});
+        fname=e.filename;
+      }
+      // Fusionar hojas de Miguel (REPORTE DE CARGA) al workbook base
+      if(hayMig){
+        const wbM=XLSX.read(b64buf(m.b64),{type:'array',cellDates:true});
+        if(!wb){wb=wbM;fname=m.filename;}
+        else{
+          // Copiar hojas de Miguel que no estén ya en el workbook de Planner
+          wbM.SheetNames.forEach(sn=>{
+            if(!wb.SheetNames.includes(sn)){
+              wb.SheetNames.push(sn);
+              wb.Sheets[sn]=wbM.Sheets[sn];
+            }
+          });
+        }
+      }
+      render(computeModel(wb,fname));
+    }catch(err){
+      $("#status").innerHTML=`<div class="errbox">❌ Error al auto-cargar: ${err.message}. Arrastra el Excel manualmente.</div>`;
+    }
+  },300);
+})();
+</script>
+</body>
+</html>

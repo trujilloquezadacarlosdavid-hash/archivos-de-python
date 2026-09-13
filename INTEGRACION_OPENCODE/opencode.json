@@ -1,0 +1,28 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "groq/llama-3.3-70b-versatile",
+  "small_model": "groq/llama-3.3-70b-versatile",
+  "provider": {
+    "groq": {},
+    "anthropic": {}
+  },
+  "mode": {
+    "chat": {
+      "prompt": "You are a helpful assistant. Answer the user in Spanish (Guatemalan style). Do not use any tools. Answer directly.",
+      "tools": {
+        "bash": false,
+        "read": false,
+        "write": false,
+        "edit": false,
+        "glob": false,
+        "grep": false,
+        "task": false,
+        "webfetch": false,
+        "todowrite": false,
+        "todoread": false,
+        "list": false,
+        "patch": false
+      }
+    }
+  }
+}

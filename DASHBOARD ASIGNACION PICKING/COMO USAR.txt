@@ -1,0 +1,167 @@
+================================================================
+  DASHBOARD DE ASIGNACIÓN DE PICKING  —  Cómo usar
+================================================================
+
+ES UN SOLO ARCHIVO
+------------------
+"Dashboard Asignacion Picking.html" ya trae TODO adentro (las
+gráficas y el lector de Excel están incrustados). No necesitas
+internet ni ningún otro archivo al lado. Lo puedes copiar, mover
+o enviar por correo y seguirá funcionando.
+
+(La carpeta "_fuente" es solo respaldo técnico — puedes ignorarla.)
+
+CÓMO USARLO CADA DÍA
+--------------------
+1. Doble clic en  "Dashboard Asignacion Picking.html"  (abre en
+   Chrome o Edge).
+2. Arrastra el archivo "Estatus de Picking [fecha].xlsx" a la zona
+   gris  —  o haz clic ahí para seleccionarlo.
+3. En unos segundos ves KPIs, gráficas y tablas.
+4. "💾 Guardar" deja el registro de esa fecha (selector "Día"
+   arriba para volver a verlo; abajo se ve la tendencia).
+5. "⬇ Excel" exporta el resultado a un .xlsx con 4 hojas.
+
+ENVIAR POR CORREO  (lo nuevo)
+-----------------------------
+En la barra verde "📧 Enviar reporte":
+  - Escribe el/los destinatario(s) en "Para:" (sepáralos con ;).
+  - (Opcional) cambia el "Asunto".
+  - Pulsa  "✉️ Generar correo (Outlook)".
+Se descarga un archivo  "Reporte Picking [fecha].eml".
+  -> Doble clic a ese .eml y Outlook abre un BORRADOR ya listo,
+     con la descripción del día + la imagen del dashboard
+     incrustada en el cuerpo. Solo revisas y das ENVIAR.
+También está  "🖼 Descargar imagen"  si solo quieres el PNG.
+
+DESTINATARIOS Y ALCANCE DEL CORREO
+----------------------------------
+En la barra de correo hay 3 controles:
+  - "Destinatarios…": elige Moderno / CEDIS / Maquila y rellena
+    solo los campos Para y CC con los contactos de ese grupo.
+    (Puedes editarlos a mano después.)
+  - "Alcance" (Correo global / Solo [canal]): define si el correo
+    lleva el reporte de TODO el plan o solo de un canal. Si eliges
+    un canal, el correo incluye el detalle de SKU cortados de ese
+    canal con sus comentarios.
+  - CC: campo de copia (se llena solo con el grupo, o a mano).
+
+TRAER LOS CORREOS SOLOS DESDE OUTLOOK (automático)
+--------------------------------------------------
+"BUSCAR PEDIDOS DE CORREO.bat"  (doble clic, con Outlook ABIERTO):
+  - Lee los correos de HOY en tu Bandeja de entrada (mismo método
+    que el calendario de descargas: Outlook COM).
+  - Extrae los números de orden pedidos (TR/ST/OV), del cuerpo del
+    correo Y de los archivos Excel adjuntos (.xlsx), aunque el número
+    venga sin prefijo (ej. "4700021903" bajo una columna "ST" —
+    el dashboard lo cruza por el número y lo muestra completo).
+  - Genera "pedidos_data.js" y abre el dashboard.
+  - En el dashboard arrastras el Excel del día y en "Verificar
+    pedidos por correo" YA aparecen los pedidos del correo y te
+    marca lo que NO se agregó. (No tienes que pegar nada.)
+  Si Outlook pide permiso ("Permitir acceso"), acepta.
+  Para incluir también ayer:  abre el .bat con  -Dias 2  (o me dices
+  y te dejo un acceso directo).
+  Las palabras clave de qué correos tomar se pueden editar en el
+  .ps1 (variable $Claves).
+
+VERIFICAR PEDIDOS POR CORREO (lo que pidieron vs lo agregado)
+------------------------------------------------------------
+Tarjeta "📨 Verificar pedidos por correo": pega ahí el TEXTO del
+correo o los números de orden (sirve aunque sea un solo "TR…"
+suelto, no necesita ser un Excel). Pulsa "Verificar" y el dashboard:
+  - Extrae solos los números de orden (TR…, ST…, OVG…); ignora
+    teléfonos y otros números.
+  - Te dice por cada uno si está en la programación y en Körber.
+  - Marca en rojo 🚨 las que se pidieron y NO se agregaron.
+Lo pegado se guarda por fecha (no se pierde al recargar).
+Estados: ✓ Agregada · ⚠ En programación sin asignar · 🚨 NO agregada
+· 🚨 No aparece (revisar el número).
+
+DOS chequeos (faltantes Y de más):
+  - 🚨 FALTANTES: lo que se pidió por correo y NO está en la
+    programación de Planner.
+  - ➕ DE MÁS: lo que está en la programación de Planner y NADIE
+    pidió por correo (revisa si sobra). Este chequeo necesita que
+    cargues TODOS los correos del día (con el .bat sale completo);
+    los pedidos de Miguel ya cuentan como pedidos (hoja Data Miguel).
+  Como CEDIS lo manda varias personas, el .bat toma los correos por
+  palabras clave (no por remitente), así jala todos.
+
+PROGRAMACIÓN DEL DÍA CONSOLIDADA (automático)
+---------------------------------------------
+Al cargar el Excel, el dashboard lee solo la hoja "Programación del
+día" y arma una tabla consolidada con TODO junto (Moderno + CEDIS +
+Maquila): por cada CLIENTE/OLA muestra el número de orden o vehículo,
+el tipo, cajas y líneas asignadas/pendientes, el avance y si la OLA
+ya está en Körber. Tú solo le das el doble check.
+  - Tipo automático:  orden Cxx → Moderno ; cliente "Maquila" →
+    Maquila ; los demás traslados (ST/TR a Jutiapa, Petén, C002, etc.)
+    → CEDIS. (Si algún destino debe ir en otro grupo, avísame.)
+  - Si Miguel pidió un camión (vehículo) que NO aparece en la
+    programación, sale una alerta roja con cuál es.
+
+ALERTA DE ÓRDENES SIN ASIGNAR
+-----------------------------
+Arriba del dashboard sale una franja roja cuando hay órdenes del
+plan de Miguel que TODAVÍA no están en Körber (pendientes), con la
+lista de cuáles son. Sirve para que no se quede ningún camión de
+Miguel fuera de la asignación.
+
+COMENTARIOS EN LOS "OTROS"
+--------------------------
+En la tabla "Revisión manual — SKU con motivo Otros" cada fila tiene
+un campo de Comentario. Escribe ahí el motivo real del corte.
+  - Se guarda solo (en este navegador, por fecha).
+  - Viaja CONSOLIDADO en el correo, en el reporte por canal y en
+    el Excel exportado.
+
+IMPRIMIR / PDF POR CANAL  (con gráficos + SKU cortados)
+-------------------------------------------------------
+En la barra "🖨 Imprimir / PDF por canal":
+  - Elige un canal (o "Todos los canales").
+  - Pulsa "🖨 Generar reporte".
+Se abre una vista limpia (clara) con, por cada canal:
+  - KPIs del canal (órdenes, fill en unidades/cajas/líneas).
+  - Gráficas (estado de órdenes + pedido vs asignado).
+  - Tabla de órdenes del canal.
+  - Detalle COMPLETO de SKU cortados (orden, SKU, descripción,
+    pedido, asignado, faltante, motivo y tu comentario).
+Sale el cuadro de impresión de Windows: puedes imprimir o
+"Guardar como PDF". El botón "✕ Cerrar" regresa al dashboard.
+
+QUÉ MIDE
+--------
+- Universo del día = todas las órdenes de la hoja "Data Miguel".
+- Pedido  = Cantidad_Orden de LOGISTICA V (por orden + SKU).
+- Asignado = Cantidad (col F) de Base de datos Korber.
+- Fill rate en 3 bases: Unidades, Cajas y Líneas/SKU.
+- Estado por orden:
+    ✓ Completa  = 100% asignado
+    ⚠ Parcial   = asignación incompleta
+    ✗ Pendiente = aún no aparece en Körber
+- Motivos de corte: Bloqueo / Fecha / Inventario / Otros.
+  Los "Otros" se listan aparte para revisión manual.
+
+LLAVE DE CRUCE (automática)
+---------------------------
+Orden de Miguel (ej. G106171128) se cruza como OVG106171128 en
+LOGISTICA V, Körber y Motivo de corte (se le antepone "OV").
+
+QUÉ ARCHIVO SUBIR Y QUÉ MUESTRA
+-------------------------------
+El dashboard reconoce las hojas por su CONTENIDO (no por el nombre),
+así que sirve aunque las hojas se llamen "Consulta2" / "Hoja2".
+  - Archivo LIVIANO (lo de cada día: Körber + Programación del día,
+    ~150 KB):  muestra la PROGRAMACIÓN DEL DÍA consolidada y la
+    VERIFICACIÓN de pedidos (faltantes / de más). Es lo que más usas.
+  - Archivo COMPLETO (con LOGISTICA V + Data Miguel + Motivo de corte,
+    ~2-3 MB):  además muestra fill rate por canal, gráficas,
+    confirmación de Moderno por orden y motivos de corte.
+Lo que falte se oculta solo y arriba sale un aviso de qué no trae el
+archivo (no se cae).
+
+NOTA
+----
+El historial de días se guarda en este navegador/equipo. Para
+llevarlo a otra PC, usa el export a Excel o reenvía los .eml.
