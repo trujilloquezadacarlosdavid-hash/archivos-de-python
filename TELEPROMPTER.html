@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teleprompter - Actividad 2 IBS</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{font-family:'Segoe UI',Calibri,Arial,sans-serif;background:#000;color:#fff;overflow:hidden;}
+  #wrap{position:fixed;inset:0;display:flex;flex-direction:column;}
+  #prompter{
+    flex:1; position:relative; overflow:hidden;
+    -webkit-mask-image:linear-gradient(to bottom,#000 78%,transparent);
+            mask-image:linear-gradient(to bottom,#000 78%,transparent);
+  }
+  #inner{padding:24px 6% 40vh;will-change:transform;}
+  #inner .line{font-size:44px;line-height:1.5;font-weight:700;padding:8px 0;text-align:center;}
+  #inner .cue{
+    display:inline-block;margin:26px 0 8px;padding:6px 18px;border-radius:10px;
+    font-size:22px;font-weight:800;letter-spacing:1px;background:#F59E0B;color:#1b2a4a;
+  }
+  /* línea guía de lectura cerca del borde superior (junto a la cámara) */
+  #guide{position:absolute;left:0;right:0;top:16%;height:3px;
+    background:linear-gradient(90deg,transparent,rgba(245,158,11,.6),transparent);}
+  #bar{
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;
+    background:#0f172a;border-top:1px solid rgba(255,255,255,.1);padding:10px 12px;
+  }
+  .btn{border:none;border-radius:10px;padding:11px 16px;font-size:15px;font-weight:700;cursor:pointer;color:#fff;background:#334155;}
+  .btn.primary{background:#2563EB;}
+  .btn.big{padding:13px 22px;font-size:16px;}
+  .ic{width:42px;height:42px;border-radius:10px;border:none;background:#334155;color:#fff;font-size:18px;font-weight:800;cursor:pointer;}
+  .btn:hover,.ic:hover{filter:brightness(1.15);}
+  .lbl{font-size:12px;color:#94A3B8;text-transform:uppercase;letter-spacing:.5px;}
+  select{background:#334155;color:#fff;border:none;border-radius:9px;padding:10px;font-size:14px;font-weight:600;cursor:pointer;}
+  #mirror.on{outline:2px solid #F59E0B;}
+  #inner.mir{transform-origin:center;}
+  #tip{position:fixed;top:8px;left:50%;transform:translateX(-50%);background:rgba(15,23,42,.9);
+    padding:8px 16px;border-radius:999px;font-size:13px;color:#cbd5e1;z-index:5;}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="prompter"><div id="guide"></div><div id="inner"></div></div>
+  <div id="bar">
+    <button class="btn primary big" id="play">▶ Iniciar (Espacio)</button>
+    <button class="btn" id="reset">⟲ Reiniciar</button>
+    <span class="lbl">Vel</span>
+    <button class="ic" id="slow">–</button><span class="lbl" id="spd">3</span><button class="ic" id="fast">+</button>
+    <span class="lbl">Texto</span>
+    <button class="ic" id="fdown">A-</button><button class="ic" id="fup">A+</button>
+    <span class="lbl">Ir a</span>
+    <select id="jump"></select>
+    <button class="btn" id="mirror" title="Espejo (para vidrio de teleprompter)">⇄ Espejo</button>
+  </div>
+</div>
+<div id="tip">Ponme arriba de la pantalla, cerca de tu cámara. Graba en Zoom y lee de aquí.</div>
+
+<script>
+const SCRIPT=[
+ {tag:"Portada",cue:"PORTADA",lines:[
+  "Buenas, soy Carlos Trujillo.",
+  "Les voy a hablar de una empresa de tecnología que está creciendo bien rápido,",
+  "pero trae cuatro problemas: la gente nueva no se acopla, se le va el personal,",
+  "los jefes no dan retroalimentación, y no hay planes para que la gente crezca.",
+  "Aquí les va lo que yo haría."]},
+ {tag:"1. La entrada (30/60/90)",cue:"ENTRADA DE LA GENTE NUEVA · 30/60/90",lines:[
+  "Primero, la entrada de la gente nueva, en tres etapas: treinta, sesenta y noventa días.",
+  "Los primeros treinta días son para que se acople.",
+  "Le pongo un compañero que lo guíe, lo capacito bien en las herramientas,",
+  "y lo presento con cada área, para que no ande perdido.",
+  "Porque la verdad, si uno deja botado al nuevo, se aburre y se va rápido.",
+  "Del treinta al sesenta, ya lo meto a trabajar con apoyo:",
+  "que agarre proyectos reales y que su jefe le diga cómo va, cada semana.",
+  "Y del sesenta al noventa, le pongo metas propias, su primera evaluación,",
+  "y un plan para que siga creciendo.",
+  "A los tres meses ya tenemos a alguien que rinde y que se pone la camiseta."]},
+ {tag:"2. Que crezcan",cue:"CÓMO HAGO QUE LA GENTE CREZCA",lines:[
+  "Segundo, cómo hago que la gente crezca. Trabajaría cuatro cosas.",
+  "Liderazgo: un programa de mentoría, que los más experimentados jalen a los que tienen potencial.",
+  "Comunicación: talleres cada tres meses, practicando situaciones de a de veras, no pura teoría.",
+  "Pensamiento analítico: proyectos donde se juntan distintas áreas a resolver un problema real.",
+  "Y adaptación: rotarlos de puesto de vez en cuando, para que aprendan de todo.",
+  "Todo esto le pega a la rotación, porque cuando la gente siente que crece, no se va."]},
+ {tag:"3. Cómo los evalúo",cue:"CÓMO LOS EVALÚO · + STAR",lines:[
+  "Tercero, cómo los evalúo. Yo mezclaría tres cosas.",
+  "Por objetivos: los números, qué entregó, si cumplió sus metas.",
+  "Por competencias: el cómo, cómo se comunica, cómo trabaja en equipo.",
+  "Y evaluación trescientos sesenta: que no solo opine el jefe, sino los compañeros y hasta uno mismo.",
+  "¿Por qué las tres juntas? Porque una sola se queda coja; juntas dan la foto completa.",
+  "Y para sacar pruebas de verdad, en las entrevistas usaría la técnica STAR:",
+  "Situación, Tarea, Acción y Resultado.",
+  "En vez de preguntar '¿sos bueno en equipo?', le digo:",
+  "contame una situación difícil, qué te tocaba hacer, qué hiciste, y cómo salió.",
+  "Así me baso en hechos, no en pura carreta."]},
+ {tag:"4. Feedback (SBI)",cue:"FEEDBACK · MODELO SBI",lines:[
+  "Y por último, el feedback. Usaría el modelo SBI: Situación, Comportamiento e Impacto.",
+  "En vez de decirle a alguien 'lo hiciste mal', que no ayuda en nada, le digo:",
+  "Situación: en la reunión del lunes.",
+  "Comportamiento: presentaste sin las gráficas.",
+  "Impacto: el cliente no entendió, y se atrasó la decisión.",
+  "Así es claro, no es ataque personal, y se ve la consecuencia.",
+  "Para que jale: capacito a todos los jefes en esto,",
+  "pongo pláticas uno a uno cada dos semanas,",
+  "y que el feedback sea al momento, no guardado para fin de año."]},
+ {tag:"Cierre",cue:"CIERRE",lines:[
+  "Para cerrar: las cuatro cosas van amarradas.",
+  "Una buena entrada baja la rotación, el desarrollo retiene a la gente,",
+  "una evaluación justa da claridad, y el feedback constante",
+  "cierra la brecha entre el jefe y el colaborador.",
+  "Al final, para una empresa que crece, no se trata solo de contratar más gente,",
+  "sino de que la que llega se quiera quedar y crezca junto con la empresa.",
+  "Muchas gracias."]}
+];
+
+const inner=document.getElementById('inner');
+const prompter=document.getElementById('prompter');
+const jump=document.getElementById('jump');
+let speed=3, fontSize=44, scrolling=false, offset=0, mir=false;
+
+function build(){
+  inner.innerHTML='';
+  SCRIPT.forEach((s,i)=>{
+    const c=document.createElement('div');c.className='cue';c.textContent='● '+s.cue;inner.appendChild(c);
+    s.lines.forEach(l=>{const d=document.createElement('div');d.className='line';d.textContent=l;d.style.fontSize=fontSize+'px';inner.appendChild(d);});
+    const o=document.createElement('option');o.value=i;o.textContent=s.tag;jump.appendChild(o);
+  });
+}
+function applyFont(){document.querySelectorAll('#inner .line').forEach(l=>l.style.fontSize=fontSize+'px');}
+function base(){return prompter.clientHeight*0.16;} // punto de lectura (16% desde arriba)
+function setY(){inner.style.transform=(mir?'scaleX(-1) ':'')+'translateY('+(base()-offset)+'px)';}
+function loop(){
+  if(!scrolling)return;
+  offset+=speed*0.14;
+  const max=inner.scrollHeight;
+  if(offset>max){offset=max;scrolling=false;document.getElementById('play').textContent='▶ Iniciar (Espacio)';}
+  setY();
+  requestAnimationFrame(loop);
+}
+function toggle(){scrolling=!scrolling;document.getElementById('play').textContent=scrolling?'⏸ Pausar (Espacio)':'▶ Iniciar (Espacio)';if(scrolling)loop();}
+function reset(){scrolling=false;offset=0;setY();document.getElementById('play').textContent='▶ Iniciar (Espacio)';}
+function goTo(i){const cue=[...document.querySelectorAll('#inner .cue')][i];if(cue){offset=cue.offsetTop;setY();}}
+
+document.getElementById('play').onclick=toggle;
+document.getElementById('reset').onclick=reset;
+document.getElementById('slow').onclick=()=>{speed=Math.max(1,speed-1);document.getElementById('spd').textContent=speed;};
+document.getElementById('fast').onclick=()=>{speed=Math.min(20,speed+1);document.getElementById('spd').textContent=speed;};
+document.getElementById('fup').onclick=()=>{fontSize=Math.min(72,fontSize+3);applyFont();};
+document.getElementById('fdown').onclick=()=>{fontSize=Math.max(24,fontSize-3);applyFont();};
+document.getElementById('mirror').onclick=()=>{mir=!mir;document.getElementById('mirror').classList.toggle('on',mir);setY();};
+jump.onchange=e=>goTo(+e.target.value);
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();toggle();}
+  else if(e.key==='+'||e.key==='='){speed=Math.min(20,speed+1);document.getElementById('spd').textContent=speed;}
+  else if(e.key==='-'||e.key==='_'){speed=Math.max(1,speed-1);document.getElementById('spd').textContent=speed;}
+  else if(e.key==='r'||e.key==='R'){reset();}
+});
+window.addEventListener('resize',setY);
+build();setY();
+setTimeout(()=>{document.getElementById('tip').style.display='none';},7000);
+</script>
+</body>
+</html>

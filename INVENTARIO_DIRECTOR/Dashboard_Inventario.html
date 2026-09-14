@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inventario Director - Bodega 1110</title>
+<style>
+:root {
+  --azul: #0d2a6b;
+  --azul2: #1a3d8f;
+  --dorado: #f5b400;
+  --verde: #1b8a4a;
+  --rojo: #c0392b;
+  --naranja: #e67e22;
+  --gris1: #f8f9fa;
+  --gris2: #e9ecef;
+  --gris3: #6c757d;
+  --texto: #1a1a2e;
+  --bg: #f0f2f5;
+  --card: #ffffff;
+  --sombra: 0 2px 8px rgba(0,0,0,0.08);
+  --radio: 10px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--texto); font-size:14px; }
+
+.header { background:linear-gradient(135deg, var(--azul) 0%, var(--azul2) 100%); color:#fff; padding:20px 30px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+.header h1 { font-size:22px; font-weight:700; letter-spacing:-0.5px; }
+.header h1 span { color:var(--dorado); }
+.header .sub { font-size:12px; opacity:0.8; margin-top:2px; }
+.header .actions { display:flex; gap:8px; align-items:center; }
+.btn { padding:8px 16px; border:none; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; transition:all 0.2s; display:inline-flex; align-items:center; gap:6px; }
+.btn-gold { background:var(--dorado); color:var(--azul); }
+.btn-gold:hover { background:#ffc61a; transform:translateY(-1px); }
+.btn-white { background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.3); }
+.btn-white:hover { background:rgba(255,255,255,0.25); }
+
+.wrap { max-width:1600px; margin:0 auto; padding:20px; }
+
+/* Tabs */
+.tabs { display:flex; gap:4px; margin-bottom:20px; background:var(--card); border-radius:var(--radio); padding:4px; box-shadow:var(--sombra); overflow-x:auto; }
+.tab { padding:10px 20px; border:none; background:transparent; cursor:pointer; font-size:13px; font-weight:600; border-radius:8px; color:var(--gris3); transition:all 0.2s; white-space:nowrap; }
+.tab.active { background:var(--azul); color:#fff; }
+.tab:hover:not(.active) { background:var(--gris2); color:var(--texto); }
+.tab .badge { background:var(--dorado); color:var(--azul); padding:1px 7px; border-radius:10px; font-size:11px; margin-left:6px; }
+.tab.active .badge { background:rgba(255,255,255,0.3); color:#fff; }
+
+/* KPIs */
+.kpis { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin-bottom:20px; }
+.kpi { background:var(--card); border-radius:var(--radio); padding:18px 20px; box-shadow:var(--sombra); border-left:4px solid var(--azul); }
+.kpi.gold { border-left-color:var(--dorado); }
+.kpi.green { border-left-color:var(--verde); }
+.kpi.red { border-left-color:var(--rojo); }
+.kpi.orange { border-left-color:var(--naranja); }
+.kpi .label { font-size:11px; color:var(--gris3); text-transform:uppercase; letter-spacing:0.5px; font-weight:600; }
+.kpi .value { font-size:26px; font-weight:800; margin-top:4px; color:var(--azul); }
+.kpi.gold .value { color:var(--dorado); }
+.kpi.red .value { color:var(--rojo); }
+.kpi .detail { font-size:11px; color:var(--gris3); margin-top:2px; }
+
+/* Filters */
+.filters { background:var(--card); border-radius:var(--radio); padding:14px 18px; box-shadow:var(--sombra); margin-bottom:16px; display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+.filters label { font-size:11px; font-weight:600; color:var(--gris3); text-transform:uppercase; }
+.filters select, .filters input { padding:6px 10px; border:1px solid var(--gris2); border-radius:6px; font-size:13px; background:#fff; }
+.filters select { min-width:140px; }
+.filters input[type=text] { min-width:200px; }
+.filter-group { display:flex; flex-direction:column; gap:3px; }
+
+/* Table */
+.table-wrap { background:var(--card); border-radius:var(--radio); box-shadow:var(--sombra); overflow:hidden; }
+.table-info { padding:10px 18px; background:var(--gris1); border-bottom:1px solid var(--gris2); font-size:12px; color:var(--gris3); display:flex; justify-content:space-between; align-items:center; }
+.table-scroll { overflow-x:auto; max-height:65vh; overflow-y:auto; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+thead { position:sticky; top:0; z-index:2; }
+th { background:var(--azul); color:#fff; padding:10px 12px; text-align:left; font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:0.3px; white-space:nowrap; cursor:pointer; user-select:none; }
+th:hover { background:var(--azul2); }
+th .sort-arrow { margin-left:4px; opacity:0.5; }
+th.sorted .sort-arrow { opacity:1; }
+td { padding:8px 12px; border-bottom:1px solid var(--gris2); white-space:nowrap; }
+tr:hover td { background:#f0f4ff; }
+td.num { text-align:right; font-variant-numeric:tabular-nums; }
+td.status-a { color:var(--verde); font-weight:600; }
+td.status-h { color:var(--rojo); font-weight:600; }
+
+/* Section */
+.section { display:none; }
+.section.active { display:block; }
+
+/* Chart container */
+.charts { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; }
+.chart-card { background:var(--card); border-radius:var(--radio); padding:18px; box-shadow:var(--sombra); }
+.chart-card h3 { font-size:14px; color:var(--azul); margin-bottom:12px; font-weight:700; }
+.bar-chart { display:flex; flex-direction:column; gap:6px; }
+.bar-row { display:flex; align-items:center; gap:8px; }
+.bar-label { width:80px; font-size:12px; font-weight:600; text-align:right; color:var(--texto); flex-shrink:0; }
+.bar-track { flex:1; height:24px; background:var(--gris2); border-radius:4px; overflow:hidden; position:relative; }
+.bar-fill { height:100%; border-radius:4px; transition:width 0.5s ease; display:flex; align-items:center; padding:0 8px; }
+.bar-fill span { font-size:11px; font-weight:700; color:#fff; white-space:nowrap; }
+.bar-value { width:90px; font-size:12px; text-align:right; color:var(--gris3); flex-shrink:0; }
+
+/* Donut charts */
+.donut { width:160px; height:160px; border-radius:50%; position:relative; flex-shrink:0; }
+.donut-center { position:absolute; inset:28px; background:var(--card); border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:16px; font-weight:800; color:var(--azul); text-align:center; line-height:1.2; }
+.donut-center small { font-size:10px; font-weight:400; color:var(--gris3); }
+.donut-legend { display:flex; flex-direction:column; gap:14px; }
+.legend-item { font-size:13px; line-height:1.4; }
+.legend-item strong { font-size:16px; }
+.legend-item small { font-size:11px; color:var(--gris3); }
+.dot { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:middle; }
+.analisis-tables { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.analisis-tables h3 { color:var(--azul); font-size:14px; margin-bottom:8px; font-weight:700; }
+@media (max-width:900px) { .analisis-tables { grid-template-columns:1fr; } }
+
+/* Pagination */
+.pagination { display:flex; justify-content:center; align-items:center; gap:8px; padding:14px; }
+.pagination button { padding:6px 12px; border:1px solid var(--gris2); background:#fff; border-radius:6px; cursor:pointer; font-size:12px; }
+.pagination button:hover { background:var(--gris1); }
+.pagination button.active { background:var(--azul); color:#fff; border-color:var(--azul); }
+.pagination button:disabled { opacity:0.4; cursor:default; }
+.page-info { font-size:12px; color:var(--gris3); }
+
+.loading { text-align:center; padding:60px; color:var(--gris3); }
+.loading .spinner { display:inline-block; width:40px; height:40px; border:3px solid var(--gris2); border-top-color:var(--azul); border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+@media (max-width:900px) {
+  .charts { grid-template-columns:1fr; }
+  .kpis { grid-template-columns:repeat(2, 1fr); }
+  .header { padding:14px 16px; }
+  .header h1 { font-size:18px; }
+  .wrap { padding:12px; }
+}
+@media print {
+  .header .actions, .filters, .tabs, .pagination { display:none !important; }
+  .table-scroll { max-height:none; overflow:visible; }
+  body { background:#fff; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Inventario <span>Bodega 1110</span> &mdash; Me Llega S.A.</h1>
+    <div class="sub" id="subtitulo">Cargando datos...</div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-white" onclick="exportarExcel()" title="Ya se genera el Excel con la extraccion">&#128196; Abrir Excel</button>
+    <button class="btn btn-gold" onclick="actualizarSQL()" title="Ejecuta EXTRAER_INVENTARIO.py">&#128260; Actualizar desde SQL</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-tab="general">Inventario General</button>
+    <button class="tab" data-tab="kraft">Kraft Heinz <span class="badge" id="badgeKH">0</span></button>
+    <button class="tab" data-tab="p34">Pasillo 34 - Dañado <span class="badge" id="badgeP34">0</span></button>
+    <button class="tab" data-tab="analisis">Análisis de Dañado</button>
+    <button class="tab" data-tab="pasillos">Por Pasillo</button>
+    <button class="tab" data-tab="vencidos">Producto Vencido</button>
+    <button class="tab" data-tab="categorias">Por Categoría</button>
+  </div>
+
+  <!-- FILTRO GLOBAL -->
+  <div class="filters" id="filtro-global" style="border-left:4px solid var(--dorado);margin-bottom:16px">
+    <div class="filter-group">
+      <label style="color:var(--azul);font-weight:700">Filtro Global — Categoría</label>
+      <select id="fGlobalCat" onchange="applyGlobal()">
+        <option value="">Todas las Categorías</option>
+      </select>
+    </div>
+    <div id="global-cat-label" style="display:none;font-size:13px;font-weight:700;color:var(--azul);align-self:center;padding:4px 14px;background:var(--gris1);border-radius:6px"></div>
+  </div>
+
+  <!-- GENERAL -->
+  <div class="section active" id="sec-general">
+    <div class="kpis" id="kpis-general"></div>
+    <div class="filters" id="filters-general">
+      <div class="filter-group">
+        <label>Buscar</label>
+        <input type="text" id="fBuscar" placeholder="Codigo, producto, ubicacion..." oninput="applyFilters()">
+      </div>
+      <div class="filter-group">
+        <label>Pasillo</label>
+        <select id="fPasillo" onchange="applyFilters()"><option value="">Todos</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Status</label>
+        <select id="fStatus" onchange="applyFilters()"><option value="">Todos</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Bloqueado</label>
+        <select id="fBloqueado" onchange="applyFilters()">
+          <option value="">Todos</option>
+          <option value="si">Solo Bloqueado</option>
+          <option value="no">Solo Libre</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-info">
+        <span id="info-general">Cargando...</span>
+        <span id="info-general-units"></span>
+      </div>
+      <div class="table-scroll" id="tbody-general"></div>
+      <div class="pagination" id="pag-general"></div>
+    </div>
+  </div>
+
+  <!-- KRAFT HEINZ -->
+  <div class="section" id="sec-kraft">
+    <div class="kpis" id="kpis-kraft"></div>
+    <div class="filters">
+      <div class="filter-group">
+        <label>Buscar</label>
+        <input type="text" id="fBuscarKH" placeholder="OC, SKU, producto..." oninput="applyKH()">
+      </div>
+      <div class="filter-group">
+        <label>Mes</label>
+        <select id="fMesKH" onchange="applyKH()"><option value="">Todos</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Completada</label>
+        <select id="fCompKH" onchange="applyKH()">
+          <option value="">Todas</option>
+          <option value="S">Completadas</option>
+          <option value="N">Pendientes</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-info">
+        <span id="info-kraft">Cargando...</span>
+        <span id="info-kraft-units"></span>
+      </div>
+      <div class="table-scroll" id="tbody-kraft"></div>
+      <div class="pagination" id="pag-kraft"></div>
+    </div>
+  </div>
+
+  <!-- PASILLO 34 -->
+  <div class="section" id="sec-p34">
+    <div class="kpis" id="kpis-p34"></div>
+    <div class="filters">
+      <div class="filter-group">
+        <label>Buscar</label>
+        <input type="text" id="fBuscarP34" placeholder="Codigo, producto..." oninput="applyP34()">
+      </div>
+      <div class="filter-group">
+        <label>Status</label>
+        <select id="fStatusP34" onchange="applyP34()">
+          <option value="">Todos</option>
+          <option value="A">A - Disponible</option>
+          <option value="H">H - Hold/Bloqueado</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-info"><span id="info-p34">Cargando...</span></div>
+      <div class="table-scroll" id="tbody-p34"></div>
+      <div class="pagination" id="pag-p34"></div>
+    </div>
+  </div>
+
+  <!-- ANALISIS DE DAÑADO -->
+  <div class="section" id="sec-analisis">
+    <div class="kpis" id="kpis-analisis"></div>
+    <div class="charts" id="charts-analisis-1"></div>
+    <div class="charts" id="charts-analisis-2"></div>
+    <div class="charts" id="charts-analisis-3"></div>
+    <div class="table-wrap" style="margin-top:16px">
+      <div class="table-info"><span id="info-analisis"></span></div>
+      <div class="table-scroll" id="tbody-analisis"></div>
+    </div>
+  </div>
+
+  <!-- POR PASILLO -->
+  <div class="section" id="sec-pasillos">
+    <div class="charts" id="charts-pasillos"></div>
+    <div class="table-wrap">
+      <div class="table-info"><span id="info-pasillos"></span></div>
+      <div class="table-scroll" id="tbody-pasillos"></div>
+    </div>
+  </div>
+
+  <!-- PRODUCTO VENCIDO -->
+  <div class="section" id="sec-vencidos">
+    <div class="kpis" id="kpis-vencidos"></div>
+    <div class="charts" id="charts-vencidos-1"></div>
+    <div class="table-wrap" style="margin-top:16px">
+      <div class="table-info"><span id="info-vencidos"></span></div>
+      <div class="table-scroll" id="tbody-vencidos"></div>
+    </div>
+  </div>
+
+  <!-- POR CATEGORÍA -->
+  <div class="section" id="sec-categorias">
+    <div class="charts" id="charts-categorias"></div>
+    <div class="table-wrap">
+      <div class="table-info"><span id="info-categorias"></span></div>
+      <div class="table-scroll" id="tbody-categorias"></div>
+    </div>
+  </div>
+</div>
+
+<script src="inventario_data.js"></script>
+<script>
+'use strict';
+const D = INVENTARIO_DATA;
+const T = D.totals;
+const PAGE_SIZE = 200;
+const MESES = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const COLORES_CAT = {ALIM:'#2196F3',CUPE:'#9C27B0',HOGA:'#FF9800',CONF:'#E91E63',CIGA:'#607D8B',DETE:'#00BCD4',MASC:'#8BC34A',ALL:'#795548',MENA:'#F44336',FARM:'#4CAF50',CLBS:'#3F51B5','SIN CATEGORIA':'#9E9E9E'};
+const CAT_NOMBRE = {ALIM:'Alimentos',CUPE:'Cuidado Personal',HOGA:'Hogar',CONF:'Confitería',CIGA:'Cigarrillos',DETE:'Detergentes',MASC:'Mascotas',ALL:'ALL',MENA:'MENA',FARM:'Farmacia',CLBS:'Clubs','SIN CATEGORIA':'Sin Categoría'};
+const FMT = n => n == null ? '-' : Number(n).toLocaleString('es-GT');
+
+// ── MAP compact keys to full names ──
+function mapInv(r) {
+  return {Pasillo:r.p,Location:r.l,ItemCode:r.c,ItemName:r.n,Qty:r.q,AvailableQty:r.av||0,BlockedQty:r.bq||0,
+    Status:r.s,BlockedCode:r.bc||'',ExpirationDate:r.ex||'',Categoria:r.ca||'SIN CATEGORIA',License:r.lp||'',LotNumber:r.lt||''};
+}
+function mapKH(r) {
+  return {Cita:r.ci,FechaCita:r.f,Rampa:r.ra,Completada:r.co,OC:r.oc,SKU:r.sk,Producto:r.pr,
+    CajasEnviadas:r.ce,UxC:r.ux,Piloto:r.pi,Placa:r.pl,Categoria:r.ca||'SIN CATEGORIA'};
+}
+function mapP34(r) {
+  return {Location:r.l,ItemCode:r.c,ItemName:r.n,Qty:r.q,Status:r.s,BlockedCode:r.bc||'',
+    LotNumber:r.lt||'',ExpirationDate:r.ex||'',Categoria:r.ca||'SIN CATEGORIA',License:r.lp||''};
+}
+
+// Expand once at load
+const INV = D.inventario.map(mapInv);
+const KH = D.kraftHeinz.map(mapKH);
+const P34 = D.pasillo34.map(mapP34);
+
+// ── STATE ──
+let invFiltered = INV;
+let khFiltered = KH;
+let p34Filtered = P34;
+let invPage = 1, khPage = 1, p34Page = 1;
+let invSort = {col:null,asc:true}, khSort = {col:null,asc:true}, p34Sort = {col:null,asc:true};
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('subtitulo').textContent =
+    `CD El Frutal · Actualizado: ${T.fechaActualizacion} · Fuente: Körber WMS (SQL 172.16.5.43/IN_E)`;
+
+  document.querySelectorAll('.tab').forEach(t => {
+    t.onclick = () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById('sec-'+t.dataset.tab).classList.add('active');
+    };
+  });
+
+  document.getElementById('badgeKH').textContent = FMT(KH.length);
+  document.getElementById('badgeP34').textContent = FMT(P34.length);
+
+  buildFilters();
+  renderKPIs();
+  applyFilters();
+  applyKH();
+  applyP34();
+  renderAnalisis();
+  renderVencidos();
+  renderPasillos();
+  renderCategorias();
+});
+
+// ── FILTERS POPULATE ──
+function buildFilters() {
+  const pasillos = [...new Set(INV.map(r=>r.Pasillo))].sort();
+  const allCats = [...new Set([
+    ...INV.map(r=>r.Categoria||'SIN CATEGORIA'),
+    ...KH.map(r=>r.Categoria||'SIN CATEGORIA'),
+    ...P34.map(r=>r.Categoria||'SIN CATEGORIA')
+  ])].sort();
+  const statuses = [...new Set(INV.map(r=>r.Status))].sort();
+  const mesesKH = [...new Set(KH.map(r=>{let d=r.FechaCita||''; return d.substring(0,7);}))].sort().reverse();
+
+  fillSelect('fGlobalCat', allCats.map(c => ({v:c, t:c + (CAT_NOMBRE[c] ? ' — '+CAT_NOMBRE[c] : '')})));
+  fillSelect('fPasillo', pasillos);
+  fillSelect('fStatus', statuses);
+  fillSelect('fMesKH', mesesKH.map(m => ({v:m, t:m?MESES[+m.split('-')[1]]+' '+m.split('-')[0]:m})));
+}
+
+function getGlobalCat() { return document.getElementById('fGlobalCat').value; }
+
+function applyGlobal() {
+  const cat = getGlobalCat();
+  const lbl = document.getElementById('global-cat-label');
+  if (cat) {
+    lbl.style.display = '';
+    lbl.textContent = 'Filtrando: ' + cat + (CAT_NOMBRE[cat] ? ' — '+CAT_NOMBRE[cat] : '');
+  } else {
+    lbl.style.display = 'none';
+  }
+  applyFilters();
+  applyKH();
+  applyP34();
+  renderKPIs();
+  renderAnalisis();
+  renderVencidos();
+  renderPasillos();
+  renderCategorias();
+}
+function fillSelect(id, items) {
+  const sel = document.getElementById(id);
+  items.forEach(item => {
+    const o = document.createElement('option');
+    if (typeof item === 'object') { o.value = item.v; o.textContent = item.t; }
+    else { o.value = item; o.textContent = item; }
+    sel.appendChild(o);
+  });
+}
+
+// ── KPIs ──
+function renderKPIs() {
+  const gc = getGlobalCat();
+  const fINV = gc ? INV.filter(r=>(r.Categoria||'SIN CATEGORIA')===gc) : INV;
+  const fP34 = gc ? P34.filter(r=>(r.Categoria||'SIN CATEGORIA')===gc) : P34;
+  const fKH = gc ? KH.filter(r=>(r.Categoria||'SIN CATEGORIA')===gc) : KH;
+  const catLabel = gc ? ` (${gc})` : '';
+
+  const totalU = fINV.reduce((s,r)=>s+(r.Qty||0),0);
+  const totalSKU = new Set(fINV.map(r=>r.ItemCode)).size;
+  const totalLP = fINV.length;
+  const p34U = fP34.reduce((s,r)=>s+(r.Qty||0),0);
+  const p34SKU = new Set(fP34.map(r=>r.ItemCode)).size;
+  const vencido = fINV.filter(r=>r.ExpirationDate && r.ExpirationDate < new Date().toISOString().slice(0,10) && r.ExpirationDate > '1900-01-02').reduce((s,r)=>s+(r.Qty||0),0);
+
+  document.getElementById('kpis-general').innerHTML = `
+    <div class="kpi"><div class="label">Total Cajas en Bodega${catLabel}</div><div class="value">${FMT(totalU)}</div><div class="detail">${FMT(totalLP)} license plates</div></div>
+    <div class="kpi gold"><div class="label">SKUs Activos</div><div class="value">${FMT(totalSKU)}</div><div class="detail">${gc?gc:'Todas las categorías'}</div></div>
+    <div class="kpi red"><div class="label">Pasillo 34 (Dañado)</div><div class="value">${FMT(p34U)}</div><div class="detail">${FMT(p34SKU)} SKUs</div></div>
+    <div class="kpi orange"><div class="label">Producto Vencido</div><div class="value">${FMT(vencido)}</div><div class="detail">cajas con fecha expirada</div></div>
+    <div class="kpi green"><div class="label">Kraft Heinz${catLabel}</div><div class="value">${FMT(new Set(fKH.map(r=>r.Cita)).size)}</div><div class="detail">${FMT(fKH.reduce((s,r)=>s+(r.CajasEnviadas||0),0))} cajas enviadas</div></div>
+  `;
+
+  const p34A = fP34.filter(r=>r.Status==='A').reduce((s,r)=>s+(r.Qty||0),0);
+  const p34H = fP34.filter(r=>r.Status==='H').reduce((s,r)=>s+(r.Qty||0),0);
+  document.getElementById('kpis-p34').innerHTML = `
+    <div class="kpi red"><div class="label">Total Pasillo 34${catLabel}</div><div class="value">${FMT(p34U)}</div><div class="detail">${FMT(p34SKU)} SKUs / ${fP34.length} LPs</div></div>
+    <div class="kpi green"><div class="label">Status A (Disponible)</div><div class="value">${FMT(p34A)}</div></div>
+    <div class="kpi orange"><div class="label">Status H (Hold)</div><div class="value">${FMT(p34H)}</div></div>
+  `;
+
+  const khCajas = fKH.reduce((s,r)=>s+(r.CajasEnviadas||0),0);
+  document.getElementById('kpis-kraft').innerHTML = `
+    <div class="kpi"><div class="label">Citas Kraft Heinz ${new Date().getFullYear()}${catLabel}</div><div class="value">${FMT(new Set(fKH.map(r=>r.Cita)).size)}</div></div>
+    <div class="kpi gold"><div class="label">Lineas de Detalle</div><div class="value">${FMT(fKH.length)}</div></div>
+    <div class="kpi green"><div class="label">Cajas Enviadas</div><div class="value">${FMT(khCajas)}</div></div>
+  `;
+}
+
+// ── GENERAL TABLE ──
+function applyFilters() {
+  const q = document.getElementById('fBuscar').value.toUpperCase();
+  const p = document.getElementById('fPasillo').value;
+  const gc = getGlobalCat();
+  const s = document.getElementById('fStatus').value;
+  const b = document.getElementById('fBloqueado').value;
+
+  invFiltered = INV.filter(r => {
+    if (q && !(r.ItemCode||'').toUpperCase().includes(q) && !(r.ItemName||'').toUpperCase().includes(q) && !(r.Location||'').toUpperCase().includes(q)) return false;
+    if (p && r.Pasillo !== p) return false;
+    if (gc && (r.Categoria||'SIN CATEGORIA') !== gc) return false;
+    if (s && r.Status !== s) return false;
+    if (b === 'si' && !r.BlockedCode) return false;
+    if (b === 'no' && r.BlockedCode) return false;
+    return true;
+  });
+  invPage = 1;
+  renderGeneral();
+}
+
+function renderGeneral() {
+  const data = sortData(invFiltered, invSort);
+  const total = data.length;
+  const totalU = data.reduce((s,r)=>s+(r.Qty||0), 0);
+  const pages = Math.ceil(total / PAGE_SIZE);
+  const start = (invPage-1)*PAGE_SIZE;
+  const slice = data.slice(start, start+PAGE_SIZE);
+
+  document.getElementById('info-general').textContent = `${FMT(total)} registros (${FMT(pages)} pag.)`;
+  document.getElementById('info-general-units').textContent = `Total filtrado: ${FMT(totalU)} cajas`;
+
+  const cols = [
+    {k:'Pasillo',l:'Pasillo'},
+    {k:'Location',l:'Ubicacion'},
+    {k:'ItemCode',l:'Codigo'},
+    {k:'ItemName',l:'Producto'},
+    {k:'Qty',l:'Cantidad',num:true},
+    {k:'AvailableQty',l:'Disponible',num:true},
+    {k:'BlockedQty',l:'Bloqueado',num:true},
+    {k:'Status',l:'Status'},
+    {k:'BlockedCode',l:'Cod Bloqueo'},
+    {k:'ExpirationDate',l:'Vencimiento'},
+    {k:'Categoria',l:'Categoría'},
+    {k:'License',l:'LP'},
+  ];
+
+  let html = '<table><thead><tr>';
+  cols.forEach(c => {
+    const sorted = invSort.col===c.k;
+    const arrow = sorted ? (invSort.asc ? '▲' : '▼') : '▴';
+    html += `<th class="${sorted?'sorted':''}" onclick="sortGeneral('${c.k}')">${c.l} <span class="sort-arrow">${arrow}</span></th>`;
+  });
+  html += '</tr></thead><tbody>';
+  slice.forEach(r => {
+    const sc = r.Status==='A'?'status-a': r.Status==='H'?'status-h':'';
+    html += '<tr>';
+    cols.forEach(c => {
+      const v = r[c.k];
+      if (c.num) html += `<td class="num">${FMT(v)}</td>`;
+      else if (c.k==='Status') html += `<td class="${sc}">${v||'-'}</td>`;
+      else if (c.k==='ExpirationDate') html += `<td>${v?v.substring(0,10):'-'}</td>`;
+      else html += `<td>${v||'-'}</td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('tbody-general').innerHTML = html;
+  renderPagination('pag-general', invPage, pages, p => { invPage=p; renderGeneral(); });
+}
+function sortGeneral(col) {
+  if (invSort.col===col) invSort.asc=!invSort.asc;
+  else { invSort.col=col; invSort.asc=true; }
+  renderGeneral();
+}
+
+// ── KRAFT HEINZ TABLE ──
+function applyKH() {
+  const q = document.getElementById('fBuscarKH').value.toUpperCase();
+  const m = document.getElementById('fMesKH').value;
+  const c = document.getElementById('fCompKH').value;
+  const gc = getGlobalCat();
+
+  khFiltered = KH.filter(r => {
+    if (q && !(r.OC||'').toUpperCase().includes(q) && !(r.SKU||'').toUpperCase().includes(q) && !(r.Producto||'').toUpperCase().includes(q)) return false;
+    if (m && !(r.FechaCita||'').startsWith(m)) return false;
+    if (c && r.Completada !== c) return false;
+    if (gc && (r.Categoria||'SIN CATEGORIA') !== gc) return false;
+    return true;
+  });
+  khPage = 1;
+  renderKH();
+}
+function renderKH() {
+  const data = sortData(khFiltered, khSort);
+  const total = data.length;
+  const totalCajas = data.reduce((s,r)=>s+(r.CajasEnviadas||0), 0);
+  const pages = Math.ceil(total / PAGE_SIZE);
+  const start = (khPage-1)*PAGE_SIZE;
+  const slice = data.slice(start, start+PAGE_SIZE);
+
+  document.getElementById('info-kraft').textContent = `${FMT(total)} lineas (${FMT(pages)} pag.)`;
+  document.getElementById('info-kraft-units').textContent = `Cajas: ${FMT(totalCajas)}`;
+
+  const cols = [
+    {k:'Cita',l:'Cita'}, {k:'FechaCita',l:'Fecha'}, {k:'Rampa',l:'Rampa'},
+    {k:'Completada',l:'Estado'}, {k:'OC',l:'Orden Compra'}, {k:'SKU',l:'SKU'},
+    {k:'Producto',l:'Producto'}, {k:'CajasEnviadas',l:'Cajas Enviadas',num:true}, {k:'UxC',l:'UxC',num:true},
+    {k:'Categoria',l:'Categoría'}, {k:'Piloto',l:'Piloto'}, {k:'Placa',l:'Placa'},
+  ];
+
+  let html = '<table><thead><tr>';
+  cols.forEach(c => {
+    const sorted = khSort.col===c.k;
+    const arrow = sorted ? (khSort.asc ? '▲' : '▼') : '▴';
+    html += `<th class="${sorted?'sorted':''}" onclick="sortKH('${c.k}')">${c.l} <span class="sort-arrow">${arrow}</span></th>`;
+  });
+  html += '</tr></thead><tbody>';
+  slice.forEach(r => {
+    html += '<tr>';
+    cols.forEach(c => {
+      const v = r[c.k];
+      if (c.num) html += `<td class="num">${FMT(v)}</td>`;
+      else if (c.k==='FechaCita') html += `<td>${v?v.substring(0,10):'-'}</td>`;
+      else if (c.k==='Completada') html += `<td class="${v==='S'?'status-a':'status-h'}">${v==='S'?'Completada':'Pendiente'}</td>`;
+      else html += `<td>${v||'-'}</td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('tbody-kraft').innerHTML = html;
+  renderPagination('pag-kraft', khPage, pages, p => { khPage=p; renderKH(); });
+}
+function sortKH(col) {
+  if (khSort.col===col) khSort.asc=!khSort.asc;
+  else { khSort.col=col; khSort.asc=true; }
+  renderKH();
+}
+
+// ── PASILLO 34 TABLE ──
+function applyP34() {
+  const q = document.getElementById('fBuscarP34').value.toUpperCase();
+  const s = document.getElementById('fStatusP34').value;
+  const gc = getGlobalCat();
+
+  p34Filtered = P34.filter(r => {
+    if (q && !(r.ItemCode||'').toUpperCase().includes(q) && !(r.ItemName||'').toUpperCase().includes(q)) return false;
+    if (s && r.Status !== s) return false;
+    if (gc && (r.Categoria||'SIN CATEGORIA') !== gc) return false;
+    return true;
+  });
+  p34Page = 1;
+  renderP34();
+}
+function renderP34() {
+  const data = sortData(p34Filtered, p34Sort);
+  const total = data.length;
+  const totalU = data.reduce((s,r)=>s+(r.Qty||0), 0);
+  const pages = Math.ceil(total / PAGE_SIZE);
+  const start = (p34Page-1)*PAGE_SIZE;
+  const slice = data.slice(start, start+PAGE_SIZE);
+
+  document.getElementById('info-p34').textContent = `${FMT(total)} registros · ${FMT(totalU)} cajas`;
+
+  const cols = [
+    {k:'Location',l:'Ubicacion'}, {k:'ItemCode',l:'Codigo'}, {k:'ItemName',l:'Producto'},
+    {k:'Qty',l:'Cantidad',num:true}, {k:'Status',l:'Status'}, {k:'BlockedCode',l:'Cod Bloqueo'},
+    {k:'LotNumber',l:'Lote'}, {k:'ExpirationDate',l:'Vencimiento'}, {k:'Categoria',l:'Categoría'}, {k:'License',l:'LP'},
+  ];
+
+  let html = '<table><thead><tr>';
+  cols.forEach(c => {
+    const sorted = p34Sort.col===c.k;
+    const arrow = sorted ? (p34Sort.asc ? '▲' : '▼') : '▴';
+    html += `<th class="${sorted?'sorted':''}" onclick="sortP34('${c.k}')">${c.l} <span class="sort-arrow">${arrow}</span></th>`;
+  });
+  html += '</tr></thead><tbody>';
+  slice.forEach(r => {
+    const sc = r.Status==='A'?'status-a': r.Status==='H'?'status-h':'';
+    html += '<tr>';
+    cols.forEach(c => {
+      const v = r[c.k];
+      if (c.num) html += `<td class="num">${FMT(v)}</td>`;
+      else if (c.k==='Status') html += `<td class="${sc}">${v||'-'}</td>`;
+      else if (c.k==='ExpirationDate') html += `<td>${v?v.substring(0,10):'-'}</td>`;
+      else html += `<td>${v||'-'}</td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('tbody-p34').innerHTML = html;
+  renderPagination('pag-p34', p34Page, pages, p => { p34Page=p; renderP34(); });
+}
+function sortP34(col) {
+  if (p34Sort.col===col) p34Sort.asc=!p34Sort.asc;
+  else { p34Sort.col=col; p34Sort.asc=true; }
+  renderP34();
+}
+
+// ── PASILLOS VIEW ──
+function renderPasillos() {
+  const gc = getGlobalCat();
+  const src = gc ? INV.filter(r => (r.Categoria||'SIN CATEGORIA') === gc) : INV;
+  const map = {};
+  src.forEach(r => {
+    const p = r.Pasillo || 'OTRO';
+    if (!map[p]) map[p] = {Pasillo:p, Unidades:0, SKUs:new Set(), LPs:0};
+    map[p].Unidades += (r.Qty||0);
+    map[p].SKUs.add(r.ItemCode);
+    map[p].LPs++;
+  });
+  const data = Object.values(map).map(r => ({...r, SKUs:r.SKUs.size})).sort((a,b) => b.Unidades - a.Unidades);
+  const max = data.length ? data[0].Unidades : 1;
+
+  let chartHtml = '<div class="chart-card"><h3>Cajas por Pasillo (Top 20)</h3><div class="bar-chart">';
+  data.slice(0,20).forEach(r => {
+    const pct = (r.Unidades/max*100).toFixed(1);
+    const color = r.Pasillo==='P34'?'var(--rojo)':'var(--azul)';
+    chartHtml += `<div class="bar-row">
+      <div class="bar-label">${r.Pasillo}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color}"><span>${FMT(r.Unidades)}</span></div></div>
+      <div class="bar-value">${FMT(r.SKUs)} SKUs</div>
+    </div>`;
+  });
+  chartHtml += '</div></div>';
+
+  chartHtml += '<div class="chart-card"><h3>LPs por Pasillo (Top 20)</h3><div class="bar-chart">';
+  const byLP = [...data].sort((a,b)=>b.LPs-a.LPs);
+  const maxLP = byLP.length ? byLP[0].LPs : 1;
+  byLP.slice(0,20).forEach(r => {
+    const pct = (r.LPs/maxLP*100).toFixed(1);
+    chartHtml += `<div class="bar-row">
+      <div class="bar-label">${r.Pasillo}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:var(--azul2)"><span>${FMT(r.LPs)}</span></div></div>
+      <div class="bar-value">${FMT(r.Unidades)} und</div>
+    </div>`;
+  });
+  chartHtml += '</div></div>';
+  document.getElementById('charts-pasillos').innerHTML = chartHtml;
+
+  let html = '<table><thead><tr><th>Pasillo</th><th>Cajas</th><th>SKUs</th><th>LPs</th><th>% del Total</th></tr></thead><tbody>';
+  const grandTotal = data.reduce((s,r)=>s+r.Unidades,0);
+  data.forEach(r => {
+    const pct = grandTotal ? (r.Unidades/grandTotal*100).toFixed(2) : 0;
+    const highlight = r.Pasillo==='P34' ? ' style="background:#fff3f3;font-weight:700;"' : '';
+    html += `<tr${highlight}><td>${r.Pasillo}</td><td class="num">${FMT(r.Unidades)}</td><td class="num">${FMT(r.SKUs)}</td><td class="num">${FMT(r.LPs)}</td><td class="num">${pct}%</td></tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('tbody-pasillos').innerHTML = html;
+  document.getElementById('info-pasillos').textContent = `${data.length} pasillos/zonas · ${FMT(grandTotal)} cajas totales`;
+}
+
+// ── CATEGORÍAS VIEW ──
+function renderCategorias() {
+  const gc = getGlobalCat();
+  let data;
+  if (gc) {
+    const src = INV.filter(r => (r.Categoria||'SIN CATEGORIA') === gc);
+    const m = {};
+    src.forEach(r => {
+      const c = r.Categoria||'SIN CATEGORIA';
+      if (!m[c]) m[c] = {Categoria:c, Unidades:0, SKUs:new Set(), LPs:0};
+      m[c].Unidades += (r.Qty||0);
+      m[c].SKUs.add(r.ItemCode);
+      m[c].LPs++;
+    });
+    data = Object.values(m).map(r => ({...r, SKUs:r.SKUs.size})).sort((a,b) => b.Unidades - a.Unidades);
+  } else {
+    data = D.resumenCategoria;
+  }
+  const max = data.length ? data[0].Unidades : 1;
+  const grandTotal = data.reduce((s,r)=>s+r.Unidades,0);
+
+  let chartHtml = '<div class="chart-card"><h3>Cajas por Categoría de Producto</h3><div class="bar-chart">';
+  data.forEach(r => {
+    const pct = (r.Unidades/max*100).toFixed(1);
+    const color = COLORES_CAT[r.Categoria] || '#607D8B';
+    const nombre = CAT_NOMBRE[r.Categoria] || r.Categoria;
+    chartHtml += `<div class="bar-row">
+      <div class="bar-label" title="${nombre}">${r.Categoria}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color}"><span>${FMT(r.Unidades)}</span></div></div>
+      <div class="bar-value">${(r.Unidades/grandTotal*100).toFixed(1)}%</div>
+    </div>`;
+  });
+  chartHtml += '</div></div>';
+
+  chartHtml += '<div class="chart-card"><h3>SKUs por Categoría de Producto</h3><div class="bar-chart">';
+  const maxSKU = data.length ? Math.max(...data.map(r=>r.SKUs)) : 1;
+  data.forEach(r => {
+    const pct = (r.SKUs/maxSKU*100).toFixed(1);
+    const color = COLORES_CAT[r.Categoria] || '#607D8B';
+    chartHtml += `<div class="bar-row">
+      <div class="bar-label">${r.Categoria}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color}"><span>${FMT(r.SKUs)}</span></div></div>
+      <div class="bar-value">${FMT(r.LPs)} LPs</div>
+    </div>`;
+  });
+  chartHtml += '</div></div>';
+  document.getElementById('charts-categorias').innerHTML = chartHtml;
+
+  let html = '<table><thead><tr><th>Código</th><th>Categoría</th><th>Cajas</th><th>SKUs</th><th>LPs</th><th>% del Total</th></tr></thead><tbody>';
+  data.forEach(r => {
+    const pct = grandTotal ? (r.Unidades/grandTotal*100).toFixed(2) : 0;
+    const nombre = CAT_NOMBRE[r.Categoria] || r.Categoria;
+    html += `<tr><td><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:${COLORES_CAT[r.Categoria]||'#607D8B'};margin-right:6px;vertical-align:middle;"></span>${r.Categoria}</td><td>${nombre}</td><td class="num">${FMT(r.Unidades)}</td><td class="num">${FMT(r.SKUs)}</td><td class="num">${FMT(r.LPs)}</td><td class="num">${pct}%</td></tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('tbody-categorias').innerHTML = html;
+  document.getElementById('info-categorias').textContent = `${data.length} categorías · ${FMT(grandTotal)} cajas totales`;
+}
+
+// ── PRODUCTO VENCIDO ──
+function calcVenc(src) {
+  const hoy = new Date().toISOString().slice(0,10);
+  const d30 = new Date(Date.now()+30*86400000).toISOString().slice(0,10);
+  const d90 = new Date(Date.now()+90*86400000).toISOString().slice(0,10);
+  const buckets = {VENCIDO:{u:0,sk:new Set(),lp:0},VENCE_30D:{u:0,sk:new Set(),lp:0},VENCE_90D:{u:0,sk:new Set(),lp:0},VIGENTE:{u:0,sk:new Set(),lp:0},SIN_FECHA:{u:0,sk:new Set(),lp:0}};
+  const topMap = {};
+  src.forEach(r => {
+    const ex = r.ExpirationDate||'';
+    const q = r.Qty||0;
+    let estado;
+    if (!ex || ex <= '1900-01-02') estado = 'SIN_FECHA';
+    else if (ex < hoy) estado = 'VENCIDO';
+    else if (ex < d30) estado = 'VENCE_30D';
+    else if (ex < d90) estado = 'VENCE_90D';
+    else estado = 'VIGENTE';
+    buckets[estado].u += q;
+    buckets[estado].sk.add(r.ItemCode);
+    buckets[estado].lp++;
+    if (estado === 'VENCIDO') {
+      if (!topMap[r.ItemCode]) topMap[r.ItemCode] = {c:r.ItemCode,n:r.ItemName,u:0,lp:0,ca:r.Categoria||'',fm:ex,fx:ex};
+      topMap[r.ItemCode].u += q;
+      topMap[r.ItemCode].lp++;
+      if (ex < topMap[r.ItemCode].fm) topMap[r.ItemCode].fm = ex;
+      if (ex > topMap[r.ItemCode].fx) topMap[r.ItemCode].fx = ex;
+    }
+  });
+  const vg = Object.entries(buckets).map(([e,d])=>({e,u:d.u,sk:d.sk.size,lp:d.lp}));
+  const vt = Object.values(topMap).sort((a,b)=>b.u-a.u).slice(0,20);
+  return {vg, vt};
+}
+
+function renderVencidos() {
+  const gc = getGlobalCat();
+  const src = gc ? INV.filter(r=>(r.Categoria||'SIN CATEGORIA')===gc) : INV;
+  const {vg, vt} = calcVenc(src);
+  const totalAll = vg.reduce((s,r)=>s+r.u, 0);
+  const vencido = vg.find(r=>r.e==='VENCIDO') || {u:0,sk:0,lp:0};
+  const v30 = vg.find(r=>r.e==='VENCE_30D') || {u:0,sk:0,lp:0};
+  const v90 = vg.find(r=>r.e==='VENCE_90D') || {u:0,sk:0,lp:0};
+  const vigente = vg.find(r=>r.e==='VIGENTE') || {u:0,sk:0,lp:0};
+  const sinFecha = vg.find(r=>r.e==='SIN_FECHA') || {u:0,sk:0,lp:0};
+  const pctVencido = totalAll ? (vencido.u/totalAll*100).toFixed(2) : '0';
+  const riesgo30 = vencido.u + v30.u;
+  const pctRiesgo = totalAll ? (riesgo30/totalAll*100).toFixed(2) : '0';
+
+  document.getElementById('kpis-vencidos').innerHTML = `
+    <div class="kpi red"><div class="label">Producto Vencido</div><div class="value">${FMT(vencido.u)}</div><div class="detail">${vencido.sk} SKUs · ${pctVencido}% del inventario</div></div>
+    <div class="kpi orange"><div class="label">Vence en 30 Días</div><div class="value">${FMT(v30.u)}</div><div class="detail">${v30.sk} SKUs en riesgo inmediato</div></div>
+    <div class="kpi gold"><div class="label">Vence en 90 Días</div><div class="value">${FMT(v90.u)}</div><div class="detail">${v90.sk} SKUs requieren atención</div></div>
+    <div class="kpi green"><div class="label">Producto Vigente</div><div class="value">${FMT(vigente.u)}</div><div class="detail">${vigente.sk} SKUs · ${totalAll ? (vigente.u/totalAll*100).toFixed(1) : 0}% del inventario</div></div>
+  `;
+
+  const expCol = {VENCIDO:'var(--rojo)',VENCE_30D:'var(--naranja)',VENCE_90D:'#f1c40f',VIGENTE:'var(--verde)',SIN_FECHA:'#9E9E9E'};
+  const expLbl = {VENCIDO:'Vencido',VENCE_30D:'Vence en 30 días',VENCE_90D:'Vence en 90 días',VIGENTE:'Vigente',SIN_FECHA:'Sin fecha'};
+  const totalConFecha = totalAll - sinFecha.u;
+  let cum = 0;
+  const items = vg.filter(r=>r.e!=='SIN_FECHA');
+  const grad = items.map(r => {
+    const p = totalConFecha ? r.u/totalConFecha*100 : 0;
+    const s = `${expCol[r.e]||'#999'} ${cum}% ${cum+p}%`;
+    cum += p;
+    return s;
+  }).join(',');
+
+  let h1 = `<div class="chart-card"><h3>Estado de Vencimiento — Inventario General</h3>
+    <div style="display:flex;align-items:center;gap:30px;justify-content:center;padding:20px 0">
+      <div class="donut" style="background:conic-gradient(${grad||'#eee 0% 100%'})"><div class="donut-center">${FMT(totalConFecha)}<br><small>cajas con fecha</small></div></div>
+      <div class="donut-legend">`;
+  items.forEach(r => {
+    const p = totalConFecha ? (r.u/totalConFecha*100).toFixed(1) : '0';
+    h1 += `<div class="legend-item"><span class="dot" style="background:${expCol[r.e]||'#999'}"></span> ${expLbl[r.e]||r.e}<br><strong>${FMT(r.u)}</strong> cajas (${p}%) · ${r.sk} SKUs</div>`;
+  });
+  if (sinFecha.u > 0) {
+    h1 += `<div class="legend-item"><span class="dot" style="background:#9E9E9E"></span> Sin fecha de vencimiento<br><strong>${FMT(sinFecha.u)}</strong> cajas · ${sinFecha.sk} SKUs</div>`;
+  }
+  h1 += '</div></div></div>';
+
+  h1 += `<div class="chart-card"><h3>Riesgo de Pérdida por Vencimiento</h3>
+    <div style="padding:16px">
+      <div style="margin-bottom:16px;text-align:center"><span style="font-size:36px;font-weight:800;color:var(--rojo)">${FMT(riesgo30)}</span><br><small style="color:var(--gris3)">cajas vencidas o por vencer en 30 días (${pctRiesgo}%)</small></div>
+      <div class="bar-chart">
+        <div class="bar-row"><div class="bar-label" style="width:100px">Vencido</div><div class="bar-track"><div class="bar-fill" style="width:${totalAll?(vencido.u/totalAll*100):0}%;background:var(--rojo)"><span>${FMT(vencido.u)}</span></div></div><div class="bar-value">${pctVencido}%</div></div>
+        <div class="bar-row"><div class="bar-label" style="width:100px">30 días</div><div class="bar-track"><div class="bar-fill" style="width:${totalAll?(v30.u/totalAll*100):0}%;background:var(--naranja)"><span>${FMT(v30.u)}</span></div></div><div class="bar-value">${totalAll?(v30.u/totalAll*100).toFixed(2):0}%</div></div>
+        <div class="bar-row"><div class="bar-label" style="width:100px">90 días</div><div class="bar-track"><div class="bar-fill" style="width:${totalAll?(v90.u/totalAll*100):0}%;background:#f1c40f"><span>${FMT(v90.u)}</span></div></div><div class="bar-value">${totalAll?(v90.u/totalAll*100).toFixed(2):0}%</div></div>
+        <div class="bar-row"><div class="bar-label" style="width:100px">Vigente</div><div class="bar-track"><div class="bar-fill" style="width:${totalAll?(vigente.u/totalAll*100):0}%;background:var(--verde)"><span>${FMT(vigente.u)}</span></div></div><div class="bar-value">${totalAll?(vigente.u/totalAll*100).toFixed(2):0}%</div></div>
+      </div>
+    </div></div>`;
+  document.getElementById('charts-vencidos-1').innerHTML = h1;
+
+  let tb = '';
+  if (vt.length) {
+    tb = '<table><thead><tr><th>Código</th><th>Producto</th><th>Cajas Vencidas</th><th>LPs</th><th>Categoría</th><th>Fecha Mín</th><th>Fecha Máx</th></tr></thead><tbody>';
+    vt.forEach(r => {
+      tb += `<tr><td>${r.c}</td><td>${r.n}</td><td class="num" style="color:var(--rojo);font-weight:700">${FMT(r.u)}</td><td class="num">${r.lp}</td><td>${CAT_NOMBRE[r.ca]||r.ca}</td><td>${r.fm||'-'}</td><td>${r.fx||'-'}</td></tr>`;
+    });
+    tb += '</tbody></table>';
+  } else {
+    tb = '<p style="padding:20px;text-align:center;color:var(--verde);font-weight:600">No hay producto vencido actualmente.</p>';
+  }
+  document.getElementById('tbody-vencidos').innerHTML = tb;
+  document.getElementById('info-vencidos').textContent = `${vt.length} SKUs con producto vencido · ${FMT(vencido.u)} cajas · ${pctVencido}% del inventario total`;
+}
+
+// ── ANALISIS DE DAÑADO ──
+function renderAnalisis() {
+  const A = D.analisisDanado;
+  if (!A) return;
+  const tot = A.tot;
+  const tipos = A.tipos;
+  const totalP34 = tipos.corr + tipos.noR;
+  const pctCorr = totalP34 ? (tipos.corr/totalP34*100).toFixed(1) : '0';
+  const pctNoR = totalP34 ? (tipos.noR/totalP34*100).toFixed(1) : '0';
+
+  document.getElementById('kpis-analisis').innerHTML = `
+    <div class="kpi red"><div class="label">Total Dañado Recibido ${new Date().getFullYear()}</div><div class="value">${FMT(tot.td)}</div><div class="detail">cajas en recepciones</div></div>
+    <div class="kpi orange"><div class="label">% del Total Recibido</div><div class="value">${tot.pct}%</div><div class="detail">de ${FMT(tot.tr)} cajas recibidas</div></div>
+    <div class="kpi green"><div class="label">Corrugado Distribuible (CDDs)</div><div class="value">${FMT(tipos.corr)}</div><div class="detail">${pctCorr}% del inventario P34</div></div>
+    <div class="kpi"><div class="label">Dañado No Recuperable</div><div class="value">${FMT(tipos.noR)}</div><div class="detail">${pctNoR}% del inventario P34</div></div>
+  `;
+
+  // Row 1: Donut tipos de daño + Dañado por mes
+  let h1 = `<div class="chart-card"><h3>Tipo de Daño en Pasillo 34</h3>
+    <div style="display:flex;align-items:center;gap:30px;justify-content:center;padding:20px 0">
+      <div class="donut" style="background:conic-gradient(var(--verde) 0% ${pctCorr}%, var(--rojo) ${pctCorr}% 100%)">
+        <div class="donut-center">${FMT(totalP34)}<br><small>cajas</small></div>
+      </div>
+      <div class="donut-legend">
+        <div class="legend-item"><span class="dot" style="background:var(--verde)"></span> Corrugado Distribuible<br><strong>${FMT(tipos.corr)}</strong> (${pctCorr}%)<br><small>Se despacha a CDDs para venta al detalle</small></div>
+        <div class="legend-item"><span class="dot" style="background:var(--rojo)"></span> No Recuperable<br><strong>${FMT(tipos.noR)}</strong> (${pctNoR}%)<br><small>Hold / Bloqueado / Vencido / Scrap</small></div>
+      </div>
+    </div></div>`;
+
+  h1 += `<div class="chart-card"><h3>Dañado Recibido por Mes (Cajas)</h3><div class="bar-chart">`;
+  const maxDM = Math.max(...A.porMes.map(r=>r.d), 1);
+  A.porMes.forEach(r => {
+    const pct = (r.d/maxDM*100).toFixed(1);
+    const lbl = MESES[+r.m.split('-')[1]]?.substring(0,3) || r.m;
+    h1 += `<div class="bar-row"><div class="bar-label">${lbl}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:var(--rojo)"><span>${FMT(r.d)}</span></div></div><div class="bar-value">${r.p}% · ${r.ci} citas</div></div>`;
+  });
+  h1 += '</div></div>';
+  document.getElementById('charts-analisis-1').innerHTML = h1;
+
+  // Row 2: Flujo P34 + Vencimiento
+  let h2 = `<div class="chart-card"><h3>Rotación Pasillo 34 — Ingreso vs Despacho a CDDs (Unidades/Mes)</h3><div class="bar-chart">`;
+  const maxF = Math.max(...A.flujo.map(r => Math.max(r.i, r.o)), 1);
+  A.flujo.forEach(r => {
+    const lbl = MESES[+r.m.split('-')[1]]?.substring(0,3) || r.m;
+    const pI = (r.i/maxF*100).toFixed(1);
+    const pO = (r.o/maxF*100).toFixed(1);
+    const neto = r.o - r.i;
+    const netoTxt = neto >= 0 ? `+${FMT(neto)}` : FMT(neto);
+    h2 += `<div class="bar-row"><div class="bar-label">${lbl}</div><div class="bar-track"><div class="bar-fill" style="width:${pI}%;background:#e74c3c;opacity:0.75"><span>${FMT(r.i)}</span></div></div><div class="bar-value" style="color:var(--rojo)">▼ IN</div></div>`;
+    h2 += `<div class="bar-row"><div class="bar-label"></div><div class="bar-track"><div class="bar-fill" style="width:${pO}%;background:var(--verde);opacity:0.75"><span>${FMT(r.o)}</span></div></div><div class="bar-value" style="color:var(--verde)">▲ OUT <small style="color:var(--gris3)">${netoTxt}</small></div></div>`;
+  });
+  h2 += '</div></div>';
+
+  const totalExp = A.exp.reduce((s,r) => s + r.u, 0);
+  const expCol = {VENCIDO:'var(--rojo)', VENCE_30D:'var(--naranja)', VENCE_90D:'#f1c40f', VIGENTE:'var(--verde)'};
+  const expLbl = {VENCIDO:'Vencido', VENCE_30D:'Vence en 30 días', VENCE_90D:'Vence en 90 días', VIGENTE:'Vigente'};
+  let cum = 0;
+  const grad = A.exp.map(r => {
+    const p = totalExp ? r.u/totalExp*100 : 0;
+    const s = `${expCol[r.e]||'#999'} ${cum}% ${cum+p}%`;
+    cum += p;
+    return s;
+  }).join(',');
+
+  h2 += `<div class="chart-card"><h3>Pérdidas por Vencimiento — Pasillo 34</h3>
+    <div style="display:flex;align-items:center;gap:30px;justify-content:center;padding:20px 0">
+      <div class="donut" style="background:conic-gradient(${grad})"><div class="donut-center">${FMT(totalExp)}<br><small>cajas</small></div></div>
+      <div class="donut-legend">`;
+  A.exp.forEach(r => {
+    const p = totalExp ? (r.u/totalExp*100).toFixed(1) : '0';
+    h2 += `<div class="legend-item"><span class="dot" style="background:${expCol[r.e]||'#999'}"></span> ${expLbl[r.e]||r.e}<br><strong>${FMT(r.u)}</strong> (${p}%) · ${r.sk} SKUs</div>`;
+  });
+  h2 += '</div></div></div>';
+  document.getElementById('charts-analisis-2').innerHTML = h2;
+
+  // Row 3: Top proveedores + Códigos de bloqueo
+  let h3 = `<div class="chart-card"><h3>Top Proveedores con Mayor Daño (Cajas Recibidas Dañadas)</h3><div class="bar-chart">`;
+  const maxPr = A.topProv.length ? A.topProv[0].d : 1;
+  A.topProv.forEach((r,i) => {
+    const pct = (r.d/maxPr*100).toFixed(1);
+    const col = i===0?'var(--rojo)':'var(--naranja)';
+    h3 += `<div class="bar-row"><div class="bar-label" style="width:150px;font-size:11px">${r.pr}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col}"><span>${FMT(r.d)}</span></div></div><div class="bar-value">${r.p}% de sus recibos</div></div>`;
+  });
+  h3 += '</div></div>';
+
+  const bcLbl = {'':'Sin bloqueo (Disponible)','PLNER':'Pendiente clasificar','BDVE':'Vencidos','BDQA':'Control de calidad','BDCU':'Dañado casa importada','BDSC':'Scrap','BDCDS':'Regional dañado','BDCDV':'Regional vencido'};
+  h3 += `<div class="chart-card"><h3>Detalle por Código de Bloqueo — P34</h3><div class="bar-chart">`;
+  const maxBC = A.bc.length ? Math.max(...A.bc.map(r=>r.u)) : 1;
+  A.bc.forEach(r => {
+    const pct = (r.u/maxBC*100).toFixed(1);
+    const col = r.s==='A'?'var(--verde)':'var(--rojo)';
+    const lbl = (r.bc?r.bc+' - ':'') + (bcLbl[r.bc]||r.bc||'Sin código');
+    h3 += `<div class="bar-row"><div class="bar-label" style="width:180px;font-size:11px">${lbl}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col}"><span>${FMT(r.u)}</span></div></div><div class="bar-value">${r.lp} LPs · ${r.sk} SKUs</div></div>`;
+  });
+  h3 += '</div></div>';
+  document.getElementById('charts-analisis-3').innerHTML = h3;
+
+  // Tables
+  let tb = '<div class="analisis-tables">';
+  tb += '<div><h3>Top SKUs Dañados en Recepciones</h3><table><thead><tr><th>SKU</th><th>Producto</th><th>Cajas Dañadas</th><th>Citas</th></tr></thead><tbody>';
+  A.topSKU.forEach(r => { tb += `<tr><td>${r.sk}</td><td>${r.ds}</td><td class="num">${FMT(r.d)}</td><td class="num">${r.ci}</td></tr>`; });
+  tb += '</tbody></table></div>';
+
+  tb += '<div><h3>Top SKUs en Pasillo 34 (Inventario Actual)</h3><table><thead><tr><th>Código</th><th>Producto</th><th>Cajas</th><th>LPs</th><th>Categoría</th><th>Status</th></tr></thead><tbody>';
+  A.topP34.forEach(r => {
+    const sc = r.s==='A'?'status-a':'status-h';
+    tb += `<tr><td>${r.c}</td><td>${r.n}</td><td class="num">${FMT(r.u)}</td><td class="num">${r.lp}</td><td>${r.ca}</td><td class="${sc}">${r.s}</td></tr>`;
+  });
+  tb += '</tbody></table></div></div>';
+  document.getElementById('tbody-analisis').innerHTML = tb;
+  document.getElementById('info-analisis').textContent = `Análisis de dañado ${new Date().getFullYear()} · Pasillo 34: ${FMT(totalP34)} cajas (${FMT(tipos.corr)} distribuibles a CDDs + ${FMT(tipos.noR)} no recuperables)`;
+}
+
+// ── HELPERS ──
+function sortData(arr, state) {
+  if (!state.col) return arr;
+  return [...arr].sort((a,b) => {
+    let va = a[state.col], vb = b[state.col];
+    if (va == null) va = '';
+    if (vb == null) vb = '';
+    if (typeof va === 'number' && typeof vb === 'number') return state.asc ? va-vb : vb-va;
+    return state.asc ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
+  });
+}
+
+function renderPagination(containerId, current, total, onPage) {
+  if (total <= 1) { document.getElementById(containerId).innerHTML = ''; return; }
+  const el = document.getElementById(containerId);
+  let html = `<button ${current===1?'disabled':''} onclick="void(0)">◀</button>`;
+  const range = [];
+  for (let i = Math.max(1,current-2); i <= Math.min(total,current+2); i++) range.push(i);
+  if (range[0] > 1) { range.unshift(1); if (range[1] > 2) range.splice(1,0,'...'); }
+  if (range[range.length-1] < total) { if (range[range.length-1] < total-1) range.push('...'); range.push(total); }
+  range.forEach(p => {
+    if (p === '...') html += '<span class="page-info">...</span>';
+    else html += `<button class="${p===current?'active':''}" onclick="void(0)">${p}</button>`;
+  });
+  html += `<button ${current===total?'disabled':''} onclick="void(0)">▶</button>`;
+  html += `<span class="page-info">Pág ${current} de ${total}</span>`;
+  el.innerHTML = html;
+  el.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const txt = btn.textContent;
+      if (txt === '◀' && current > 1) onPage(current-1);
+      else if (txt === '▶' && current < total) onPage(current+1);
+      else { const n = parseInt(txt); if (!isNaN(n)) onPage(n); }
+    });
+  });
+}
+
+function exportarExcel() {
+  const dir = location.href.substring(0, location.href.lastIndexOf('/'));
+  const path = dir + '/INVENTARIO_COMPLETO.xlsx';
+  window.open(path, '_blank');
+}
+
+function actualizarSQL() {
+  alert('Para actualizar los datos:\n\n1. Doble clic en ACTUALIZAR_INVENTARIO.bat\n2. Espera a que termine (~30 seg)\n3. Presiona F5 en este dashboard\n\nO ejecuta: py EXTRAER_INVENTARIO.py');
+}
+</script>
+</body>
+</html>

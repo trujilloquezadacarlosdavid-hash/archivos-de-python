@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte Identity — Control de Asistencia</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --surface:#1a1a19;--surface-card:#222221;--surface-input:#2c2c2a;
+  --ink:#ffffff;--ink2:#c3c2b7;--muted:#898781;
+  --grid:#2c2c2a;--baseline:#383835;--border:rgba(255,255,255,0.10);
+  --blue:#3987e5;--orange:#d95926;--aqua:#199e70;--yellow:#c98500;
+  --red:#e66767;--violet:#9085e9;--green:#008300;
+  --good:#0ca30c;--warning:#fab219;--serious:#ec835a;--critical:#d03b3b;
+  --radius:8px;--gap:16px;
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+html,body{background:#0d0d0d;color:var(--ink);min-height:100vh}
+body{padding:0}
+.app{max-width:1200px;margin:0 auto;padding:var(--gap)}
+
+/* Header */
+.header{display:flex;align-items:center;justify-content:space-between;padding:12px 0;margin-bottom:8px;border-bottom:1px solid var(--grid)}
+.header h1{font-size:1.25rem;font-weight:600;display:flex;align-items:center;gap:8px}
+.header h1 span{color:var(--blue);font-size:0.75rem;background:rgba(57,135,229,0.15);padding:2px 8px;border-radius:12px}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;margin-bottom:var(--gap);border-bottom:1px solid var(--grid);padding-bottom:0}
+.tab-btn{background:none;border:none;color:var(--muted);padding:10px 16px;cursor:pointer;font-size:0.875rem;font-weight:500;border-bottom:2px solid transparent;transition:all 0.2s}
+.tab-btn:hover{color:var(--ink2)}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* Cards */
+.card{background:var(--surface);border-radius:var(--radius);padding:20px;margin-bottom:var(--gap);border:1px solid var(--grid)}
+.card-title{font-size:0.8125rem;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px}
+
+/* KPI Row */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:var(--gap);margin-bottom:var(--gap)}
+.kpi{background:var(--surface);border-radius:var(--radius);padding:16px 20px;border:1px solid var(--grid)}
+.kpi-label{font-size:0.75rem;color:var(--muted);margin-bottom:4px}
+.kpi-value{font-size:1.75rem;font-weight:600}
+.kpi-delta{font-size:0.75rem;margin-top:4px}
+.kpi-delta.good{color:var(--good)}
+.kpi-delta.bad{color:var(--critical)}
+
+/* Forms */
+input,select,textarea{background:var(--surface-input);border:1px solid var(--grid);color:var(--ink);padding:8px 12px;border-radius:6px;font-size:0.875rem;font-family:inherit;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue)}
+input[type="time"]{width:auto;min-width:120px}
+input[type="date"]{width:auto;min-width:160px}
+label{font-size:0.8125rem;color:var(--ink2);display:block;margin-bottom:4px}
+.form-row{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:12px}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group.grow{flex:1;min-width:150px}
+
+/* Buttons */
+.btn{padding:8px 16px;border-radius:6px;border:none;font-size:0.8125rem;font-weight:500;cursor:pointer;transition:all 0.15s;font-family:inherit}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{filter:brightness(1.1)}
+.btn-danger{background:var(--critical);color:#fff}
+.btn-danger:hover{filter:brightness(1.1)}
+.btn-ghost{background:transparent;border:1px solid var(--grid);color:var(--ink2)}
+.btn-ghost:hover{border-color:var(--ink2);color:var(--ink)}
+.btn-sm{padding:5px 10px;font-size:0.75rem}
+.btn-success{background:var(--good);color:#fff}
+
+/* Table */
+.data-table{width:100%;border-collapse:separate;border-spacing:0;font-size:0.8125rem}
+.data-table th{text-align:left;padding:8px 12px;color:var(--muted);font-weight:500;border-bottom:1px solid var(--grid);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;position:sticky;top:0;background:var(--surface)}
+.data-table td{padding:8px 12px;border-bottom:1px solid var(--grid);color:var(--ink2);font-variant-numeric:tabular-nums}
+.data-table tr:hover td{background:rgba(255,255,255,0.03)}
+.table-wrap{overflow-x:auto;max-height:400px;overflow-y:auto}
+
+/* Status badges */
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:0.6875rem;font-weight:500}
+.badge-ok{background:rgba(12,163,12,0.15);color:var(--good)}
+.badge-late{background:rgba(250,178,25,0.15);color:var(--warning)}
+.badge-absent{background:rgba(208,59,59,0.15);color:var(--critical)}
+
+/* Chart containers */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
+@media(max-width:800px){.chart-grid{grid-template-columns:1fr}}
+.chart-box{background:var(--surface);border-radius:var(--radius);padding:20px;border:1px solid var(--grid)}
+.chart-box canvas{max-height:280px}
+
+/* Registro - attendance list */
+.att-row{display:grid;grid-template-columns:1fr 100px 100px 1fr 80px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--grid);font-size:0.8125rem}
+.att-row.header{color:var(--muted);font-weight:500;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.3px;border-bottom:2px solid var(--grid)}
+@media(max-width:700px){.att-row{grid-template-columns:1fr 80px 80px 1fr 70px}}
+
+.att-name{color:var(--ink)}
+.att-status{text-align:center}
+
+select.status-select{padding:4px 6px;font-size:0.75rem;width:auto;min-width:70px;text-align:center;border-radius:4px}
+select.status-select option{background:var(--surface-input)}
+
+/* Empty state */
+.empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:0.875rem}
+
+/* Filter bar */
+.filter-bar{display:flex;gap:12px;align-items:end;margin-bottom:var(--gap);flex-wrap:wrap}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--grid);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--surface-card);border:1px solid var(--good);color:var(--ink);padding:12px 20px;border-radius:var(--radius);font-size:0.8125rem;opacity:0;transform:translateY(10px);transition:all 0.3s;z-index:100;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* Import textarea */
+textarea.import-area{min-height:120px;font-family:monospace;font-size:0.8125rem}
+
+.hero-number{font-size:3rem;font-weight:700;text-align:center;padding:20px 0}
+.hero-label{text-align:center;color:var(--muted);font-size:0.875rem;margin-top:-12px;margin-bottom:8px}
+
+/* Responsive */
+@media(max-width:600px){
+  .kpi-row{grid-template-columns:1fr 1fr}
+  .att-row{grid-template-columns:1fr 80px 80px 60px;font-size:0.75rem}
+  .att-row .att-obs{display:none}
+  .hero-number{font-size:2.25rem}
+}
+
+.highlight-row{animation:flash 0.6s ease}
+@keyframes flash{0%{background:rgba(57,135,229,0.2)}100%{background:transparent}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1>Reporte Identity <span>v1.0</span></h1>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost btn-sm" onclick="exportData()">Exportar JSON</button>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()">Importar JSON</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="registro">Registro</button>
+    <button class="tab-btn" data-tab="analisis">Analisis</button>
+    <button class="tab-btn" data-tab="empleados">Empleados</button>
+    <button class="tab-btn" data-tab="config">Configuracion</button>
+  </div>
+
+  <!-- TAB: REGISTRO -->
+  <div id="tab-registro" class="tab-content active">
+    <div class="card">
+      <div class="form-row" style="margin-bottom:16px">
+        <div class="form-group">
+          <label>Fecha del registro</label>
+          <input type="date" id="regDate" onchange="loadDayRegistro()">
+        </div>
+        <button class="btn btn-primary" onclick="saveDayRegistro()">Guardar registro</button>
+        <button class="btn btn-ghost" onclick="markAllPresent()">Marcar todos presentes</button>
+      </div>
+      <div id="regList">
+        <div class="empty">Agrega empleados en la pestana "Empleados" para comenzar</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: ANALISIS -->
+  <div id="tab-analisis" class="tab-content">
+    <div class="filter-bar">
+      <div class="form-group">
+        <label>Desde</label>
+        <input type="date" id="filterFrom" onchange="refreshAnalysis()">
+      </div>
+      <div class="form-group">
+        <label>Hasta</label>
+        <input type="date" id="filterTo" onchange="refreshAnalysis()">
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="setPreset(7)">7 dias</button>
+      <button class="btn btn-ghost btn-sm" onclick="setPreset(30)">30 dias</button>
+      <button class="btn btn-ghost btn-sm" onclick="setPreset(90)">Todo</button>
+    </div>
+
+    <div id="heroSection" class="card" style="text-align:center">
+      <div class="hero-number" id="heroValue">--</div>
+      <div class="hero-label">Asistencia promedio</div>
+    </div>
+
+    <div class="kpi-row" id="kpiRow"></div>
+
+    <div class="chart-grid">
+      <div class="chart-box">
+        <div class="card-title">Asistencia diaria</div>
+        <canvas id="chartAttendance"></canvas>
+      </div>
+      <div class="chart-box">
+        <div class="card-title">Puntualidad diaria</div>
+        <canvas id="chartPunctuality"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-grid" style="margin-top:var(--gap)">
+      <div class="chart-box">
+        <div class="card-title">Ranking de tardanzas</div>
+        <canvas id="chartLate"></canvas>
+      </div>
+      <div class="chart-box">
+        <div class="card-title">Ranking de ausencias</div>
+        <canvas id="chartAbsent"></canvas>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:var(--gap)">
+      <div class="card-title">Resumen por empleado</div>
+      <div class="table-wrap">
+        <table class="data-table" id="summaryTable">
+          <thead><tr><th>Empleado</th><th>Dias presentes</th><th>A tiempo</th><th>Tardes</th><th>Ausencias</th><th>% Asistencia</th><th>% Puntualidad</th></tr></thead>
+          <tbody id="summaryBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: EMPLEADOS -->
+  <div id="tab-empleados" class="tab-content">
+    <div class="card">
+      <div class="card-title">Agregar empleado</div>
+      <div class="form-row">
+        <div class="form-group grow">
+          <label>Nombre completo</label>
+          <input type="text" id="newEmpName" placeholder="Ej: Juan Perez" onkeydown="if(event.key==='Enter')addEmployee()">
+        </div>
+        <button class="btn btn-primary" onclick="addEmployee()">Agregar</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Roster de empleados (<span id="empCount">0</span> activos)</div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>#</th><th>Nombre</th><th>Fecha alta</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="empBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: CONFIGURACION -->
+  <div id="tab-config" class="tab-content">
+    <div class="card">
+      <div class="card-title">Parametros de asistencia</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Hora limite de entrada (puntual)</label>
+          <input type="time" id="cfgThreshold" value="07:00" onchange="saveConfig()">
+        </div>
+      </div>
+      <p style="color:var(--muted);font-size:0.8125rem;margin-top:8px">
+        Ingresos despues de esta hora se marcan como tardanza automaticamente.
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-title">Datos almacenados</div>
+      <p style="color:var(--ink2);font-size:0.8125rem;margin-bottom:12px">
+        Los datos se guardan en localStorage de este navegador. Usa Exportar/Importar JSON para respaldar.
+      </p>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-danger btn-sm" onclick="if(confirm('Borrar TODOS los datos? Esta accion no se puede deshacer.'))clearAll()">Borrar todo</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Importar datos historicos (texto)</div>
+      <p style="color:var(--ink2);font-size:0.8125rem;margin-bottom:12px">
+        Pega los datos de las fotos historicas en formato:<br>
+        <code style="color:var(--blue)">YYYY-MM-DD | Nombre | HH:MM entrada | HH:MM salida | Observaciones</code><br>
+        Una linea por registro. El separador es <code style="color:var(--blue)">|</code> (pipe).
+      </p>
+      <textarea class="import-area" id="bulkText" placeholder="2026-05-15 | Juan Perez | 06:45 | 16:00 | &#10;2026-05-15 | Maria Lopez | 07:15 | 16:00 | Llego tarde por transporte"></textarea>
+      <div style="margin-top:8px">
+        <button class="btn btn-primary" onclick="importBulk()">Importar texto</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const LS_KEY = 'reporte_identity_v1';
+
+let state = loadState();
+
+function defaultState() {
+  return {
+    employees: [],
+    records: {},
+    config: { threshold: '07:00' },
+    nextId: 1
+  };
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      const s = JSON.parse(raw);
+      s.config = s.config || { threshold: '07:00' };
+      s.nextId = s.nextId || (s.employees.length + 1);
+      return s;
+    }
+  } catch(e) {}
+  return defaultState();
+}
+
+function saveState() {
+  localStorage.setItem(LS_KEY, JSON.stringify(state));
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Tabs
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    if (btn.dataset.tab === 'analisis') refreshAnalysis();
+    if (btn.dataset.tab === 'empleados') renderEmployees();
+    if (btn.dataset.tab === 'registro') loadDayRegistro();
+  });
+});
+
+// EMPLOYEES
+function addEmployee() {
+  const input = document.getElementById('newEmpName');
+  const name = input.value.trim();
+  if (!name) return;
+  if (state.employees.some(e => e.name.toLowerCase() === name.toLowerCase() && e.active)) {
+    toast('Ese empleado ya existe');
+    return;
+  }
+  state.employees.push({ id: state.nextId++, name, active: true, addedDate: today() });
+  saveState();
+  input.value = '';
+  renderEmployees();
+  toast('Empleado agregado');
+}
+
+function toggleEmployee(id) {
+  const emp = state.employees.find(e => e.id === id);
+  if (emp) {
+    emp.active = !emp.active;
+    saveState();
+    renderEmployees();
+  }
+}
+
+function removeEmployee(id) {
+  if (!confirm('Eliminar este empleado del roster?')) return;
+  state.employees = state.employees.filter(e => e.id !== id);
+  saveState();
+  renderEmployees();
+}
+
+function renderEmployees() {
+  const active = state.employees.filter(e => e.active);
+  document.getElementById('empCount').textContent = active.length;
+  const tbody = document.getElementById('empBody');
+  tbody.innerHTML = state.employees.map((e, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td>${esc(e.name)}</td>
+      <td>${e.addedDate || '--'}</td>
+      <td><span class="badge ${e.active ? 'badge-ok' : 'badge-absent'}">${e.active ? 'Activo' : 'Inactivo'}</span></td>
+      <td>
+        <button class="btn btn-ghost btn-sm" onclick="toggleEmployee(${e.id})">${e.active ? 'Desactivar' : 'Activar'}</button>
+        <button class="btn btn-danger btn-sm" onclick="removeEmployee(${e.id})">Eliminar</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// REGISTRO
+function today() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function loadDayRegistro() {
+  const date = document.getElementById('regDate').value;
+  if (!date) return;
+  const active = state.employees.filter(e => e.active);
+  if (active.length === 0) {
+    document.getElementById('regList').innerHTML = '<div class="empty">Agrega empleados en la pestana "Empleados" para comenzar</div>';
+    return;
+  }
+
+  const existing = state.records[date] || [];
+
+  let html = `
+    <div class="att-row header">
+      <div>Nombre</div>
+      <div>Entrada</div>
+      <div>Salida</div>
+      <div class="att-obs">Observaciones</div>
+      <div class="att-status">Estado</div>
+    </div>
+  `;
+
+  active.forEach(emp => {
+    const rec = existing.find(r => r.employeeId === emp.id) || {};
+    const status = rec.status || 'present';
+    const entry = rec.entryTime || '';
+    const exit = rec.exitTime || '';
+    const obs = rec.observations || '';
+    html += `
+      <div class="att-row" data-eid="${emp.id}">
+        <div class="att-name">${esc(emp.name)}</div>
+        <div><input type="time" class="reg-entry" value="${entry}" ${status === 'absent' ? 'disabled' : ''}></div>
+        <div><input type="time" class="reg-exit" value="${exit}" ${status === 'absent' ? 'disabled' : ''}></div>
+        <div class="att-obs"><input type="text" class="reg-obs" value="${esc(obs)}" placeholder="--"></div>
+        <div class="att-status">
+          <select class="status-select reg-status" onchange="toggleRowInputs(this)">
+            <option value="present" ${status === 'present' ? 'selected' : ''}>Presente</option>
+            <option value="absent" ${status === 'absent' ? 'selected' : ''}>Ausente</option>
+          </select>
+        </div>
+      </div>
+    `;
+  });
+
+  document.getElementById('regList').innerHTML = html;
+}
+
+function toggleRowInputs(sel) {
+  const row = sel.closest('.att-row');
+  const inputs = row.querySelectorAll('.reg-entry, .reg-exit');
+  inputs.forEach(inp => inp.disabled = sel.value === 'absent');
+  if (sel.value === 'absent') inputs.forEach(inp => inp.value = '');
+}
+
+function markAllPresent() {
+  document.querySelectorAll('.reg-status').forEach(sel => {
+    sel.value = 'present';
+    toggleRowInputs(sel);
+  });
+}
+
+function saveDayRegistro() {
+  const date = document.getElementById('regDate').value;
+  if (!date) { toast('Selecciona una fecha'); return; }
+
+  const rows = document.querySelectorAll('.att-row[data-eid]');
+  if (rows.length === 0) return;
+
+  const threshold = state.config.threshold || '07:00';
+  const entries = [];
+
+  rows.forEach(row => {
+    const eid = parseInt(row.dataset.eid);
+    const emp = state.employees.find(e => e.id === eid);
+    const statusSel = row.querySelector('.reg-status').value;
+    const entry = row.querySelector('.reg-entry').value;
+    const exit = row.querySelector('.reg-exit').value;
+    const obs = row.querySelector('.reg-obs')?.value || '';
+
+    let computedStatus = 'absent';
+    if (statusSel === 'present') {
+      computedStatus = (entry && entry > threshold) ? 'late' : 'on_time';
+    }
+
+    entries.push({
+      employeeId: eid,
+      name: emp ? emp.name : 'Desconocido',
+      entryTime: entry,
+      exitTime: exit,
+      observations: obs,
+      status: computedStatus
+    });
+  });
+
+  state.records[date] = entries;
+  saveState();
+  toast('Registro guardado: ' + date);
+}
+
+// ANALYSIS
+let chartInstances = {};
+
+function destroyCharts() {
+  Object.values(chartInstances).forEach(c => c.destroy());
+  chartInstances = {};
+}
+
+function setPreset(days) {
+  const to = new Date();
+  const from = new Date();
+  from.setDate(from.getDate() - days);
+  document.getElementById('filterFrom').value = from.toISOString().slice(0, 10);
+  document.getElementById('filterTo').value = to.toISOString().slice(0, 10);
+  refreshAnalysis();
+}
+
+function getFilteredDates() {
+  const from = document.getElementById('filterFrom').value;
+  const to = document.getElementById('filterTo').value;
+  let dates = Object.keys(state.records).sort();
+  if (from) dates = dates.filter(d => d >= from);
+  if (to) dates = dates.filter(d => d <= to);
+  return dates;
+}
+
+function refreshAnalysis() {
+  destroyCharts();
+  const dates = getFilteredDates();
+  const totalEmployees = state.employees.filter(e => e.active).length;
+
+  if (dates.length === 0 || totalEmployees === 0) {
+    document.getElementById('heroValue').textContent = '--';
+    document.getElementById('kpiRow').innerHTML = '';
+    document.getElementById('summaryBody').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px">Sin datos en el rango seleccionado</td></tr>';
+    return;
+  }
+
+  // Compute per-day stats
+  const dailyStats = dates.map(date => {
+    const recs = state.records[date];
+    const present = recs.filter(r => r.status !== 'absent').length;
+    const onTime = recs.filter(r => r.status === 'on_time').length;
+    const late = recs.filter(r => r.status === 'late').length;
+    const absent = recs.filter(r => r.status === 'absent').length;
+    const total = recs.length;
+    return { date, present, onTime, late, absent, total };
+  });
+
+  // Aggregates
+  const totalDays = dates.length;
+  const avgPresent = dailyStats.reduce((s, d) => s + d.present, 0) / totalDays;
+  const avgTotal = dailyStats.reduce((s, d) => s + d.total, 0) / totalDays;
+  const avgAttendance = avgTotal > 0 ? (avgPresent / avgTotal * 100) : 0;
+  const totalLate = dailyStats.reduce((s, d) => s + d.late, 0);
+  const totalAbsent = dailyStats.reduce((s, d) => s + d.absent, 0);
+
+  // Hero
+  document.getElementById('heroValue').textContent = avgAttendance.toFixed(1) + '%';
+  document.getElementById('heroValue').style.color =
+    avgAttendance >= 90 ? 'var(--good)' : avgAttendance >= 75 ? 'var(--warning)' : 'var(--critical)';
+
+  // KPIs
+  document.getElementById('kpiRow').innerHTML = `
+    <div class="kpi">
+      <div class="kpi-label">Dias registrados</div>
+      <div class="kpi-value">${totalDays}</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Promedio diario</div>
+      <div class="kpi-value">${avgPresent.toFixed(1)}</div>
+      <div class="kpi-delta" style="color:var(--ink2)">de ${avgTotal.toFixed(0)} registrados</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Total tardanzas</div>
+      <div class="kpi-value" style="color:var(--warning)">${totalLate}</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Total ausencias</div>
+      <div class="kpi-value" style="color:var(--critical)">${totalAbsent}</div>
+    </div>
+  `;
+
+  // Chart: attendance line
+  const chartOpts = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#222221',
+        titleColor: '#ffffff',
+        bodyColor: '#c3c2b7',
+        borderColor: '#2c2c2a',
+        borderWidth: 1,
+        padding: 10,
+        cornerRadius: 6,
+        displayColors: true,
+        boxWidth: 12,
+        boxHeight: 2,
+        boxPadding: 4
+      }
+    },
+    scales: {
+      x: {
+        ticks: { color: '#898781', font: { size: 11 }, maxRotation: 45 },
+        grid: { color: '#2c2c2a', lineWidth: 1 },
+        border: { color: '#383835' }
+      },
+      y: {
+        beginAtZero: true,
+        ticks: { color: '#898781', font: { size: 11 }, stepSize: 1 },
+        grid: { color: '#2c2c2a', lineWidth: 1 },
+        border: { color: '#383835' }
+      }
+    }
+  };
+
+  const labels = dailyStats.map(d => {
+    const dt = new Date(d.date + 'T12:00:00');
+    return dt.toLocaleDateString('es-GT', { day: '2-digit', month: 'short' });
+  });
+
+  chartInstances.attendance = new Chart(document.getElementById('chartAttendance'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Presentes',
+        data: dailyStats.map(d => d.present),
+        borderColor: '#3987e5',
+        backgroundColor: 'rgba(57,135,229,0.1)',
+        borderWidth: 2,
+        pointRadius: dailyStats.length > 30 ? 0 : 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: '#3987e5',
+        pointBorderColor: '#1a1a19',
+        pointBorderWidth: 2,
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: chartOpts
+  });
+
+  // Chart: punctuality (stacked area)
+  const punctOpts = JSON.parse(JSON.stringify(chartOpts));
+  punctOpts.plugins.legend = { display: true, position: 'top', labels: { color: '#c3c2b7', usePointStyle: true, pointStyle: 'line', padding: 12, font: { size: 11 } } };
+  punctOpts.scales.y.stacked = true;
+
+  chartInstances.punctuality = new Chart(document.getElementById('chartPunctuality'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'A tiempo',
+          data: dailyStats.map(d => d.onTime),
+          borderColor: '#199e70',
+          backgroundColor: 'rgba(25,158,112,0.15)',
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: true,
+          tension: 0.3
+        },
+        {
+          label: 'Tardes',
+          data: dailyStats.map(d => d.late),
+          borderColor: '#d95926',
+          backgroundColor: 'rgba(217,89,38,0.15)',
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: true,
+          tension: 0.3
+        },
+        {
+          label: 'Ausentes',
+          data: dailyStats.map(d => d.absent),
+          borderColor: '#e66767',
+          backgroundColor: 'rgba(230,103,103,0.15)',
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: true,
+          tension: 0.3
+        }
+      ]
+    },
+    options: punctOpts
+  });
+
+  // Per-employee stats
+  const empStats = {};
+  state.employees.forEach(e => {
+    empStats[e.id] = { name: e.name, onTime: 0, late: 0, absent: 0, totalDays: 0 };
+  });
+
+  dates.forEach(date => {
+    const recs = state.records[date];
+    recs.forEach(r => {
+      if (!empStats[r.employeeId]) {
+        empStats[r.employeeId] = { name: r.name, onTime: 0, late: 0, absent: 0, totalDays: 0 };
+      }
+      const s = empStats[r.employeeId];
+      s.totalDays++;
+      if (r.status === 'on_time') s.onTime++;
+      else if (r.status === 'late') s.late++;
+      else s.absent++;
+    });
+  });
+
+  const empArr = Object.values(empStats).filter(e => e.totalDays > 0);
+
+  // Chart: late ranking (horizontal bar)
+  const lateRank = [...empArr].filter(e => e.late > 0).sort((a, b) => b.late - a.late).slice(0, 10);
+  const barOpts = {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#222221', titleColor: '#ffffff', bodyColor: '#c3c2b7',
+        borderColor: '#2c2c2a', borderWidth: 1, padding: 10, cornerRadius: 6
+      }
+    },
+    scales: {
+      x: {
+        beginAtZero: true,
+        ticks: { color: '#898781', font: { size: 11 }, stepSize: 1 },
+        grid: { color: '#2c2c2a', lineWidth: 1 },
+        border: { color: '#383835' }
+      },
+      y: {
+        ticks: { color: '#c3c2b7', font: { size: 11 } },
+        grid: { display: false },
+        border: { color: '#383835' }
+      }
+    }
+  };
+
+  chartInstances.late = new Chart(document.getElementById('chartLate'), {
+    type: 'bar',
+    data: {
+      labels: lateRank.map(e => e.name),
+      datasets: [{
+        data: lateRank.map(e => e.late),
+        backgroundColor: '#d95926',
+        borderRadius: { topRight: 4, bottomRight: 4 },
+        maxBarThickness: 24
+      }]
+    },
+    options: barOpts
+  });
+
+  // Chart: absent ranking
+  const absentRank = [...empArr].filter(e => e.absent > 0).sort((a, b) => b.absent - a.absent).slice(0, 10);
+  const absBarOpts = JSON.parse(JSON.stringify(barOpts));
+
+  chartInstances.absent = new Chart(document.getElementById('chartAbsent'), {
+    type: 'bar',
+    data: {
+      labels: absentRank.map(e => e.name),
+      datasets: [{
+        data: absentRank.map(e => e.absent),
+        backgroundColor: '#e66767',
+        borderRadius: { topRight: 4, bottomRight: 4 },
+        maxBarThickness: 24
+      }]
+    },
+    options: absBarOpts
+  });
+
+  // Summary table
+  const sorted = [...empArr].sort((a, b) => {
+    const aRate = a.totalDays > 0 ? (a.onTime + a.late) / a.totalDays : 0;
+    const bRate = b.totalDays > 0 ? (b.onTime + b.late) / b.totalDays : 0;
+    return aRate - bRate;
+  });
+
+  document.getElementById('summaryBody').innerHTML = sorted.map(e => {
+    const present = e.onTime + e.late;
+    const attPct = e.totalDays > 0 ? (present / e.totalDays * 100) : 0;
+    const punctPct = present > 0 ? (e.onTime / present * 100) : 0;
+    return `<tr>
+      <td style="color:var(--ink)">${esc(e.name)}</td>
+      <td>${present}</td>
+      <td>${e.onTime}</td>
+      <td>${e.late > 0 ? '<span style="color:var(--warning)">' + e.late + '</span>' : '0'}</td>
+      <td>${e.absent > 0 ? '<span style="color:var(--critical)">' + e.absent + '</span>' : '0'}</td>
+      <td><span class="badge ${attPct >= 90 ? 'badge-ok' : attPct >= 75 ? 'badge-late' : 'badge-absent'}">${attPct.toFixed(0)}%</span></td>
+      <td><span class="badge ${punctPct >= 90 ? 'badge-ok' : punctPct >= 75 ? 'badge-late' : 'badge-absent'}">${punctPct.toFixed(0)}%</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// CONFIG
+function saveConfig() {
+  state.config.threshold = document.getElementById('cfgThreshold').value || '07:00';
+  saveState();
+  toast('Configuracion guardada');
+}
+
+// IMPORT / EXPORT
+function exportData() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'reporte_identity_' + today() + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('Datos exportados');
+}
+
+function importData(evt) {
+  const file = evt.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!imported.employees || !imported.records) throw new Error('Formato invalido');
+      // Merge employees
+      imported.employees.forEach(imp => {
+        if (!state.employees.some(e => e.name.toLowerCase() === imp.name.toLowerCase())) {
+          imp.id = state.nextId++;
+          state.employees.push(imp);
+        }
+      });
+      // Merge records
+      Object.keys(imported.records).forEach(date => {
+        if (!state.records[date]) {
+          state.records[date] = imported.records[date];
+        }
+      });
+      saveState();
+      renderEmployees();
+      toast('Datos importados: ' + Object.keys(imported.records).length + ' dias');
+    } catch(err) {
+      toast('Error: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  evt.target.value = '';
+}
+
+function importBulk() {
+  const text = document.getElementById('bulkText').value.trim();
+  if (!text) { toast('Pega los datos primero'); return; }
+
+  const lines = text.split('\n').filter(l => l.trim());
+  let imported = 0;
+  let errors = 0;
+  const threshold = state.config.threshold || '07:00';
+
+  lines.forEach(line => {
+    const parts = line.split('|').map(p => p.trim());
+    if (parts.length < 3) { errors++; return; }
+
+    const [date, name, entry, exit, obs] = parts;
+    if (!date.match(/^\d{4}-\d{2}-\d{2}$/) || !name) { errors++; return; }
+
+    // Ensure employee exists
+    let emp = state.employees.find(e => e.name.toLowerCase() === name.toLowerCase());
+    if (!emp) {
+      emp = { id: state.nextId++, name, active: true, addedDate: date };
+      state.employees.push(emp);
+    }
+
+    // Determine status
+    let status = 'absent';
+    if (entry) {
+      status = entry > threshold ? 'late' : 'on_time';
+    }
+
+    if (!state.records[date]) state.records[date] = [];
+
+    // Avoid duplicate
+    const existing = state.records[date].find(r => r.employeeId === emp.id);
+    if (existing) { errors++; return; }
+
+    state.records[date].push({
+      employeeId: emp.id,
+      name: emp.name,
+      entryTime: entry || '',
+      exitTime: exit || '',
+      observations: obs || '',
+      status
+    });
+    imported++;
+  });
+
+  saveState();
+  renderEmployees();
+  document.getElementById('bulkText').value = '';
+  toast(`Importados: ${imported} registros` + (errors > 0 ? ` (${errors} errores)` : ''));
+}
+
+function clearAll() {
+  state = defaultState();
+  saveState();
+  renderEmployees();
+  loadDayRegistro();
+  toast('Datos eliminados');
+}
+
+// Utils
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+// Init
+document.getElementById('regDate').value = today();
+document.getElementById('cfgThreshold').value = state.config.threshold || '07:00';
+
+const allDates = Object.keys(state.records).sort();
+if (allDates.length > 0) {
+  document.getElementById('filterFrom').value = allDates[0];
+  document.getElementById('filterTo').value = allDates[allDates.length - 1];
+} else {
+  const d = new Date();
+  d.setDate(d.getDate() - 30);
+  document.getElementById('filterFrom').value = d.toISOString().slice(0, 10);
+  document.getElementById('filterTo').value = today();
+}
+
+renderEmployees();
+loadDayRegistro();
+</script>
+</body>
+</html>

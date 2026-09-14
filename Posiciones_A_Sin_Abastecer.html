@@ -1,0 +1,1057 @@
+<meta charset="utf-8">
+<title>Posiciones A Sin Abastecer — Bodega 1110</title>
+<style>
+  @font-face {
+    font-family: 'Mono';
+    src: local('Cascadia Code'), local('Consolas'), local('Monaco');
+  }
+  :root {
+    --ground: #F5F6F8;
+    --surface: #FFFFFF;
+    --surface-alt: #EDF0F4;
+    --border: #D4DAE3;
+    --text: #1A1F2B;
+    --text-2: #5A6478;
+    --text-3: #8B95A8;
+    --accent: #2D5F9A;
+    --accent-surface: #E8EFF8;
+    --red: #C0392B;
+    --red-bg: #FDECEA;
+    --red-text: #922B21;
+    --amber: #D4880F;
+    --amber-bg: #FEF5E0;
+    --amber-text: #7D5006;
+    --green: #1E8449;
+    --green-bg: #E8F8EF;
+    --green-text: #145C32;
+    --steel: #34495E;
+    --mono: 'Cascadia Code', 'Consolas', 'Monaco', monospace;
+    --sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --radius: 6px;
+    --shadow: 0 1px 3px rgba(26,31,43,.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0E1117;
+      --surface: #161B26;
+      --surface-alt: #1E2433;
+      --border: #2A3244;
+      --text: #DDE1EA;
+      --text-2: #8D96AA;
+      --text-3: #5C6578;
+      --accent: #5B9BD5;
+      --accent-surface: #1A2A40;
+      --red: #E74C3C;
+      --red-bg: #2C1518;
+      --red-text: #F1948A;
+      --amber: #F0A842;
+      --amber-bg: #2C2210;
+      --amber-text: #F5D08A;
+      --green: #2ECC71;
+      --green-bg: #102A1A;
+      --green-text: #82E0AA;
+      --steel: #AEB6C0;
+      --shadow: 0 1px 3px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0E1117;
+    --surface: #161B26;
+    --surface-alt: #1E2433;
+    --border: #2A3244;
+    --text: #DDE1EA;
+    --text-2: #8D96AA;
+    --text-3: #5C6578;
+    --accent: #5B9BD5;
+    --accent-surface: #1A2A40;
+    --red: #E74C3C;
+    --red-bg: #2C1518;
+    --red-text: #F1948A;
+    --amber: #F0A842;
+    --amber-bg: #2C2210;
+    --amber-text: #F5D08A;
+    --green: #2ECC71;
+    --green-bg: #102A1A;
+    --green-text: #82E0AA;
+    --steel: #AEB6C0;
+    --shadow: 0 1px 3px rgba(0,0,0,.3);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 20px;
+    background: var(--ground); color: var(--text);
+    font-family: var(--sans); font-size: 14px; line-height: 1.5;
+  }
+
+  .wrap { max-width: 1400px; margin: 0 auto; }
+
+  /* ─── Header ─── */
+  .hdr { margin-bottom: 28px; }
+  .hdr h1 {
+    font-size: 22px; font-weight: 700; margin: 0 0 4px;
+    letter-spacing: -0.3px; text-wrap: balance;
+    color: var(--text);
+  }
+  .hdr .sub {
+    font-size: 12px; color: var(--text-3);
+    font-family: var(--mono); letter-spacing: .02em;
+  }
+
+  /* ─── KPI strip ─── */
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px; margin-bottom: 24px;
+  }
+  .kpi {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 18px;
+    box-shadow: var(--shadow);
+  }
+  .kpi .label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--text-3); margin-bottom: 6px; font-weight: 600;
+  }
+  .kpi .val {
+    font-size: 28px; font-weight: 700; line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi .pct {
+    font-size: 13px; color: var(--text-2); margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi.alert { border-left: 4px solid var(--red); }
+  .kpi.alert .val { color: var(--red); }
+  .kpi.ok { border-left: 4px solid var(--green); }
+  .kpi.ok .val { color: var(--green); }
+  .kpi.warn { border-left: 4px solid var(--amber); }
+  .kpi.warn .val { color: var(--amber); }
+  .kpi.neutral { border-left: 4px solid var(--accent); }
+  .kpi.neutral .val { color: var(--accent); }
+
+  /* ─── Pasillo bars ─── */
+  .section-title {
+    font-size: 14px; font-weight: 700; color: var(--text);
+    margin: 28px 0 12px; text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .pasillo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 6px; margin-bottom: 24px;
+  }
+  .pas-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 8px 10px;
+    cursor: pointer; transition: border-color .15s;
+  }
+  .pas-card:hover, .pas-card.active { border-color: var(--accent); }
+  .pas-card .pas-name {
+    font-family: var(--mono); font-size: 12px; font-weight: 700;
+    margin-bottom: 4px; color: var(--text);
+  }
+  .pas-bar {
+    height: 8px; border-radius: 4px; background: var(--surface-alt);
+    overflow: hidden; margin-bottom: 4px;
+  }
+  .pas-bar-fill { height: 100%; border-radius: 4px; transition: width .3s; }
+  .pas-nums {
+    font-size: 10px; color: var(--text-3);
+    font-variant-numeric: tabular-nums;
+    display: flex; justify-content: space-between;
+  }
+
+  /* ─── Controls ─── */
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    align-items: center; margin-bottom: 12px;
+  }
+  .search-box {
+    flex: 1 1 280px; max-width: 400px;
+    padding: 8px 12px; font-size: 13px;
+    background: var(--surface); color: var(--text);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    font-family: var(--sans); outline: none;
+    transition: border-color .15s;
+  }
+  .search-box:focus { border-color: var(--accent); }
+  .search-box::placeholder { color: var(--text-3); }
+
+  select.filter-sel {
+    padding: 8px 10px; font-size: 13px;
+    background: var(--surface); color: var(--text);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    font-family: var(--sans); cursor: pointer; outline: none;
+  }
+  select.filter-sel:focus { border-color: var(--accent); }
+
+  .count-badge {
+    font-size: 12px; color: var(--text-2);
+    font-variant-numeric: tabular-nums;
+    padding: 6px 10px; background: var(--surface-alt);
+    border-radius: var(--radius); white-space: nowrap;
+  }
+
+  .btn-clear {
+    padding: 7px 14px; font-size: 12px; font-weight: 600;
+    background: var(--surface-alt); color: var(--text-2);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    cursor: pointer; font-family: var(--sans);
+    transition: all .15s; text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .btn-clear:hover { background: var(--accent-surface); color: var(--accent); border-color: var(--accent); }
+
+  /* ─── Table ─── */
+  .table-wrap {
+    overflow-x: auto; border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+    background: var(--surface);
+  }
+  table {
+    width: 100%; border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+  }
+  thead { position: sticky; top: 0; z-index: 2; }
+  th {
+    background: var(--surface-alt); color: var(--text-2);
+    font-size: 11px; text-transform: uppercase; letter-spacing: .05em;
+    font-weight: 700; padding: 10px 12px; text-align: left;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap; cursor: pointer;
+    user-select: none; transition: color .15s;
+  }
+  th:hover { color: var(--accent); }
+  th .arrow { font-size: 10px; margin-left: 3px; opacity: .4; }
+  th.sorted .arrow { opacity: 1; color: var(--accent); }
+
+  td {
+    padding: 8px 12px; border-bottom: 1px solid var(--border);
+    color: var(--text); vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--accent-surface); }
+
+  td.code {
+    font-family: var(--mono); font-size: 12px;
+    letter-spacing: .01em; white-space: nowrap;
+  }
+  td.num { text-align: right; font-family: var(--mono); font-size: 12px; }
+  td.name-cell {
+    max-width: 320px; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  .cat-pill {
+    display: inline-block; padding: 2px 8px;
+    border-radius: 10px; font-size: 10px; font-weight: 700;
+    letter-spacing: .04em; text-transform: uppercase;
+    background: var(--surface-alt); color: var(--text-2);
+    border: 1px solid var(--border);
+  }
+
+  .severity-high { background: var(--red-bg); color: var(--red-text); border-color: transparent; }
+  .severity-med  { background: var(--amber-bg); color: var(--amber-text); border-color: transparent; }
+  .severity-low  { background: var(--green-bg); color: var(--green-text); border-color: transparent; }
+
+  .locs-detail {
+    font-size: 11px; color: var(--text-3);
+    max-width: 260px; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  /* ─── Footer ─── */
+  .footer {
+    margin-top: 20px; padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--text-3);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  }
+
+  /* ─── Panel detalle pasillo ─── */
+  .pas-detail {
+    grid-column: 1 / -1;
+    background: var(--surface); border: 1px solid var(--accent);
+    border-radius: var(--radius); padding: 14px 16px;
+    box-shadow: var(--shadow); animation: slideDown .2s ease-out;
+  }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .pas-detail-hdr {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; gap: 12px;
+  }
+  .pas-detail-hdr h3 {
+    margin: 0; font-size: 14px; font-weight: 700; color: var(--accent);
+  }
+  .pas-detail-hdr .pas-detail-stats {
+    font-size: 12px; color: var(--text-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .pas-detail-close {
+    background: none; border: 1px solid var(--border); border-radius: 4px;
+    color: var(--text-3); cursor: pointer; padding: 2px 8px; font-size: 12px;
+    font-family: var(--sans); transition: all .15s;
+  }
+  .pas-detail-close:hover { color: var(--red); border-color: var(--red); }
+  .pas-detail-block {
+    padding-top: 10px; margin-top: 10px;
+    border-top: 1px dashed var(--border);
+  }
+  .pas-detail-block:first-of-type {
+    padding-top: 0; margin-top: 0; border-top: none;
+  }
+  .pas-detail-subhdr {
+    font-size: 13px; color: var(--text); margin-bottom: 8px;
+  }
+  .pas-detail-subhdr strong { color: var(--accent); font-size: 14px; }
+  .pas-detail-subhdr .pas-detail-stats {
+    display: block; font-size: 11px; color: var(--text-2);
+    margin-top: 2px; font-variant-numeric: tabular-nums;
+  }
+  .pos-chips {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .pos-chip {
+    display: inline-flex; flex-direction: column; align-items: flex-start;
+    padding: 6px 10px; border-radius: 5px;
+    background: var(--surface-alt); border: 1px solid var(--border);
+    font-family: var(--mono); font-size: 12px;
+    min-width: 110px; transition: border-color .15s;
+    cursor: default;
+  }
+  .pos-chip:hover { border-color: var(--accent); }
+  .pos-chip .pos-loc {
+    font-weight: 700; color: var(--text); letter-spacing: .02em;
+  }
+  .pos-chip .pos-sku {
+    font-size: 10px; color: var(--text-3); margin-top: 1px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 160px;
+  }
+  .pos-chip .pos-qty {
+    font-size: 10px; color: var(--amber); margin-top: 1px;
+    font-weight: 600;
+  }
+
+  @media (max-width: 768px) {
+    body { padding: 12px 10px; }
+    .hdr h1 { font-size: 18px; }
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .kpi .val { font-size: 22px; }
+    .pasillo-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
+    td.name-cell { max-width: 180px; }
+    .locs-detail { max-width: 140px; }
+  }
+</style>
+
+<div class="wrap">
+  <div class="hdr">
+    <h1>Posiciones A Sin Abastecer con Stock Disponible</h1>
+    <div class="sub">Bodega 1110A001 &middot; <span id="fecha"></span> &middot; Fuente: Korber WMS (V_HJ_t_fwd_pick + HJ_Inventory)</div>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="section-title">Ocupacion por pasillo <span style="font-weight:400;font-size:12px;color:var(--text-3)">(click para marcar uno o varios pasillos)</span></div>
+  <div class="pasillo-grid" id="pasillos"></div>
+
+  <div id="pasDetail"></div>
+  <div class="section-title">Detalle de posiciones vacias con stock en reserva</div>
+  <div class="controls">
+    <input class="search-box" id="search" type="text" placeholder="Buscar SKU, nombre o posicion...">
+    <select class="filter-sel" id="catFilter"><option value="">Todas las categorias</option></select>
+    <select class="filter-sel" id="sortSel">
+      <option value="qty-desc">Qty Reserva: Mayor a Menor</option>
+      <option value="qty-asc">Qty Reserva: Menor a Mayor</option>
+      <option value="pos-asc">Posicion A-Z</option>
+      <option value="sku-asc">SKU A-Z</option>
+      <option value="name-asc">Nombre A-Z</option>
+      <option value="locs-desc"># Ubicaciones: Mayor a Menor</option>
+    </select>
+    <button class="btn-clear" id="clearBtn">Limpiar filtros</button>
+    <div class="count-badge" id="countBadge"></div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th data-col="0" data-type="n"># <span class="arrow">&#9650;</span></th>
+          <th data-col="1" data-type="s">SKU <span class="arrow">&#9650;</span></th>
+          <th data-col="2" data-type="s">Nombre <span class="arrow">&#9650;</span></th>
+          <th data-col="3" data-type="s">Categoria <span class="arrow">&#9650;</span></th>
+          <th data-col="4" data-type="s">Pos. A <span class="arrow">&#9650;</span></th>
+          <th data-col="5" data-type="s">Pasillo <span class="arrow">&#9650;</span></th>
+          <th data-col="6" data-type="n">Qty Reserva <span class="arrow">&#9660;</span></th>
+          <th data-col="7" data-type="n"># Ubic. <span class="arrow">&#9650;</span></th>
+          <th data-col="8" data-type="s">Ubicaciones principales <span class="arrow">&#9650;</span></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <span>Generado automaticamente desde Korber WMS &middot; Analisis de slotting forward pick</span>
+    <span id="footerCount"></span>
+  </div>
+</div>
+
+<script>
+const DATA = null;
+const R = {"total_asignaciones":1341,"ocupadas":754,"vacias_con_stock":420,"vacias_sin_stock":167};
+const P = {"P02":{"vacias":5,"total":47,"ocupadas":41},"P03":{"vacias":5,"total":46,"ocupadas":38},"P04":{"vacias":7,"total":46,"ocupadas":37},"P05":{"vacias":5,"total":46,"ocupadas":35},"P06":{"vacias":7,"total":44,"ocupadas":33},"P07":{"vacias":5,"total":44,"ocupadas":38},"P08":{"vacias":81,"total":204,"ocupadas":97},"P09":{"vacias":6,"total":42,"ocupadas":33},"P10":{"vacias":13,"total":49,"ocupadas":34},"P11":{"vacias":12,"total":48,"ocupadas":36},"P12":{"vacias":13,"total":48,"ocupadas":31},"P13":{"vacias":14,"total":48,"ocupadas":33},"P14":{"vacias":10,"total":45,"ocupadas":33},"P15":{"vacias":8,"total":44,"ocupadas":34},"P16":{"vacias":25,"total":39,"ocupadas":5},"P17":{"vacias":36,"total":48,"ocupadas":0},"P18":{"vacias":88,"total":175,"ocupadas":62},"P19":{"vacias":14,"total":90,"ocupadas":61},"P20":{"vacias":3,"total":17,"ocupadas":12},"P21":{"vacias":7,"total":21,"ocupadas":13},"P24":{"vacias":0,"total":5,"ocupadas":5},"P25":{"vacias":1,"total":6,"ocupadas":4},"P26":{"vacias":4,"total":7,"ocupadas":2},"P27":{"vacias":1,"total":3,"ocupadas":1},"P28":{"vacias":1,"total":7,"ocupadas":6},"P30":{"vacias":2,"total":9,"ocupadas":5},"P31":{"vacias":33,"total":82,"ocupadas":15},"P33":{"vacias":0,"total":4,"ocupadas":1},"P34":{"vacias":1,"total":5,"ocupadas":0},"P36":{"vacias":12,"total":21,"ocupadas":9},"P37":{"vacias":1,"total":1,"ocupadas":0}};
+const CATS = {"CUPE":131,"HOGA":115,"(sin categoria)":64,"ALIM":62,"MASC":18,"CONF":17,"DETE":10,"ALL":1,"MENA":1,"FARM":1};
+</script>
+<script>
+var ROWS=[["A0000001404","ROYAL GELATINA CEREZA 40GX12UNX4BX","CONF","P02C04A","P02",288,2,"P20C41E (240), P22C13E (48)"],
+["A0010001366","CHIPS AHOY REGULAR 37GX6UNX24BS","CONF","P02C20A","P02",392,7,"P22C19B (347), SCRAPCDS-JULIO (18), P23C05C (12)"],
+["A0010001358","MAX AIR DENTYNE SPEARMI 2.8GX100BXX32BX","","P02C39A","P02",6833000,86,"P02C03B (153,600), P02C36E (153,600), P03C14D (153,600)"],
+["A0010001515","CHOCO FRUTA 350GX50UN","CONF","P02C45A","P02",9952,9,"P02C14D (1,650), P04C10C (1,650), P04C27B (1,650)"],
+["A0000003307","RICOLINO CORON PAL VITRO 12GX80UNX36BT","ALIM","P02C46A","P02",614,7,"P21C36E (180), P14C05C (144), P14C47D (144)"],
+["A0000004386","TRIDENT 14S 3PK SPEARMINT 79.8GX20UN","","P03C04A","P03",340,2,"P21C39E (320), P22C21D (20)"],
+["A0010003832","TRIDENT BOT FRELIM 23S 44.6GX6UNX6PQ","CONF","P03C05A","P03",576,1,"P21C32F (576)"],
+["A0010001422","CHOCO PANDA COCOA EN POLVO 14GX12UNX25TI","CONF","P03C15A","P03",30072,4,"P07C46D (25,200), P04C14B (4,800), SCRAPCDS-JULIO (69)"],
+["A0000001368","OREO WHITE FUDGE 131.2GX48UN","CONF","P03C28A","P03",48,1,"P22C06E (48)"],
+["A0000002454","BUBBALOO 1S FRUTA 5.1GX70UNX32PQ","CONF","P03C39A","P03",1209740,29,"P21C24F (125,440), P23C11E (125,440), P21C43F (120,960)"],
+["A0000003371","CHOCO PANDA CHOCOLATE LIQUIDO 200MLX24UN","ALIM","P04C21A","P04",100,2,"SCRAPCDS-JULIO (75), SCRAPCDS-AGOSTO (25)"],
+["A0000003831","TRIDENT 5S TUTTIFRUTTI 8.5GX18UNX30TI","CONF","P04C22A","P04",2050,6,"P20C41C (630), P04C18B (540), P20C24B (462)"],
+["A0000003136","BEST GALLETA XL 40GX12UNX12PQ","CONF","P04C23A","P04",2409,6,"P21C48B (602), P21C44D (528), P21C45B (528)"],
+["AP000004034","BOMBONERA TRANSPARENTE TRIDENT 1UN","CONF","P04C24A","P04",90,1,"P14C48B (90)"],
+["A0000004603","KICK MANI PLEGADIZA 35GX 12UNX12PL","","P04C28A","P04",4,1,"SCRAPCDS-JULIO (4)"],
+["A0000003962","BOTONETA GOLD TRIPLE CHOCO 50GX12UNX12DP","CONF","P04C37A","P04",44,1,"P21C48D (44)"],
+["A0000003303","RICOLINO BUBULUBU VITRO  20GX65UNX36BT","ALIM","P04C47A","P04",302,6,"P20C39B (180), P22C21C (72), P21C33B (21)"],
+["A0010003121","BOTONETA MANI 9GX24UNX20TI","CONF","P05C15A","P05",141544,5,"P02C07B (47,040), P04C27B (47,040), P04C32B (47,040)"],
+["A0000004484","RITZ ROLLO 70GX64UN","","P05C19A","P05",4608,2,"P20C15C (2,304), P20C15D (2,304)"],
+["A0000004520","OREO REGULAR SRP 36GX12UNX12BS","CONF","P05C27A","P05",22452,3,"P05C09E (15,264), P02C33D (7,056), P23C05D (132)"],
+["A0000003150","COLOMBINA CHOCOL KICK MANI 35GX12UNX12BX","ALIM","P05C30A","P05",21,2,"P21C42B (12), P21C34B (9)"],
+["A0000004010","BUBBALOO 1S HALLOWEEN 5.1GX70UNX32PQ","CONF","P05C43A","P05",69440,3,"P20C25D (58,520), P20C31B (10,430), P20C24B (490)"],
+["A0000004389","TRIDENT 14S 3PK BUBBLEGUM 79.8GX20UN","","P06C06A","P06",260,1,"P06C05D (260)"],
+["A0000004496","BON BON BUM TAJIN 17GX12UNX12TIR","","P06C09A","P06",3962,6,"P09C34D (1,320), P09C25C (660), P09C35D (660)"],
+["A0000003266","TRIDENT BOT FRESA 35S 45.5GX6UNX6PQ","CONF","P06C14A","P06",468,5,"P21C29F (288), P21C32F (72), P21C17F (36)"],
+["A0020001299","GRISSLY GOMAS DELFIN 80GX36BS","ALIM","P06C15A","P06",1,1,"SCRAPCDS-AGOSTO (1)"],
+["A0010003061","BOTONETA CHOCOLATE 9GX24UNX20TI","CONF","P06C22A","P06",189044,6,"P04C21C (47,040), P05C10C (47,040), P06C15C (47,040)"],
+["A0000004462","XTIME MENTA XTREMA 3.1GX100UNX15","","P06C32A","P06",223,5,"P09C41B (150), P20C23B (28), P20C38B (28)"],
+["A0000004565","BEST DAPI VAINILLA 17GX12UNX24PQ","","P06C36A","P06",1,1,"SCRAPCDS-AGOSTO (1)"],
+["A0020001297","GRISSLY GOMAS SANDIA 80GX36UN","ALIM","P07C09A","P07",4,2,"SCRAPCDS-JULIO (3), P23C07C (1)"],
+["A0000003293","RICOLINO DULCIGOMAS 125GX13UN","ALIM","P07C12A","P07",7,1,"SCRAPCDS-JULIO (7)"],
+["A0000004382","RITZ REGULAR 20GX6UNX24BS","","P07C17A","P07",134599,24,"P20C16C (7,200), P20C16D (7,200), P20C18D (7,200)"],
+["A0010003077","MILLOWS CILINDRO BLANCO 290GX20BS","ALIM","P07C41A","P07",5537,11,"RAMPA-07 (1,000), P09C02C (500), P09C31D (500)"],
+["A0000003308","RICOLINO CORON PALET TIRA 120GX10UNX50TI","ALIM","P07C43A","P07",21799,10,"P05C07C (3,000), P05C07E (3,000), P05C08B (3,000)"],
+["A0000000007","DURACELL REGULAR AAA 1C 6UNX10TI","CUPE","P08C01A","P08",930,1,"P22C20B (930)"],
+["A0000000327","LISTERINE COOLMINT 1LX6UN","CUPE","P08C01B","P08",2595,8,"P30C03C (528), P30C06B (528), P08C38D (510)"],
+["A0000003883","GELAT SHAMP 3EN1 BAB SHARK 3D 350MLX12UN","CUPE","P08C01B","P08",12,1,"P08C01B (12)"],
+["A0000004515","NTG SUN FRESH FPS 90 200MLX6UN","","P08C02B","P08",672,2,"P31C12C (438), P08C07C (234)"],
+["A0000004513","NTG PURIFIED SKIN GEL LIMPIEZA 150GX6UN","","P08C03B","P08",660,3,"P08C36C (354), P31C13E (180), P08C03B (126)"],
+["A0010000199","JBB CREMA LIQUIDA 2 PACK 200MLX2UNX6PQ","","P08C03B","P08",306,1,"P08C03B (306)"],
+["A0000002268","JBB SHAMPOO GOTAS BRILLO BMR 1000MLX6UN","CUPE","P08C04B","P08",2,2,"P23S01A (1), R-INV (1)"],
+["A0000002303","DURACELL RECARGABLE AA 4C+CARG 1UNX4PQ","CUPE","P08C04B","P08",606,3,"P08C04B (222), P08C29E (204), P30C01B (180)"],
+["A0000004392","JBB CREMA DERMA PROTECT 200MLX6UN","","P08C04B","P08",1601,3,"P08C21D (1,230), P31C07C (366), P08C04B (5)"],
+["A0010001967","DOVE SUPER ACONDICIONADOR 12MLX12UNX20TI","HOGA","P08C05B","P08",100080,6,"P14C35C (26,880), P14C44B (26,880), P15C10C (16,800)"],
+["A0010003443","JBB POLVO ANTES DORMIR 400GX12UN","CUPE","P08C05B","P08",10,1,"P08C05B (10)"],
+["A0000000189","JBB JABON ANTES DORMIR 75GX48UN","CUPE","P08C06B","P08",6715,3,"P08C09E (3,984), P36C09C (1,968), P08C06B (763)"],
+["A0010002321","REXONA  DEO CLEAN SCH 8GX10UNX12TI","","P08C07B","P08",8164,3,"P08C07B (8,150), SCRAPCDS-JULIO (10), SCRAPCDS-AGOSTO (4)"],
+["A0000003430","EGO GEL ATTRAC 200MLX24UN","CUPE","P08C08B","P08",52,3,"SCRAPCDS-AGOSTO (25), P23C07C (24), SCRAPCDS-JULIO (3)"],
+["A0000003650","SET CARTUCHERA CILINDRO UNICORNIO 12UN","HOGA","P08C08B","P08",3096,5,"P08C37E (900), P14C39C (900), P14C42C (900)"],
+["A0000002404","LISTERINE TOTAL CARE 1LX6UN","CUPE","P08C09B","P08",834,3,"P08C02E (360), P08C38C (264), P08C09B (210)"],
+["A0000000004","DURACELL REGULAR TIRA AA 2C 6UNX10TI","CUPE","P08C10B","P08",186740,17,"P30C04C (21,600), P30C11B (21,600), P30C12B (21,600)"],
+["A0000003847","LUBRIDERM REPARACIÓN INTENSIV 120MLX12BX","CUPE","P08C10B","P08",850,1,"P08C10B (850)"],
+["A0000000292","LISTERINE COOLMINT 1.5LX6UN","CUPE","P08C11B","P08",7699,21,"P30C08C (768), P30C09C (768), P08C06D (384)"],
+["A0000000305","LISTERINE COOLMINT 250MLX12UN","CUPE","P08C12B","P08",9493,8,"P08C01D (1,872), P08C03D (1,872), P30C05D (1,872)"],
+["A0000004100","GELAT H.BAG  MAQUILLAJE MINNIE  6UN","CUPE","P08C13B","P08",2,1,"P08C13B (2)"],
+["A0010000004","DURACELL REGULAR AA MAQ 2C 6UNX10TI","CUPE","P08C13B","P08",32,1,"P08C13B (32)"],
+["A0000000213","JBB ACEITE ANTES DORMIR 100MLX12UN","CUPE","P08C14B","P08",1572,2,"P08C24D (1,224), P08C14B (348)"],
+["A0000000110","EGO GEL POWER 950MLX6UN","CUPE","P08C15A","P08",186,1,"P14C38B (186)"],
+["AP000000767","LUBRIDERM CREM HUMECT DIARIA 400ML+120ML","CUPE","P08C15B","P08",825,3,"P08C15B (345), P08C18E (288), P30C06D (192)"],
+["A0000001875","DURACELL PB2 6700MAH 1UNX4BX","CUPE","P08C16B","P08",141,1,"P08C16B (141)"],
+["A0000003383","REXONA DESODORANTE POWDER DRY 58GX12UN","CUPE","P08C16B","P08",4,1,"P23C07C (4)"],
+["A0000000326","LISTERINE ZERO 1LX6UN","CUPE","P08C17B","P08",857,5,"P30C04D (528), P36C06F (264), P08C17B (48)"],
+["A0000000954","AXE DESODORANTE AEROSOL DARK 97GX12UN","HOGA","P08C17B","P08",3,2,"R-INV (2), SCRAPCDS-JULIO (1)"],
+["A0020002321","REXONA DEO CLASSIC SCH 8GX10UNX12TI","","P08C17B","P08",9780,2,"P08C17B (9,770), SCRAPCDS-AGOSTO (10)"],
+["A0020000943","SEDAL SHAMP 2EN1 NEGR LUMI 9MLX28UNX24TI","HOGA","P08C18B","P08",20872,2,"P14C35C (20,832), SCRAPCDS-JULIO (40)"],
+["A0010000291","LISTERINE COOLMINT 500MLX12UN","CUPE","P08C19B","P08",8268,9,"P08C03E (1,020), P08C22E (1,020), P08C35E (1,020)"],
+["A0000002254","JBB SHAMPOO GOTAS BRILLO BMR 200MLX12UN","CUPE","P08C20B","P08",833,2,"P08C22C (672), P08C20B (161)"],
+["A0010000207","JBB ACEITE ORIGINAL BMR 100MLX12UN","CUPE","P08C20B","P08",1040,3,"P36C08D (780), P23C05C (256), P08C20B (4)"],
+["A0000003752","SCOTCH BRITE 2PK DU CERO RAYA RRP - 30UN","CUPE","P08C21B","P08",415,7,"P14C13D (120), P15C08D (120), P15C09D (120)"],
+["A0000001827","AXE DESODORANTE ICE CHILL 97GX12UN","HOGA","P08C22B","P08",5,2,"SCRAPCDS-JULIO (3), R-INV (2)"],
+["A0000003382","REXONA DESODORANTE V8 58GX12UN","CUPE","P08C22B","P08",400,1,"P23C06D (400)"],
+["A0000000009","DURACELL REGULAR TIRA AAA 2C 6UNX10TI","CUPE","P08C23A","P08",153300,20,"P08C09D (10,800), P08C30D (10,800), P08C35D (10,800)"],
+["A0000003751","SCOTCH BRITE 3PK DU ANATOMICA RRP - 20UN","CUPE","P08C23B","P08",456,12,"P14C20D (120), P15C35D (120), P14C31C (56)"],
+["A0000003852","LUBRIDERM HUMECTACIÓN DIARIA 946MLX12BX","CUPE","P08C24B","P08",1912,5,"P08C07E (480), P30C12C (480), P36C08F (480)"],
+["A0040000575","DOVE SHAMPOO OLEO 9MLX28UNX24TI","CUPE","P08C24B","P08",2074,3,"P08C24B (2,016), SCRAPCDS-JULIO (52), SCRAPCDS-AGOSTO (6)"],
+["A0000003424","EGO GEL POWER 100MLX24UN","CUPE","P08C27B","P08",2787,5,"P08C18C (1,152), P15C40D (1,152), P08C27B (480)"],
+["A0000002186","JBB SHAMPOO MANZANILLA BMR 400MLX12UN","CUPE","P08C28B","P08",26,2,"R-INV (24), P08C28B (2)"],
+["A0000002259","JBB SHAMPOO ORIGINAL BMR 100MLX12UN","CUPE","P08C28B","P08",13,2,"P08C28B (11), SCRAPCDS-AGOSTO (2)"],
+["A0000003984","LISTERINE CONTROL CALCULO 1000MLX6UN","CUPE","P08C29B","P08",66,2,"P08C28C (54), P08C29B (12)"],
+["A0010000306","LISTERINE ORIGINAL 500MLX12UN","CUPE","P08C29B","P08",49,1,"P08C29B (49)"],
+["A0000003380","AXE DESODORANTE FUSSION 97GX12UN","CUPE","P08C30B","P08",1,1,"SCRAPCDS-AGOSTO (1)"],
+["A0000003427","SEDAL SHAMP 2EN1 KERATINA 9MLX28UNX24TI","CUPE","P08C30B","P08",28,2,"SCRAPCDS-AGOSTO (14), SCRAPCDS-JULIO (14)"],
+["A0000002258","JBB SHAMPOO ORIGINAL BMR 400MLX12UN","CUPE","P08C31B","P08",3358,8,"P30C08B (1,296), P08C27E (1,116), P08C31B (330)"],
+["A0010002054","LISTERINE COOLMINT ZERO 180MLX12UN","CUPE","P08C31B","P08",3281,3,"P31C03D (2,112), P08C31B (797), P08C13D (372)"],
+["A0000000728","EGO GL ATTRAC 450MLX12UN","CUPE","P08C32B","P08",5,1,"SCRAPCDS-AGOSTO (5)"],
+["A0000003381","DOVE DESODORANTE ORQUIDEA 89GX12UN","CUPE","P08C32B","P08",420,1,"P08C32B (420)"],
+["A0000003850","LUBRIDERM HUMECTACIÓN DIARIA 400MLX12BX","CUPE","P08C33A","P08",1428,3,"P31C13D (1,032), P08C03C (324), R-INV (72)"],
+["A0000001563","LUBRIDERM REPARACION INTENSIVA 750MLX6UN","CUPE","P08C33B","P08",2969,6,"P08C25D (780), P08C33D (780), P08C46E (780)"],
+["A0000000212","JBB VASELINA 100GX12UN","CUPE","P08C34B","P08",1028,3,"P08C34B (590), P08C39E (432), P23C06D (6)"],
+["A0000000304","LISTERINE ORIGINAL 250MLX12UN","CUPE","P08C34B","P08",5858,5,"P30C07D (2,016), P30C10D (2,016), P31C01E (1,404)"],
+["A0000003982","JOHNSON BABY CREMA PINK 800MLX12UN","CUPE","P08C35A","P08",1704,3,"P08C04E (660), P08C19E (660), P08C08C (384)"],
+["A0000002021","DOVE AEROSOL AP CALENDULA  87GX12UN","HOGA","P08C35B","P08",420,1,"P08C35B (420)"],
+["A0000003422","SEDAL CREMA PEINAR KERATIN 9MLX28UNX24TI","CUPE","P08C35B","P08",18871,2,"P08C35B (18,816), SCRAPCDS-AGOSTO (55)"],
+["A0000003249","DURACELL OPTIMUM AA 1.5V 2UNX16PQ","CUPE","P08C36A","P08",8,1,"P22C20B (8)"],
+["A0000003584","BOAT  BLQ ADV PROTEC 100LTN 118MLX12UN","CUPE","P08C36B","P08",3168,3,"P21C01C (2,700), P08C36B (432), P22C20B (36)"],
+["A0000003586","BOAT  BLQ ADV PROTEC 50+LTN 180MLX12UN","CUPE","P08C36B","P08",2312,3,"P14C24C (1,200), P08C15C (576), P08C36B (536)"],
+["A0000003882","GELAT SHAMP 3EN1 DRAGONBA 2D 300MLX12UN","CUPE","P08C37A","P08",168,1,"P08C46C (168)"],
+["A0000003431","EGO GEL POWER 200MLX24UN","CUPE","P08C37B","P08",12,1,"P08C37B (12)"],
+["A0000000264","LUBRIDERM UV15 400MLX12UN","CUPE","P08C38B","P08",462,3,"P08C15E (312), P31C04C (144), P08C38B (6)"],
+["A0000002260","JBB SHAMPOO ORIGINAL BMR 750MLX12UN","CUPE","P08C38B","P08",2610,6,"P08C43E (780), P30C01D (780), P30C03D (780)"],
+["A0000000003","DURACELL REGULAR AA 2C 12UNX4PQ","CUPE","P08C40B","P08",7731,5,"P31C09D (5,184), P30C04B (1,968), P08C40B (338)"],
+["A0000001569","LISTERINE TOTAL CARE ZERO 250MLX12UN","CUPE","P08C40B","P08",557,4,"P08C34C (312), P25C04E (132), P08C40B (111)"],
+["A0010003441","JBB POLVO ORIGINAL 200GX24UN","CUPE","P08C41A","P08",797,3,"P31C02C (384), P36C04D (221), P31C13E (192)"],
+["A0000003983","LISTERINE ANTICARIES ZERO 500MLX12UN","CUPE","P08C41B","P08",5,1,"P08C41B (5)"],
+["A0000000300","LISTERINE COOLMINT ZERO 250MLX12UN","CUPE","P08C43B","P08",2817,5,"P08C23E (1,320), P08C44C (816), P08C50D (672)"],
+["A0010000236","JBB SHAMPOO MANZANILLA BMR 750MLX12UN","CUPE","P08C43B","P08",3603,10,"P08C32E (780), P30C11D (624), P31C09E (624)"],
+["A0000004544","EGO GEL ULTRA INTENSE 950MLX6UN","","P08C44B","P08",150,1,"P08C44B (150)"],
+["A0000001132","POND´S CREMA CLARANT GRASA 50GX24UN","HOGA","P08C45B","P08",97,2,"P08C45B (96), SCRAPCDS-JULIO (1)"],
+["A0000004321","H TROPIC BALSAMO LABIOS SPF 30 4GX24UN","CUPE","P08C45B","P08",6695,2,"P14C34C (5,039), P08C45B (1,656)"],
+["A0000001133","POND´S CREMA CLARANT B3 SECA 50GX24UN","HOGA","P08C46B","P08",26,1,"SCRAPCDS-AGOSTO (26)"],
+["A0000002019","REXONA AP DEO AP V8 90GX12UN","HOGA","P08C46B","P08",4,2,"SCRAPCDS-AGOSTO (2), SCRAPCDS-JULIO (2)"],
+["A0000003421","SEDAL CREM PEINAR LIS PERF 9MLX28UNX24TI","CUPE","P08C46B","P08",10,1,"SCRAPCDS-AGOSTO (10)"],
+["A0000003583","BOAT  BLQ DRY BLNC SPRT50+SPR 170MLX12UN","CUPE","P08C47B","P08",1424,5,"P30C08D (1,284), P08C47B (78), P23C02D (60)"],
+["AP000003637","SCHICK XTREME3 PIEL SENSIBLE 6UNX24TI","CUPE","P08C47B","P08",5184,2,"P08C47B (2,745), P14C30D (2,439)"],
+["A0000004107","GELAT KIT MAQUILLAJE XXL UNICORNIO 6UN","CUPE","P08C49A","P08",6,1,"P23C02C (6)"],
+["A0010001545","TANG FRUIT PUNCH 13GX12UNX12BX","CONF","P09C07A","P09",304,7,"P20C25E (180), P21C42F (48), P23C12E (36)"],
+["A0000004486","BUBULUBU SNOW 20GX12UNX14PQ","","P09C14A","P09",168,1,"P20C19E (168)"],
+["A0000003080","MILLOWS CREAM 250GX15BS","ALIM","P09C15A","P09",60,3,"P20C34B (30), P20C31B (15), P21C34C (15)"],
+["A0000000171","TIPITIN CERVECITA 12GX24UNX15BS","ALIM","P09C16A","P09",1,1,"SCRAPCDS-AGOSTO (1)"],
+["A0010002153","TRIDENT 14S BUBBLEGUM 26.6GX12UNX12BX","","P09C17A","P09",112,5,"P20C41C (96), P21C37B (12), P23C08B (2)"],
+["A0000000026","XTIME GUM MENTA 3.7GX100UNX12BX","ALIM","P09C18A","P09",3962,8,"P09C24C (1,152), P09C27C (1,152), P09C10D (768)"],
+["A0000004539","FROOT LOOPS BOLSITA MALV 18GX12UNX5TI","","P10C01A","P10",29844,9,"P10C09E (7,200), P12C36C (7,200), P13C42B (7,140)"],
+["A0000002318","BOCA2 NATURAL FRITURAS BOLSITA 107GX30BX","ALIM","P10C03A","P10",4829,6,"P20C30E (1,650), P20C40E (1,205), P10C02E (1,110)"],
+["A0000004507","Caja Economix CK, CF, FL y ZUC 1x3080g","","P10C06A","P10",8,1,"P21C45F (8)"],
+["A0000004183","HEINZ CIRUELAS PASAS 113GX24UN","","P10C16A","P10",48,2,"P22C21B (24), P23C07B (24)"],
+["A0000004245","KRAFT ZESTY ITALIAN DRESSING 8OZX9UN","","P10C17A","P10",720,2,"P20C41C (711), P22C21B (9)"],
+["A0000002787","DEL MONTE TETRA MELOCOTON 200MLX24UN","ALIM","P10C28A","P10",8,2,"SCRAPCDS-JULIO (5), SCRAPCDS-AGOSTO (3)"],
+["A0000002436","PINITO LECHE ENTE VITAM 3.5%G 473MLX12UN","ALIM","P10C31A","P10",5,2,"SCRAPCDS-JULIO (4), P20C38B (1)"],
+["A0010001716","CHOCO KRISPIS CAJA 220GX28BX","","P10C34A","P10",34,3,"SCRAPCDS-JULIO (24), P23S01A (7), SCRAPCDS-AGOSTO (3)"],
+["A0000003863","DEL FRUTAL MANZANA LATA 330ML X24UN","ALIM","P10C36A","P10",310,3,"SCRAPCDS-JULIO (183), SCRAPCDS-AGOSTO (103), P23C07C (24)"],
+["A0000002242","RAPTOR LATA 350MLX24UN","ALIM","P10C37A","P10",113424,7,"RAMPA-10 (67,176), PISO-B1 (23,928), P32C16B (20,688)"],
+["A0000003933","DEL MONTE ALOE VERA PET 500MLX20UN","ALIM","P10C41A","P10",1500,1,"RAMPA-10 (1,500)"],
+["A0000000717","NATURAS SALSA TOMATE RANCHERA 90GX8BX","HOGA","P10C44A","P10",9,2,"SCRAPCDS-JULIO (8), SCRAPCDS-AGOSTO (1)"],
+["A0000002439","DOS PINOS LECHE DESCREMADA 0%G 1LX12UN","ALIM","P10C47A","P10",95,3,"P23C08B (84), SCRAPCDS-JULIO (8), SCRAPCDS-AGOSTO (3)"],
+["A0000001746","SPECIAL K NUT ARAN ALME BAR 33GX5UNX12BX","ALIM","P11C18A","P11",604,2,"P10C45B (600), P20C24B (4)"],
+["A0000002793","MAYOLIVA MAYONE LIGHT DOY PACK 200GX12UN","ALIM","P11C19A","P11",637,2,"P10C48B (636), SCRAPCDS-JULIO (1)"],
+["A0000004267","KRAFT CLASSIC RANCH FAT FREE  16OZX6UN","","P11C21A","P11",1512,3,"P21C30C (1,002), P21C20E (504), P22C16C (6)"],
+["A0000002788","DEL MONTE TETRA MANZANA 200MLX24UN","ALIM","P11C28A","P11",8,1,"SCRAPCDS-JULIO (8)"],
+["A0000003838","LULA LECHE SABORIZA CHOCOL 200MLX9BXX3PQ","ALIM","P11C29A","P11",114,1,"P20C30C (114)"],
+["A0000002777","REVIVE BOTELLA NARANDINA 600MLX12UN","ALIM","P11C32A","P11",3,2,"SCRAPCDS-JULIO (2), SCRAPCDS-AGOSTO (1)"],
+["A0000002783","DEL MONTE LATA MANZANA 330MLX24UN","ALIM","P11C36A","P11",33,3,"P23C07C (24), SCRAPCDS-JULIO (7), SCRAPCDS-AGOSTO (2)"],
+["A0000002433","PINITO LECHE ENTERA EN POLVO 350GRX24UN","ALIM","P11C37A","P11",7,1,"P20C38B (7)"],
+["A0000004270","KRAFT CARAMELS 11OZX12UN","","P11C38A","P11",34,1,"P23C07C (34)"],
+["A0000004279","LEA&PERRI WORCESTERSHIRE SAUCE 15OZX12UN","","P11C41A","P11",1872,7,"P10C17B (864), P11C06B (864), P22C20C (60)"],
+["A0000003860","RAPTOR LATA ORIGINAL 473MLX24UN","ALIM","P11C46A","P11",941,3,"SCRAPCDS-JULIO (760), SCRAPCDS-AGOSTO (175), P23S01A (6)"],
+["A0000002642","DOS PINOS LECHE EN POLVO 2.2KGX6BS","ALIM","P11C49A","P11",319,3,"P10C11C (198), P20C38B (120), SCRAPCDS-AGOSTO (1)"],
+["A0010002434","DOS PINOS POLVO 110GX12UN","ALIM","P12C07A","P12",7,2,"SCRAPCDS-JULIO (6), SCRAPCDS-AGOSTO (1)"],
+["A0000004504","KELLOGGS JUSTICE L 130GX14UN","","P12C12A","P12",798,4,"P10C22B (448), P20C36C (196), P21C43B (121)"],
+["A0000002940","DOS PINOS LECHE CONDENSADA 397GX12UN","ALIM","P12C19A","P12",27,2,"SCRAPCDS-JULIO (25), SCRAPCDS-AGOSTO (2)"],
+["A0010002840","REGIA SALSA PIC CHIRMOL SA 35GX12UNX12TI","ALIM","P12C23A","P12",391,3,"P20C37B (363), SCRAPCDS-JULIO (27), SCRAPCDS-AGOSTO (1)"],
+["A0010002635","CORN FLAKES CAJA 370GX18BX","","P12C24A","P12",7863,4,"P28C10B (7,848), SCRAPCDS-JULIO (10), SCRAPCDS-AGOSTO (3)"],
+["A0000002779","REVIVE BOTELLA LIMA LIMON 600MLX12UN","ALIM","P12C29A","P12",9,2,"SCRAPCDS-AGOSTO (5), SCRAPCDS-JULIO (4)"],
+["A0010001942","CORN FLAKES CAJA 500GX16BX","ALIM","P12C30A","P12",30903,7,"PISO-B1 (30,743), P20C31B (80), SCRAPCDS-JULIO (38)"],
+["A0000002785","DEL MONTE LATA PERA 330MLX24UN","ALIM","P12C31A","P12",3,2,"SCRAPCDS-AGOSTO (2), SCRAPCDS-JULIO (1)"],
+["A0000003868","DEL FRUTAL PERA LATA 330MLX24UN","ALIM","P12C32A","P12",56,2,"SCRAPCDS-JULIO (33), SCRAPCDS-AGOSTO (23)"],
+["A0000003166","CREMY MARGARI MEDIA BARRA 400GX10UNX24BX","ALIM","P12C36A","P12",45,3,"P21C40B (24), SCRAPCDS-JULIO (11), P20C37B (10)"],
+["A0000000621","CAÑA REAL AZUCAR 110GX100UN","ALIM","P12C38A","P12",10394,4,"P20C36B (9,850), P20C29B (403), SCRAPCDS-AGOSTO (117)"],
+["A0000002590","CHOCO ZUCARITAS CAJA 480GX21BX","ALIM","P12C42A","P12",102,1,"P20C17B (102)"],
+["A0000002438","DELACTOMY LECHE DESLACTOSADA 2%G 1LX12UN","ALIM","P12C43A","P12",93,4,"SCRAPCDS-JULIO (73), P20C38B (17), SCRAPCDS-AGOSTO (2)"],
+["A0000002319","BOCA2 QUESO FRITURAS BOLSITA 107GX30BX","ALIM","P13C04A","P13",5861,10,"P12C19D (1,200), P12C36D (1,200), P13C48E (1,200)"],
+["A0000001747","SPECIAL K NUT CHOCO BARRA 33GX5UNX12BX","ALIM","P13C10A","P13",5,1,"SCRAPCDS-JULIO (5)"],
+["A0000001723","FROOT LOOPS BOLSA 110GX6BSX5TI","ALIM","P13C14A","P13",22,2,"P22S01A (18), RET-VENCIDOS (4)"],
+["A0010001638","NATURAS SALSA TOMATE RANCHERA 180GX24UN","HOGA","P13C17A","P13",79,3,"SCRAPCDS-JULIO (47), P23C07B (24), SCRAPCDS-AGOSTO (8)"],
+["A0000004553","KRAFT HEINZ ECONOPACK 3PACKX4UN","","P13C18A","P13",3189,11,"P20C51B (504), P21C39D (482), P21C40D (400)"],
+["A0000002790","DEL MONTE TETRA PIÑA 200MLX24UN","ALIM","P13C19A","P13",15,2,"SCRAPCDS-JULIO (12), SCRAPCDS-AGOSTO (3)"],
+["A0000001726","ZUCARITAS BOLSA 130GX6BSX8TI","ALIM","P13C23A","P13",12,2,"P21C37B (8), SCRAPCDS-JULIO (4)"],
+["A0000000950","REXONA DESODORANTE ROLL ON V8 30MLX6BX","HOGA","P13C24A","P13",1,1,"SCRAPCDS-AGOSTO (1)"],
+["A0000001715","CHOCO KRISPIS BOLSA 150GX6BSX8TI","ALIM","P13C28A","P13",1,1,"SCRAPCDS-JULIO (1)"],
+["A0000002784","DEL MONTE LATA MELOCOTON 330MLX24UN","ALIM","P13C32A","P13",10,2,"SCRAPCDS-AGOSTO (6), SCRAPCDS-JULIO (4)"],
+["A0000003864","DEL FRUTAL MELOCOTON LATA 330ML X24UN","ALIM","P13C33A","P13",548,2,"SCRAPCDS-JULIO (480), SCRAPCDS-AGOSTO (68)"],
+["A0000001716","CHOCO KRISPIS CAJA 290GX28BX","ALIM","P13C38A","P13",28,1,"P20C30C (28)"],
+["A0000001771","CACEROLA FRIJOL NEGRO ENTERO 29OZX12UN","ALIM","P13C40A","P13",865,2,"P27C02B (853), P20C29B (12)"],
+["A0000002444","PINITO LECHE ENTE VITAMIN 3.5G 1LX12UN","ALIM","P13C44A","P13",499,5,"P21C35B (432), SCRAPCDS-JULIO (30), R-INV (24)"],
+["A0000003196","MOLINO ACEITE COCINERO NORMAL 375MLX12UN","ALIM","P14C17A","P14",5,2,"P20C37B (4), SCRAPCDS-JULIO (1)"],
+["A0000002791","DEL MONTE TETRA MANGO 200MLX24UN","ALIM","P14C20A","P14",5,2,"SCRAPCDS-JULIO (3), SCRAPCDS-AGOSTO (2)"],
+["A0000004263","KRAFT MAC&CHEESE THREE CHEES 7.25OZX24UN","","P14C23A","P14",2280,4,"P12C07D (2,184), P22C21B (48), P22C17C (24)"],
+["A0010001715","CHOCO KRISPIS BOLSA 135GX48UN","","P14C31A","P14",11671,9,"P12C38D (3,456), P11C35D (1,728), P12C44D (1,728)"],
+["A0000002786","DEL MONTE LATA PIÑA 330MLX24UN","ALIM","P14C32A","P14",20,2,"SCRAPCDS-JULIO (19), SCRAPCDS-AGOSTO (1)"],
+["A0000003866","DEL FRUTAL VEGETALES LATA 330MLX24UN","ALIM","P14C34A","P14",112,2,"SCRAPCDS-JULIO (92), SCRAPCDS-AGOSTO (20)"],
+["A0000001278","KNORR SOPA GALLIN CONCHITA 54GX12UNX12BX","HOGA","P14C35A","P14",432,1,"P23C03B (432)"],
+["A0000004411","CORN FLAKES CAJA 610GX16BX","","P14C40A","P14",8431,22,"P12C24D (768), P13C25D (768), P27C06E (768)"],
+["A0000002441","CORONADO LECHE ENTERA 3.5% GRASA 1LX12UN","ALIM","P14C45A","P14",46,4,"SCRAPCDS-AGOSTO (28), SCRAPCDS-JULIO (16), P23C07B (1)"],
+["A0000003198","MOLINO ACEITE COCINERO NORMAL 2500MLX6UN","ALIM","P14C49A","P14",8,2,"SCRAPCDS-AGOSTO (6), SCRAPCDS-JULIO (2)"],
+["A0010001640","NATURAS SALSA DE TOMATE QUESO 180GX24UN","HOGA","P15C17A","P15",3,2,"SCRAPCDS-JULIO (2), SCRAPCDS-AGOSTO (1)"],
+["A0000002795","MAYOLIVA MAYONE LIGHT DOY PACK 800GX6UN","ALIM","P15C19A","P15",3,1,"P20C37B (3)"],
+["A0000004124","EMILY TOMATE GAL 4000GX4UN","","P15C29A","P15",192,1,"P21C31F (192)"],
+["A0000003865","DEL FRUTAL PIÑA LATA 330MLX24UN","ALIM","P15C34A","P15",154,3,"SCRAPCDS-JULIO (93), SCRAPCDS-AGOSTO (37), P01S01A (24)"],
+["A0000002982","PACIFICO ATUN TROCITOS VEGETAL 140GX48UN","ALIM","P15C35A","P15",2,1,"SCRAPCDS-AGOSTO (2)"],
+["A0000001272","KNORR SOP GALLI CRIO FIDEO 54GX12UNX12BX","HOGA","P15C36A","P15",1,1,"SCRAPCDS-JULIO (1)"],
+["A0010002435","NUTRICORONADO MEZCLA DE LECHE 1LX12UN","","P15C45A","P15",9578,19,"P20C46B (1,080), P20C22D (1,013), P21C27C (900)"],
+["A0000003194","MOLINO ACEITE COCINER NORMAL 1250MLX12UN","ALIM","P15C46A","P15",2,1,"SCRAPCDS-JULIO (2)"],
+["A0000004398","ALIMIAU ALIM HUMEDO POLLO 85GX20UN","","P16C02A","P16",1321,2,"R-INV (1,320), SCRAPCDS-AGOSTO (1)"],
+["A0000004394","RUFOPRO ALIM HUMEDO PAVO 100GX20UN","","P16C03A","P16",819,2,"R-INV (812), SCRAPCDS-JULIO (7)"],
+["A0000004393","RUFOPRO ALIM HUMEDO POLLO 100GX20UN","","P16C04A","P16",1825,2,"R-INV (1,824), SCRAPCDS-AGOSTO (1)"],
+["A0000003992","ALIMIAU MAR Y TIERRA ADULTO 420GX12UN","MASC","P16C05A","P16",1,1,"SCRAPCDS-JULIO (1)"],
+["A0010000595","RAMBOCAN CACHORRO 400GX12UN","MASC","P16C06A","P16",18381,32,"P01C04E (720), P01C05D (720), P01C06C (720)"],
+["A0010000594","RAMBOCAN ADULTO 420GX12UN","MASC","P16C07A","P16",14266,24,"P01C15E (1,440), P01C03E (720), P01C11D (720)"],
+["A0020000802","ALIMIAU ADULTO 420GX12UN","MASC","P16C08A","P16",8,2,"SCRAPCDS-JULIO (5), SCRAPCDS-AGOSTO (3)"],
+["A0010000331","RUFO ADULTO 454GX12UN","MASC","P16C09A","P16",28716,41,"P01C07E (1,440), P01C20E (1,440), P01C02C (720)"],
+["A0000001253","RUFO CACHORRO 8.8LBX5BS","MASC","P16C13A","P16",473,7,"P16C06D (120), P16C46C (100), P16C49D (85)"],
+["A0000000160","RUFO ADULTO 4.4LBX10UN","MASC","P16C14A","P16",91,2,"P17C47B (90), P23C07C (1)"],
+["A0000004457","ALIMAX CACHORRO 44LB","","P16C15A","P16",19,3,"P17C42B (12), P16C45B (4), P17C02B (3)"],
+["A0010003988","ALIMAX ADULTO 44LB","","P16C17A","P16",11,2,"P01C06B (8), P21C17D (3)"],
+["A0000000119","RUFO CACHORRO DE 44LB","MASC","P16C18A","P16",519,27,"P01C19E (38), P01C13D (21), P01C14C (21)"],
+["A0000000122","RUFO ADULTO 44LB","MASC","P16C19A","P16",355,22,"P01C05E (21), P01C19C (21), P16C11D (21)"],
+["A0010003989","ALIMAX ADULTO 100LB","","P16C21A","P16",84,11,"P01C11D (12), P01C14B (12), P01C14C (12)"],
+["A0000001708","RUFO CACHORRO 100LB","MASC","P16C23A","P16",434,41,"P01C16B (12), P01C17B (12), P01C18B (12)"],
+["A0000000120","RUFO ADULTO 100LB","MASC","P16C24A","P16",888,77,"R-INV (50), P01C09E (12), P16C05D (12)"],
+["A0000003990","ALIMIAU MAR Y TIERRA ADULTO 3LBX10UN","MASC","P16C29A","P16",56,3,"P20C31C (35), P20C42B (20), P23C07C (1)"],
+["A0000004399","RUFOPRO TALLAS PEQUEÑAS 4.4LBX10UN","","P16C30A","P16",300,2,"P16C31B (150), P20C31C (150)"],
+["A0000004400","RUFOPRO TALLAS PEQUEÑAS 8.8LBX5UN","","P16C31A","P16",165,2,"P20C42B (115), P16C36B (50)"],
+["A0000000161","RUFO CACHORRO 4.4LBX10UN","MASC","P16C32A","P16",80,1,"P16C44C (80)"],
+["A0000001252","RUFO ADULTO 8.8LBX5BS","MASC","P16C33A","P16",177,4,"P16C44D (75), P17C51C (65), P01C03B (35)"],
+["A0000000371","RAMBOCAN CACHORRO 44LB","MASC","P16C34A","P16",13,2,"P16C48C (12), P01C07B (1)"],
+["A0000003398","RAMBOCAN ADULTO 44LB","MASC","P16C35A","P16",17,3,"P16C32D (9), P16C03C (7), SCRAPCDS-AGOSTO (1)"],
+["A0000004456","ALIMAX CACHORRO 100LB","","P16C36A","P16",35,5,"P16C22D (10), P21C17D (10), P17C19B (8)"],
+["A0000002959","SENSATIONS TOALLA DIURNA ALAS 10UNX24PQ","HOGA","P17C03A","P17",2304,1,"P15C22D (2,304)"],
+["A0000004451","SCHICK 2 1UNX24UNX6TI","","P17C04A","P17",176688,21,"P14C43D (13,824), P14C45C (13,824), P15C10B (13,824)"],
+["A0000002343","SILUETA SUPER ABSORVENTES ALAS 10UNX24PQ","HOGA","P17C05A","P17",4608,1,"RAMPA-09 (4,608)"],
+["A0000002344","SILUETA EXTRA LARGA NOCTURNA+2 8UNX24PQ","HOGA","P17C06A","P17",5185,3,"RAMPA-06 (3,456), RAMPA-09 (1,728), SCRAPCDS-JULIO (1)"],
+["A0000002463","FAMILYS TOALLA HUM BEBE/ADULTO 15UNX24PQ","HOGA","P17C07A","P17",4320,2,"P14C10C (2,304), P14C09C (2,016)"],
+["A0000004568","POM POM PAÑAL REC NAC 1UNX40UNX6PQ","","P17C08A","P17",42,1,"P15C46B (42)"],
+["A0000003130","SILVER ROPA INTERIOR DESECH G 10UNX10PQ","HOGA","P17C10A","P17",130,1,"P14C41C (130)"],
+["A0010002775","POMPOM PLUS TOALLA HUM EXTRA G 80UNX12BX","HOGA","P17C11A","P17",3420,6,"P14C06C (600), P15C08C (600), P15C36C (600)"],
+["A0000004570","POM POM PAÑAL G 1UNX50UNX6PQ","","P17C12A","P17",7,1,"SCRAPCDS-JULIO (7)"],
+["A0000002181","TOTITOS TOALLITA HUMEDA 80 WIPE 1UNX12PQ","HOGA","P17C13A","P17",48,1,"R-INV (48)"],
+["A0000002765","POM POM PAÑAL M 1UNX50UNX6PQ","HOGA","P17C14A","P17",1,1,"SCRAPCDS-AGOSTO (1)"],
+["A0000002772","POM POM PLUS PAÑAL XG 1UNX50UNX6PQ","HOGA","P17C15A","P17",9,3,"P15C43B (3), R-INV (3), SCRAPCDS-JULIO (3)"],
+["A0020002177","TOTITOS PAÑAL BLANCO P 1UNX54UNX6PQ","HOGA","P17C16A","P17",1,1,"SCRAPCDS-JULIO (1)"],
+["A0020002179","TOTITOS PAÑAL BLANCO G 1UNX50UNX6PQ","HOGA","P17C18A","P17",6,2,"SCRAPCDS-JULIO (5), SCRAPCDS-AGOSTO (1)"],
+["A0020002180","TOTITOS PAÑAL BLANCO XG 1UNX50UNX6PQ","HOGA","P17C19A","P17",2,1,"SCRAPCDS-JULIO (2)"],
+["A0000002471","SILVER PAÑAL ADULTO G 1UNX10UNX10PQ","HOGA","P17C20A","P17",1680,5,"RAMPA-06 (1,080), P14C51C (240), P14C08C (120)"],
+["A0000002470","SILVER PAÑAL ADULTO XG 1UNX10UNX10PQ","HOGA","P17C21A","P17",1340,12,"P14C04C (120), P14C05D (120), P14C40C (120)"],
+["A0000002466","FAMILYS CHOICE PAÑAL XL 1UNX50UNX6PQ","HOGA","P17C22A","P17",6,1,"R-INV (6)"],
+["A0000002468","FAMILYS CHOICE PAÑAL M 1UNX50UNX6PQ","HOGA","P17C23A","P17",706,9,"P14C11D (120), P14C12D (120), P14C16D (120)"],
+["A0000002467","FAMILYS CHOICE PAÑAL L 1UNX50UNX6PQ","HOGA","P17C24A","P17",6,1,"P15C43B (6)"],
+["A0000004575","POM POM PAÑAL AMA S 1UNX54UNX6PQ","","P17C29A","P17",24,2,"P15C38B (21), R-INV (3)"],
+["A0000004080","FAMI CHOICE PAÑAL REC NAC 1UNX40UNX6PQ","HOGA","P17C30A","P17",12,2,"P15C43B (6), R-INV (6)"],
+["A0000004569","POM POM PAÑAL P 1UNX54UNX6PQ","","P17C31A","P17",1,1,"SCRAPCDS-JULIO (1)"],
+["A0000004314","FAMILY´S CHOICE JABON EN BARRA 90GX48UN","HOGA","P17C32A","P17",2768,2,"P14C42B (2,752), R-INV (16)"],
+["A0000004077","FAMI CHOICE PAÑAL PULL XXL 1UNX25UNX6PQ","HOGA","P17C33A","P17",12,2,"P15C38B (11), SCRAPCDS-JULIO (1)"],
+["A0000003128","SILVER TOALLAS HUMEDAS ADULTO 40UNX12PQ","HOGA","P17C35A","P17",246,1,"P14C42B (246)"],
+["A0000004078","FAMI CHOICE PAÑAL PULL XL 1UNX25UNX6PQ","HOGA","P17C37A","P17",12,2,"P15C46B (6), R-INV (6)"],
+["A0000003400","SILVER PROTECTORES DE CAMA 10UNX8PQ","HOGA","P17C38A","P17",80,2,"P14C38B (40), R-INV (40)"],
+["A0000003633","SCHICK SIST INTUITION P NOURISHMENT 1CT","CUPE","P17C40A","P17",2904,3,"P15C12C (1,152), P15C32C (1,152), P14C37B (600)"],
+["A0000002469","FAMILYS CHOICE PAÑAL P 1UNX54UNX6PQ","HOGA","P17C42A","P17",114,1,"P14C29C (114)"],
+["A0000004576","POM POM PAÑAL AMA M 1UNX50UNX6PQ","","P17C43A","P17",132,2,"P15C38C (66), R-INV (66)"],
+["A0000002770","POM POM PLUS PAÑAL M 1UNX50UNX6PQ","HOGA","P17C44A","P17",891,10,"P14C03D (120), P14C33C (120), P14C48C (120)"],
+["A0000004571","POM POM PAÑAL XG 1UNX50UNX6PQ","","P17C46A","P17",3,1,"SCRAPCDS-AGOSTO (3)"],
+["A0000004578","POM POM PAÑAL AMA XG 1UNX50UNX6PQ","","P17C47A","P17",6,1,"P14C35B (6)"],
+["A0000004577","POM POM PAÑAL AMA G 1UNX50UNX6PQ","","P17C48A","P17",1,1,"SCRAPCDS-JULIO (1)"],
+["A0000003579","BONGO PADS MASCOTA DESECHA 30UNX12PQ","MASC","P17C49A","P17",18,1,"RET-VENCIDOS (18)"],
+["A0000000857","PHILIPS ECO TWIST LUZ BLAN 12W/50WX12UN","HOGA","P18C01B","P18",36,1,"P22C16D (36)"],
+["A0000002693","PHILIPS LED HIGH LUMEN 40W/ 65W 1UNX6UN","HOGA","P18C01B","P18",4,1,"P18C01B (4)"],
+["A0000003709","POST IT NOTA SR WAN 3X3  1UN8UNX4UN","HOGA","P18C01B","P18",1728,2,"P18C34D (1,528), P18C01B (200)"],
+["A0000002096","SCOTCH 1PK CELULOSA DU 420E VE/AM - 24UN","HOGA","P18C02B","P18",1489,3,"P14C26D (768), P18C02B (697), P22C23C (24)"],
+["A0000002094","SCOTCH 2PK METALICA 1UNX36UN","HOGA","P18C03A","P18",68,1,"P23C03C (68)"],
+["A0000002090","SCOTCH 1PK ESPONJA DU EXTREMA 1UNX36UN","HOGA","P18C03B","P18",1594,4,"P19C17B (792), P19C45D (432), P18C03B (304)"],
+["A0000003686","NEXCARE VENDITA PLASTICA TRANSP  - 12UN","HOGA","P18C03B","P18",1464,3,"P14C15D (1,296), P18C03B (144), P23C07D (24)"],
+["A0000000880","PHILIPS BOMB INCANDESCENT 100WX10UNX10BS","HOGA","P18C04A","P18",3480,1,"P23C18E (3,480)"],
+["A0000002079","SCOTCH 2PK FIBRA EXTREMA 1UNX24","HOGA","P18C04B","P18",2334,3,"P14C28B (1,608), P18C04B (678), P23C03C (48)"],
+["A0000002095","SCOTCH LIMPIADOR DE BOTELLAS 1UNX30UN","HOGA","P18C05B","P18",1316,3,"P18C05B (836), P22C24C (450), P23C10E (30)"],
+["A0000002074","SCOTCH FIBRA LA MAQUINA 1UNX144UN","HOGA","P18C06B","P18",2160,4,"P22C19D (1,296), P18C06B (432), P22C23D (288)"],
+["A0000003708","POST IT NOTA SUMMER JOY 3X3  1UN6UNX8UN","HOGA","P18C06B","P18",1042,3,"P18C06B (1,014), R-INV (18), P23C06D (10)"],
+["A0010002033","PHILIPS LED AHORRA BLANC 12W 1UNX3UNX4PQ","HOGA","P18C07B","P18",262,2,"P18C07B (210), P18C47C (52)"],
+["A0000004327","PHILIPS LED HIGH LUMEN 30W 1UNX6UN","HOGA","P18C08B","P18",6,1,"P18C08B (6)"],
+["A0000003699","NEXCARE VENDITAS  MAX HOLD 15U 1UNX12UN","HOGA","P18C09B","P18",1079,3,"P18C51B (503), P18C09C (408), P18C09B (168)"],
+["A0000003664","SCOTCH GOMA EN BARRA 40G  1UNX72UN","HOGA","P18C10B","P18",12,1,"P18C10B (12)"],
+["A0000003676","COMMAND GANCHO MEDIANO TRANSPARE 6UNX6UN","HOGA","P18C10B","P18",1944,2,"P20C10C (1,728), P18C10B (216)"],
+["A0000003707","COMMAND GANCHO BLANCO GIGAN 15LB 4UNX6UN","HOGA","P18C10B","P18",528,1,"P18C10B (528)"],
+["A0000003665","3M CINTA MASKING BLANCO 18MMX40M - 48UN","HOGA","P18C11B","P18",5061,4,"P19C13E (4,794), P18C11B (263), R-INV (3)"],
+["AP000002089","SCOTCH 1PK ESPON CERO RAYA BAÑO 12UNX6BS","HOGA","P18C11B","P18",66,1,"P18C11B (66)"],
+["A0000002101","SCOTCH 1PK PAÑO 3M ABSORBENTE 1UNX60PQ","HOGA","P18C12B","P18",2591,4,"P15C27D (1,380), P18C12B (1,116), P22C24C (60)"],
+["A0000002423","PONJITA ESPON EXFOLIACION PROFUND - 24UN","HOGA","P18C13B","P18",72,1,"P23C06C (72)"],
+["A0000003700","NEXCARE VENDITA ADVAN HEALING 6UN - 12UN","HOGA","P18C13B","P18",2999,2,"P15C34C (2,988), P18C13B (11)"],
+["A0010003275","PHILIPS LED AHORRAD L.CALIDA12W 1UNX20UN","HOGA","P18C13B","P18",3375,3,"P15C46D (1,800), P15C01B (1,355), P18C13B (220)"],
+["A0000002075","SCOTCH 1PK FIBRA NARAN CERO RAYA - 144UN","HOGA","P18C14B","P18",2440,2,"P18C14B (1,288), P14C43C (1,152)"],
+["A0000002077","SCOTCH 2PK FIBRA CERO RAYAS BAÑO - 72UN","HOGA","P18C15B","P18",1951,3,"P14C34B (1,512), P15C22C (360), P18C15B (79)"],
+["A0000003675","COMMAND GANCHO MINI LLAVES TRANS 6UNX6UN","HOGA","P18C15B","P18",4026,6,"P18C03C (1,188), P20C08C (864), P14C51B (756)"],
+["A0000002078","SCOTCH 1PK FIBRA EXTREMA 1UNX36UN","HOGA","P18C16B","P18",180,1,"P14C47B (180)"],
+["A0000003072","SCOTCH PROTECTORES GABINETES - 6UNX4BX","HOGA","P18C16B","P18",599,2,"P18C16B (575), P23C10E (24)"],
+["A0000002112","SCOTCH GUANTE COCINA T-L ROSA - 6UNX4BS","HOGA","P18C17B","P18",2890,3,"P14C47C (2,064), P18C17B (803), P20C07B (23)"],
+["A0000002120","SCOTCH RODILLO QUITAPELU MASCOTAS - 12UN","HOGA","P18C17B","P18",3102,5,"P14C17C (1,536), P15C34D (1,500), P20C20B (36)"],
+["A0000000454","REDI SHINE ESPONJA MILAGROSA 2UNX12BX","HOGA","P18C18B","P18",5570,5,"P20C11F (2,509), P25C04E (2,016), P18C28F (1,009)"],
+["A0000002575","FANAL CANDADO HIERRO 20MMX6PQX12BX","HOGA","P18C18B","P18",3188,2,"P19C36B (2,165), P18C18B (1,023)"],
+["A0000003073","MOUNT CINTA MONTAJE INDOOR 6.8KGX6UNX4BS","HOGA","P18C18B","P18",1517,2,"P15C19B (1,128), P18C18B (389)"],
+["A0000003658","SCOTCH BRITE PAÑO ABSORBENTE 6UN  - 36PQ","HOGA","P18C18B","P18",612,4,"P15C24B (360), P23C10E (108), P18C18B (72)"],
+["A0000003104","SCOTCH PROTECTOR FIELTRO 32PZ - 6UNX4BX","HOGA","P18C19B","P18",240,1,"P18C19B (240)"],
+["A0000003678","SCOTCH CINTA MOUNTING TAPE EXTREM - 24UN","HOGA","P18C19B","P18",2328,3,"P19C18C (1,800), P18C19B (504), R-INV (24)"],
+["A0000003673","SCOTCH TIJERA MULTIPROPOSITOS 8  - 36UN","HOGA","P18C20B","P18",1229,1,"P18C20B (1,229)"],
+["A0000003674","SCOTCH CINTA DE MONTAJE INTERIOR - 24UN","HOGA","P18C21B","P18",3106,3,"P14C18D (2,760), P15C34B (216), P18C21B (130)"],
+["A0000003711","POST IT NOTA PASTEL 2X2  1UN6UNX4UN","HOGA","P18C21B","P18",342,1,"P18C21B (342)"],
+["AP000002076","SCOTCH 1PK FIB CERO RAYAS BAÑO 24UNX6BS","HOGA","P18C22B","P18",58,2,"P18C22B (56), P23C07B (2)"],
+["A0010002750","PHILIPS LED AHORRA LZ BLANC 14W 1UNX20UN","HOGA","P18C23A","P18",21103,6,"P15C32D (4,320), P18C20F (4,320), P20C03F (4,320)"],
+["A0000003105","SCOTCH REPUES DISHWAND 2PK SIN RA - 12UN","HOGA","P18C23B","P18",967,3,"P14C35B (792), P18C23B (163), P23C03C (12)"],
+["A0000003660","SCOTCH GUANTE COCINA ROSA M  1UNX24UN","HOGA","P18C24B","P18",8078,5,"P15C33B (3,312), P15C36C (3,288), P14C50D (1,320)"],
+["A0000002114","SCOTCH GUANTES LAVANDERIA S 1UNX6UNX4BS","HOGA","P18C27B","P18",2908,5,"P18C11C (1,152), P18C17C (1,032), P18C27B (676)"],
+["A0000002031","PHILIPS LED AFFORDABLE BLANC 11W/75W 6UN","HOGA","P18C28B","P18",683,2,"P18C28B (605), P18C47C (78)"],
+["A0000003710","POST IT NOTA BRT CUBE 2X2  1UN6UNX4UN","HOGA","P18C28B","P18",629,2,"P18C28B (509), P15C34B (120)"],
+["A0000002131","SCOTCH TIJERA DE HOGAR 8 1UNX6UNX6BX","HOGA","P18C29B","P18",93,1,"R-INV (93)"],
+["A0000002138","SCOTCH 2PK SUPER GLUE 1UNX6UNX6BX","HOGA","P18C29B","P18",7504,5,"P15C34B (3,996), P18C29B (2,623), P18C40C (792)"],
+["A0000003662","DISPENSADOR 3M CINTA SCOTCH NEGRO - 12U","HOGA","P18C29B","P18",23,1,"P18C29B (23)"],
+["A0000002147","NEXCARE COMPRESA REUSABLE FRIO/CA - 12UN","HOGA","P18C30B","P18",545,3,"P18C30B (465), P23C07D (56), P23C02D (24)"],
+["A0000002104","SCOTCH PAÑO 3M SUPER LIMPION 1UNX12","HOGA","P18C31B","P18",4,1,"P18C31B (4)"],
+["A0000003682","NEXCARE MICROPORE BLANCO 1/2 24UNX3UN","HOGA","P18C31B","P18",3312,1,"P18C31B (3,312)"],
+["A0000003702","NEXCARTE VENDITAS WATERP ANIMALS - 12UN","HOGA","P18C31B","P18",204,1,"P18C31B (204)"],
+["A0000003720","SUPERMAX 3PK FIBRA VERDE 1UNX28UN","HOGA","P18C32A","P18",1820,2,"P15C49D (1,148), P14C43B (672)"],
+["AP000002081","SCOTCH 1PK ESPON CUADRA VER/AMA 12UNX6BS","HOGA","P18C32A","P18",41,1,"P14C52D (41)"],
+["A0000003590","BOAT BLQ ADV PROT SPRT50+SPRY 170MLX12UN","CUPE","P18C32B","P18",19,1,"P18C32B (19)"],
+["A0000003756","SCOTCH BRITE 2PK DU EXTREMA RRP 1UNX30UN","CUPE","P18C32B","P18",89,3,"P14C41C (62), P15C47C (24), P18C32B (3)"],
+["A0000002080","SCOTCH ESPON DOBLE USO ECON - 6UNX12TI","HOGA","P18C33A","P18",100810,12,"PISO-B4 (69,696), P14C02C (4,320), P14C03B (4,320)"],
+["A0000003726","SUPERMAX3PK  ESPONJA DU NO RAYAS - 20UN","HOGA","P18C33B","P18",760,3,"P14C51D (280), P18C33B (280), P19C45D (200)"],
+["A0000003755","SCOTCH BRITE 2PK FIBRA EXTREM RRP - 42UN","CUPE","P18C34B","P18",72,4,"P15C13B (56), P15C41C (10), P18C34B (5)"],
+["A0000003723","SUPERMAX 2PK ESPONJA DU ANATOMICA - 30UN","HOGA","P18C35A","P18",7770,7,"P19C31E (3,600), P15C31D (2,970), P14C14B (900)"],
+["A0000002081","SCOTCH 1PK ESPON DU CUADR VER/AMA - 72UN","HOGA","P18C35B","P18",4882,9,"P14C19D (3,456), P18C35B (479), P22C24C (216)"],
+["A0000003724","SUPERMAX3PK ESPONJA DU ANATOMICA - 20UN","HOGA","P18C36A","P18",1620,2,"P19C49E (1,120), P15C01B (500)"],
+["A0000003341","GELAT COLON PRINCESAS DISN  140MLX12UN","CUPE","P18C36B","P18",211,3,"P21C04B (179), P23C07D (24), P18C36B (8)"],
+["A0000003467","GELAT H.BAG SMLT+GLOSS+L BALM SKYE 6UN","CUPE","P18C36B","P18",2,1,"P18C36B (2)"],
+["A0000003999","GELAT GEL DE CABELLO AVENGERS 280GX12UN","CUPE","P18C36B","P18",1542,3,"P14C25C (1,104), P18C36B (426), P23C03C (12)"],
+["A0000002110","SCOTCH 491 GUANTES MULTIP T- L - 6UNX4BS","HOGA","P18C37B","P18",8134,5,"P14C27B (3,240), P15C23D (3,240), P14C30B (1,296)"],
+["A0000003071","MOUNT CUADRADOS INDOOR 6.8KG 1UNX6UNX4BS","HOGA","P18C38B","P18",4294,3,"P19C52D (2,808), P14C17B (1,080), P18C38B (406)"],
+["A0000002085","SCOTCH 1PK ESPON ANATO CERO NARAN - 72UN","HOGA","P18C40B","P18",6124,3,"P15C04B (4,752), P18C40B (1,319), P23C03C (53)"],
+["A0000002558","3M MASCARILLA DESECHABLE BLANC 50UNX12BX","HOGA","P18C41B","P18",939,3,"P14C08D (576), P18C26E (352), P18C41B (11)"],
+["A0000003152","SCOTCH DISPENSADOR CINTA ENGAN - 4UNX4BX","HOGA","P18C41B","P18",368,2,"P18C41B (320), P20C20C (48)"],
+["A0000003617","PLAYTEX TAMPON SIMPLY GG SUPER 8CTX72UN","CUPE","P18C42B","P18",17971,9,"P14C52D (3,600), P15C25D (3,600), P18C22F (3,600)"],
+["A0000003346","GELAT COLONIA MINNIE 140MLX12UN","CUPE","P18C43B","P18",48,1,"P18C43B (48)"],
+["A0000003477","GELAT KIT SHAMPOO+ESPONJA AVENGERS 6UN","CUPE","P18C43B","P18",12,1,"P18C43B (12)"],
+["A0010003591","BOAT BLQ DRY BLNC SPRT 50+LTN 60ML 48XUN","CUPE","P18C43B","P18",2754,3,"P19C10C (2,640), P22C18D (96), P18C43B (18)"],
+["A0000003478","GELAT KIT SHAMP+ESPONJA SPIDERMAN 6UN","CUPE","P18C44B","P18",451,2,"P14C33D (288), P18C44B (163)"],
+["A0000003479","GELAT KIT SHAMPOO+ESPONJA FROZEN 6UN","CUPE","P18C44B","P18",6,1,"P18C44B (6)"],
+["A0000003480","GELAT KIT SHAMPOO+ESPONJA SKYE 6UN","CUPE","P18C44B","P18",2,1,"P18C44B (2)"],
+["A0000003273","LISTERINE CONTROL CALCULO 500MLX12UN","CUPE","P18C45B","P18",18,3,"P20C28B (12), P18C45B (5), R-INV (1)"],
+["A0000003415","NEXCARE BANDITAS 10UN DUO 1UNX12UN","HOGA","P18C45B","P18",3869,2,"P14C14D (3,744), P18C45B (125)"],
+["A0000003760","SCOTCH BRITE 2PK BOLA METALICA 1UNX36UN","CUPE","P18C46B","P18",15,5,"P23C06C (9), P23C06D (3), P18C46B (1)"],
+["A0000003746","SCOTCH BRITE 1PK FIBRA VERDE  RRP - 84UN","CUPE","P18C47B","P18",81,2,"P14C23B (75), P18C47B (6)"],
+["A0000002139","SCOTCH GOMA EN BARRA 20G 1UNX12UNX6PQ","HOGA","P18C48B","P18",2413,2,"P20C11C (2,328), P18C48B (85)"],
+["A0000003725","SUPERMAX2PK  ESPONJA DU NO RAYAS - 30UN","HOGA","P18C48B","P18",3660,2,"P18C08F (3,600), P18C48B (60)"],
+["A0000003974","SCOTCH BRITE 3PK CELULOSA VER/AMA - 8UN","HOGA","P18C49B","P18",192,2,"P18C49B (160), P22C18D (32)"],
+["A0000004084","PILA LED LUZ BLANCA 6W 1UNX12UN","HOGA","P18C49B","P18",15970,4,"P27C09B (15,696), P18C49B (264), SCRAPCDS-JULIO (8)"],
+["A0000003468","GELAT H.BAG SMLT+GLS+COLLAR UNICORNI 6UN","CUPE","P18C50B","P18",6,1,"P18C50B (6)"],
+["A0000004439","PHILPS LED  75W/13W 1UNX20UN","","P19C02A","P19",254252,4,"P30C12B (202,240), PISO-B4 (52,000), SCRAPCDS-JULIO (10)"],
+["A0030000576","DOVE SHAMP RECONSTRUCCION 9MLX28UNX24TI","CUPE","P19C10A","P19",24864,1,"P15C52D (24,864)"],
+["A0000003066","COMMAND 2PK GANCHO MEDIA 1.3KG - 6UNX6BS","HOGA","P19C11A","P19",1728,1,"P14C37D (1,728)"],
+["A0000003428","SEDAL SHAMP 2EN1 CERAMIDAS 9MLX28UNX24TI","CUPE","P19C13A","P19",1,1,"SCRAPCDS-JULIO (1)"],
+["A0000002938","SCOTCH CERO RAYAS COCINA 3PACK 1UNX24UN","HOGA","P19C15A","P19",384,1,"P22C24D (384)"],
+["AP000003052","PALANGANA PROMOCIONAL","ALL","P19C17A","P19",21,1,"SCRAPCDS-JULIO (21)"],
+["A0000003321","GELAT SHAMP 2EN1 3D FROZEN2 300MLX12UN","CUPE","P19C27A","P19",47,2,"P23C02D (35), P23C05D (12)"],
+["A0000004351","GELATTI SPRAY DESENRE BARBIE 200MLX12UN","CUPE","P19C29A","P19",787,1,"P14C13B (787)"],
+["A0000003749","SCOTCH BRITE 2PK DU CUADRADA RRP - 32UN","CUPE","P19C32A","P19",202,8,"P14C03C (60), P15C09B (60), P14C35B (53)"],
+["A0000002519","SUAVE ACTIVE C TOALLA DELGADA 10UNX36UN","HOGA","P19C33A","P19",15,1,"P19C42B (15)"],
+["A0000003637","SCHICK XTREME3 PIEL SENSIBLE 12UNX12TI","CUPE","P19C42A","P19",34356,4,"P15C14C (14,400), P14C16C (7,200), P15C10C (7,200)"],
+["A0000000951","AXE DESODO AEROSOL DARK TEMPTAT 58GX12BX","HOGA","P19C43A","P19",1,1,"SCRAPCDS-AGOSTO (1)"],
+["A0000003426","SEDAL SHAMP 2EN1 LISO PERF 9MLX28UNX24TI","CUPE","P19C47A","P19",115,1,"SCRAPCDS-JULIO (115)"],
+["A0000003757","SCOTCH BRITE 1PK ESFERA LIMP. RRP - 62UN","CUPE","P19C48A","P19",148,6,"P19C29E (73), P14C36B (42), P23C10E (11)"],
+["A0000003791","SULTAN ACIDO MURIATICO REGUL 900MLX15UN","DETE","P20C05A","P20",2390,2,"P01C01B (2,373), P23C07B (17)"],
+["A0000003794","PINOL AROMAS LAVANDA 2LX8UN","DETE","P20C14A","P20",2954,17,"P18C12F (240), P20C11E (240), P21C12D (240)"],
+["A0000004555","CLORALEX RENDIDOR GEL950MLX15U","","P20C15A","P20",1635,5,"P19C22E (600), P18C51C (450), P19C48B (435)"],
+["A0000003808","CLORALEX MASCOTAS 10LX1UN","DETE","P21C07A","P21",576,17,"P18C47D (72), P20C05D (72), P21C10D (72)"],
+["A0000003775","PINOL AROMAS POUCH FLORAL 750MLX16UN","DETE","P21C08A","P21",1024,4,"P22C11B (784), P22C14C (176), P22C06B (48)"],
+["A0000003817","CLORALEX TOALLA DESINFECTANTE 206GX24UN","DETE","P21C17A","P21",8271,9,"P19C04E (1,800), P18C29D (1,440), P18C34E (1,440)"],
+["A0000003774","ENSUEÑO FRESCURA PRIMAVER 100MLX12UNX6TI","DETE","P21C18A","P21",36787,14,"P18C24D (5,184), P19C14E (5,184), P19C35E (5,184)"],
+["A0000004554","ENSUEÑO ULTRA 740MLX12U","","P21C18A","P21",3924,8,"P18C22E (612), P19C14B (612), P19C15C (612)"],
+["A0000003807","ENSUEÑO MAX FRESCURA PRIMAVERAL 3.7LX4UN","DETE","P21C19A","P21",199,2,"P21C15B (120), P21C09D (79)"],
+["A0000003941","ENSUEÑO NATUREZA ARGAN/MANDAR 850MLX12UN","DETE","P21C19A","P21",2776,9,"P18C49C (576), P20C07E (576), P25C02D (576)"],
+["A0000003782","ENSUEÑO FRESCURA PRIMAVERAL 9000MLX1UN","DETE","P25C01A","P25",39,2,"P18C38C (37), P23C07C (2)"],
+["AP000004477","EXHIBIDOR BARU TRIDENT 1UN","","P26C02A","P26",8,1,"P18C02C (8)"],
+["AP000001944","KELLOGGS MUEBLE TIENDA BONITA 1UN","MASC","P26C03A","P26",18,3,"P19C06E (8), P18C41F (6), P18C42F (4)"],
+["AP000002739","BEST EXHIBIDOR PROMOCIONAL 1UN","MENA","P26C05A","P26",85,2,"P19C51B (80), SCRAPCDS-JULIO (5)"],
+["AP010000406","CHOCO KRISPIS VOLANTE PROMOCIONAL 1UN","ALIM","P26C07A","P26",124,1,"P09C51B (124)"],
+["A0000003262","SUAVE ACTIVE C NOCT DISPEN 1UNX40UNX10PQ","CUPE","P27C01A","P27",40,1,"P25C05B (40)"],
+["A0000000410","COLOMBINA MIX 1KGX12BX","ALIM","P28C06A","P28",2,2,"P23C07B (1), P23S01A (1)"],
+["A0000002405","JBB SHAM MANZ750ML+ACON400ML BMR 1UNX8PQ","CUPE","P30C02A","P30",895,7,"P08C08E (320), P08C10E (320), P08C12C (176)"],
+["A0020000207","JBB ACEITE ORIGINAL BMR 2P 100MLX2UNX6PQ","","P30C08A","P30",222,1,"P08C49B (222)"],
+["A0000003336","GELAT JAB LIQUID SPIDERM 300MLX12UN","CUPE","P31C01A","P31",300,1,"P31C11C (300)"],
+["A0000001568","LISTERINE TOTAL CARE ZERO 500MLX12UN","CUPE","P31C01B","P31",32,2,"P31C01B (20), RAMPA-15 (12)"],
+["A0000002287","JBB SHAMPOO FRAGANCIA BMR 200MLX12UN","CUPE","P31C01B","P31",48,1,"P30C11C (48)"],
+["A0000003444","JBB POLVO ANTES DE DORMIR 200GX24UN","CUPE","P31C01B","P31",393,2,"P08C01C (384), P31C01B (9)"],
+["A0000004493","LISTERINE ANTICARIES ZERO 250MLX12U","","P31C02A","P31",792,3,"P36C05C (504), P31C03C (276), P31C04E (12)"],
+["A0000003332","GELAT SPRAY DESEN UNICORNIO 200MLX12UN","CUPE","P31C02B","P31",565,2,"P31C05C (528), P31C02B (37)"],
+["A0000003337","GELAT JAB LIQUI BOB ESPON 300MLX12UN","CUPE","P31C02B","P31",18,1,"P31C02B (18)"],
+["A0000003880","GELAT SHAMP 2 EN 1 LADYBUG 2D 300MLX12UN","CUPE","P31C02B","P31",49,1,"P31C02B (49)"],
+["A0000003601","TROPIC BLQ SHEERTOUCH 50+LTN 240MLX12UN","CUPE","P31C03B","P31",1704,3,"P14C22C (864), P21C08D (816), P22C18D (24)"],
+["A0000003606","TROPIC BLQ AIRSOFT FACE 30 LTN 50MLX12UN","CUPE","P31C03B","P31",453,2,"P18C24C (444), P31C03B (9)"],
+["A0000003457","GELAT LG SMLT+GLS+L.BLM+SMBRS FROZ 6UN","CUPE","P31C04B","P31",79,1,"P31C04B (79)"],
+["A0010000305","LISTERINE COOLMINT 2PACK 250MLX2UNX6PQ","","P31C04B","P31",6,1,"P31C04B (6)"],
+["A0000003603","TROPIC BLQ OZONO 50+ LTN 120MLX12UN","CUPE","P31C05B","P31",57,2,"P22C18D (48), P31C05B (9)"],
+["A0000003605","TROPIC BLQ AIRSOFT 50 LTN 150MLX12UN","CUPE","P31C05B","P31",84,1,"P31C05B (84)"],
+["AP000004479","FROOT LOOPS CAJA 180GX14BX","","P31C06A","P31",2854,10,"P20C20E (992), P13C30E (630), P12C09B (338)"],
+["A0000000764","JBB JABON CREMOS HUMEC ROSADO 75GX48UN","CUPE","P31C06B","P31",2736,1,"P08C10D (2,736)"],
+["A0010000178","DESITIN CREAMY NUEVA IMAGEN 113GRX12UN","CUPE","P31C06B","P31",205,2,"P31C04E (120), P31C06B (85)"],
+["A0000003459","GELAT LG SMLT+GLS+L.BLM+STIC SKYE 6UN","CUPE","P31C07A","P31",30,1,"P21C33B (30)"],
+["A0000003343","GELAT COLON MARVEL AVENGERS 175MLX12UN","CUPE","P31C07B","P31",1823,4,"P31C08B (617), P14C18B (600), P14C49B (324)"],
+["A0000003348","GELAT COLON MARVEL SPIDERM 175MLX12UN","CUPE","P31C07B","P31",706,4,"P14C20B (685), P23C01C (11), P31C07B (8)"],
+["A0000003460","GELAT LG SMLT+GLS+PELO+CMTQ UNICOR 6UN","CUPE","P31C07B","P31",30,2,"P31C07B (28), P23C02C (2)"],
+["AP000004480","ZUCARITAS CAJA 260GX14BX","","P31C08A","P31",3418,9,"P12C51D (645), P10C22C (630), P12C12D (630)"],
+["A0000003339","GELAT JAB LIQUI PAW PATROL 350MLX12UN","CUPE","P31C09B","P31",40,1,"P31C09B (40)"],
+["A0000003340","GELAT ESPUMA BAÑO 3D FROZEN 300MLX6UN","CUPE","P31C09B","P31",4,1,"P31C09B (4)"],
+["A0000003452","GELAT MD SMLT+SMBRS+GLS+L.BLM PRIN 6UN","CUPE","P31C09B","P31",15,1,"P31C09B (15)"],
+["A0000003449","GELAT SM SMLT+GLS+LBLM+STIC UNICO 12UN","CUPE","P31C10B","P31",114,1,"P31C10B (114)"],
+["A0000004101","GELAT H.BAG  MAQUILLAJE STITCH  6UN","CUPE","P31C10B","P31",475,2,"P31C11E (264), P31C10B (211)"],
+["A0000003338","GELAT JAB LIQUI UNICORNIO 300MLX12UN","CUPE","P31C11B","P31",4,1,"P31C11B (4)"],
+["A0000004098","GELAT H.BAG  MAQUILLAJE BARBIE  6UN","CUPE","P31C11B","P31",88,1,"P31C11B (88)"],
+["A0000003639","SCHICK DES EXACTA2 PIEL SENSIBLE 5CT","CUPE","P31C12B","P31",8851,6,"P26C07D (4,320), P31C08C (2,664), P15C28C (1,656)"],
+["A0000003446","GELAT SM SMLT+GLOSS+STICKER MINNI 12UN","CUPE","P31C13B","P31",16,1,"P31C13B (16)"],
+["A0000003885","GELAT JAB LIQUI SPIDERMAN 3D 400MLX12UN","CUPE","P31C13B","P31",504,2,"P08C30E (372), P14C46B (132)"],
+["A0010000304","LISTERINE ORIGINAL 2PACK 250MLX2UNX6PQ","","P31C14B","P31",18,1,"P31C14B (18)"],
+["MP000000016","HAN RAN SAZONADOR POLLO ORIGINAL 1G","","P34C18A","P34",25000,1,"P23C07B (25,000)"],
+["A0000000182","COTONETES CAJITA 150UNX30UN","CUPE","P36C01B","P36",1073,2,"P36C01B (623), P31C04E (450)"],
+["A0000000181","COTONETES BOTE 150UNX30UN","CUPE","P36C02B","P36",486,2,"P36C05D (450), P36C02B (36)"],
+["AP000003956","HIDRAVIDA 2P FRESA/COCO 625MLX2UNX6PQ","FARM","P36C03A","P36",1332,3,"P10C03C (510), P10C03D (510), P10C10E (312)"],
+["A0000000303","REACH HILO DENTAL ORIGINAL 50MX24UN","CUPE","P36C03B","P36",2342,2,"P08C33B (1,181), P36C03B (1,161)"],
+["A0000000288","REACH HILO DENTAL MENTA 50MX24UN","CUPE","P36C04B","P36",2156,2,"P08C29D (2,136), P36C04B (20)"],
+["A0010001851","TYLENOL INFANTIL SUSPENSION 120MLX30UN","CUPE","P36C05B","P36",476,1,"P36C05B (476)"],
+["A0010000321","VISINA ORIGINAL 15MLX36UN","CUPE","P36C06B","P36",134,1,"P36C06B (134)"],
+["A0000003647","TYLENOL 50 CAPS 500GX60BX","CUPE","P36C07B","P36",152,1,"P36C07B (152)"],
+["A0000000318","TYLENOL 500MG FRASCO 100UNX60UN","CUPE","P36C08B","P36",1013,2,"P36C08B (593), P36C08C (420)"],
+["A0030002451","HIDRAVIDA 9 MO/FR/UV/FR-KI 625MLX9UNX2PQ","","P36C09A","P36",9462,85,"P10C13B (200), P10C15B (200), P11C52C (200)"],
+["A0000002465","TYLENOL FRASCO XTR/STRENGTH 20UNX60UN","CUPE","P36C09B","P36",4488,3,"P30C06C (3,600), P36C02E (840), P36C09B (48)"],
+["A0000000316","TYLENOL 500MG TABLETAS 2UNX10SOX40UN","CUPE","P36C10B","P36",5505,3,"P08C02D (2,560), P36C10B (1,665), P36C03E (1,280)"],
+["A0000003792","SULTAN ACIDO MURIATICO LIMON 900MLX15UN","DETE","P37C01B","P37",1328,3,"P01C01B (1,325), SCRAPCDS-JULIO (2), SCRAPCDS-AGOSTO (1)"]];
+</script>
+<script>
+(function(){
+  const now = new Date();
+  document.getElementById('fecha').textContent =
+    `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+  // KPIs
+  const kpiData = [
+    {label:'Total Asignaciones', val:R.total_asignaciones, cls:'neutral', pct:'100%'},
+    {label:'Abastecidas', val:R.ocupadas, cls:'ok', pct:(R.ocupadas/R.total_asignaciones*100).toFixed(1)+'%'},
+    {label:'Vacias con Stock', val:R.vacias_con_stock, cls:'alert', pct:(R.vacias_con_stock/R.total_asignaciones*100).toFixed(1)+'%'},
+    {label:'Vacias sin Stock', val:R.vacias_sin_stock, cls:'warn', pct:(R.vacias_sin_stock/R.total_asignaciones*100).toFixed(1)+'%'},
+  ];
+  const kpiBox = document.getElementById('kpis');
+  kpiData.forEach(k => {
+    const d = document.createElement('div');
+    d.className = 'kpi ' + k.cls;
+    d.innerHTML = `<div class="label">${k.label}</div><div class="val">${k.val.toLocaleString('es-GT')}</div><div class="pct">${k.pct} del total</div>`;
+    kpiBox.appendChild(d);
+  });
+
+  // Pasillos
+  let activePasillos = new Set();
+  const pasBox = document.getElementById('pasillos');
+  const pasillos = Object.keys(P).sort((a,b) => {
+    const na = parseInt(a.slice(1)), nb = parseInt(b.slice(1));
+    return na - nb;
+  });
+
+  pasillos.forEach(p => {
+    const d = P[p];
+    const pctVacio = d.vacias / d.total * 100;
+    const pctOcup = d.ocupadas / d.total * 100;
+    const barColor = pctVacio >= 50 ? 'var(--red)' : pctVacio >= 25 ? 'var(--amber)' : 'var(--green)';
+    const card = document.createElement('div');
+    card.className = 'pas-card';
+    card.dataset.pasillo = p;
+    card.innerHTML = `
+      <div class="pas-name">${p}</div>
+      <div class="pas-bar"><div class="pas-bar-fill" style="width:${pctOcup}%;background:${barColor}"></div></div>
+      <div class="pas-nums"><span>${d.vacias} vacias</span><span>${d.total}</span></div>
+    `;
+    card.addEventListener('click', () => {
+      if (activePasillos.has(p)) {
+        activePasillos.delete(p);
+        card.classList.remove('active');
+      } else {
+        activePasillos.add(p);
+        card.classList.add('active');
+      }
+      renderPasDetail();
+      render();
+    });
+    pasBox.appendChild(card);
+  });
+
+  const pasDetailBox = document.getElementById('pasDetail');
+  function renderPasDetail() {
+    if (activePasillos.size === 0) { pasDetailBox.innerHTML = ''; return; }
+    const seleccion = [...activePasillos].sort((a,b) => parseInt(a.slice(1)) - parseInt(b.slice(1)));
+    let bloques = '';
+    let totalPos = 0;
+    seleccion.forEach(p => {
+      const d = P[p];
+      const items = ROWS.filter(r => r[4] === p).sort((a,b) => {
+        const la = a[3], lb = b[3];
+        return la < lb ? -1 : la > lb ? 1 : 0;
+      });
+      totalPos += items.length;
+      const sinStock = d.total - d.ocupadas - d.vacias;
+      let chips = '';
+      items.forEach(r => {
+        const qtyFmt = r[5].toLocaleString('es-GT');
+        const nameShort = r[1].length > 28 ? r[1].slice(0,26) + '...' : r[1];
+        chips += `<div class="pos-chip" title="${r[1]}&#10;SKU: ${r[0]}&#10;Qty en reserva: ${qtyFmt}&#10;Ubicaciones: ${r[7]}">
+          <span class="pos-loc">${r[3]}</span>
+          <span class="pos-sku">${nameShort}</span>
+          <span class="pos-qty">${qtyFmt} und en reserva</span>
+        </div>`;
+      });
+      bloques += `<div class="pas-detail-block">
+        <div class="pas-detail-subhdr">
+          <strong>${p}</strong> — ${items.length} posiciones A vacias con stock
+          <span class="pas-detail-stats">${d.ocupadas} ocupadas &middot; ${d.vacias} vacias c/stock &middot; ${sinStock} vacias s/stock &middot; ${d.total} total</span>
+        </div>
+        <div class="pos-chips">${chips}</div>
+      </div>`;
+    });
+    const titulo = seleccion.length === 1
+      ? `${seleccion[0]}`
+      : `${seleccion.length} pasillos seleccionados (${seleccion.join(', ')})`;
+    pasDetailBox.innerHTML = `<div class="pas-detail">
+      <div class="pas-detail-hdr">
+        <h3>${titulo} — ${totalPos} posiciones A vacias con stock</h3>
+        <button class="pas-detail-close" id="pasDetailClose">Cerrar todo</button>
+      </div>
+      ${bloques}
+    </div>`;
+    document.getElementById('pasDetailClose').addEventListener('click', () => {
+      document.querySelectorAll('.pas-card').forEach(c => c.classList.remove('active'));
+      activePasillos.clear();
+      renderPasDetail();
+      render();
+    });
+  }
+
+  // Category filter
+  const catSel = document.getElementById('catFilter');
+  Object.keys(CATS).forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = `${c} (${CATS[c]})`;
+    catSel.appendChild(o);
+  });
+
+  // Refs
+  const searchEl = document.getElementById('search');
+  const sortEl = document.getElementById('sortSel');
+  const clearBtn = document.getElementById('clearBtn');
+  const tbody = document.getElementById('tbody');
+  const countBadge = document.getElementById('countBadge');
+  const footerCount = document.getElementById('footerCount');
+
+  // Sort by header click
+  let sortCol = 6, sortDir = -1; // default: qty desc
+  document.querySelectorAll('th[data-col]').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = parseInt(th.dataset.col);
+      if (sortCol === col) sortDir *= -1;
+      else { sortCol = col; sortDir = th.dataset.type === 'n' ? -1 : 1; }
+      sortEl.value = '';
+      render();
+    });
+  });
+
+  searchEl.addEventListener('input', render);
+  catSel.addEventListener('change', render);
+  sortEl.addEventListener('change', () => {
+    const v = sortEl.value;
+    if (v === 'qty-desc') { sortCol=6; sortDir=-1; }
+    else if (v === 'qty-asc') { sortCol=6; sortDir=1; }
+    else if (v === 'pos-asc') { sortCol=4; sortDir=1; }
+    else if (v === 'sku-asc') { sortCol=1; sortDir=1; }
+    else if (v === 'name-asc') { sortCol=2; sortDir=1; }
+    else if (v === 'locs-desc') { sortCol=7; sortDir=-1; }
+    render();
+  });
+  clearBtn.addEventListener('click', () => {
+    searchEl.value = '';
+    catSel.value = '';
+    sortEl.value = 'qty-desc';
+    sortCol = 6; sortDir = -1;
+    activePasillos.clear();
+    document.querySelectorAll('.pas-card').forEach(c => c.classList.remove('active'));
+    renderPasDetail();
+    render();
+  });
+
+  function severityClass(qty) {
+    if (qty >= 10000) return 'severity-high';
+    if (qty >= 1000) return 'severity-med';
+    return 'severity-low';
+  }
+
+  function render() {
+    const q = searchEl.value.toLowerCase().trim();
+    const cat = catSel.value;
+
+    let filtered = ROWS.filter(r => {
+      if (activePasillos.size > 0 && !activePasillos.has(r[4])) return false;
+      if (cat) {
+        const rc = r[2] || '(sin categoria)';
+        if (rc !== cat) return false;
+      }
+      if (q) {
+        const hay = [r[0],r[1],r[2],r[3],r[4],r[7]].join(' ').toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+
+    filtered.sort((a, b) => {
+      let va = a[sortCol], vb = b[sortCol];
+      if (typeof va === 'number' && typeof vb === 'number') return (va - vb) * sortDir;
+      va = String(va||'').toLowerCase(); vb = String(vb||'').toLowerCase();
+      return va < vb ? -sortDir : va > vb ? sortDir : 0;
+    });
+
+    // Update header arrows
+    document.querySelectorAll('th[data-col]').forEach(th => {
+      const col = parseInt(th.dataset.col);
+      const arrow = th.querySelector('.arrow');
+      th.classList.toggle('sorted', col === sortCol);
+      if (col === sortCol) arrow.textContent = sortDir > 0 ? '▲' : '▼';
+      else arrow.textContent = '▲';
+    });
+
+    const frag = document.createDocumentFragment();
+    filtered.forEach((r, i) => {
+      const tr = document.createElement('tr');
+      const catVal = r[2] || '(sin categoria)';
+      tr.innerHTML = `
+        <td class="num">${i+1}</td>
+        <td class="code">${r[0]}</td>
+        <td class="name-cell" title="${r[1]}">${r[1]}</td>
+        <td><span class="cat-pill">${catVal}</span></td>
+        <td class="code">${r[3]}</td>
+        <td class="code">${r[4]}</td>
+        <td class="num"><span class="cat-pill ${severityClass(r[5])}">${r[5].toLocaleString('es-GT')}</span></td>
+        <td class="num">${r[6]}</td>
+        <td class="locs-detail" title="${r[7]}">${r[7]}</td>
+      `;
+      frag.appendChild(tr);
+    });
+    tbody.innerHTML = '';
+    tbody.appendChild(frag);
+
+    const label = `${filtered.length} de ${ROWS.length} registros`;
+    countBadge.textContent = label;
+    footerCount.textContent = label;
+  }
+
+  // Initial render
+  render();
+})();
+</script>
