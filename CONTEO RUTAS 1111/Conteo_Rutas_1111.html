@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Conteo Rutas Preparadas · Bodega 1111</title>
+<title>Conteo Rutas Preparadas · Bodega 1111A001</title>
 <style>
   :root{
     --azul:#0d2a6b; --azul2:#1a3d8f; --azulC:#2a78d6;
@@ -14,7 +14,7 @@
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:'Segoe UI',system-ui,sans-serif;background:#fff;color:var(--texto);font-size:12px;line-height:1.35}
-  .hdr{background:linear-gradient(135deg,var(--azul),var(--azul2));color:#fff;padding:12px 24px;display:flex;align-items:center;justify-content:space-between}
+  .hdr{background:linear-gradient(135deg,var(--azul),var(--azul2));color:#fff;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
   .hdr h1{margin:0;font-size:20px;font-weight:800}
   .hdr h1 span{color:var(--dorado)}
   .hdr .sub{font-size:11px;opacity:.85;margin-top:2px}
@@ -23,17 +23,33 @@
 
   .wrap{padding:14px 24px 40px}
 
-  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px}
+  .drop{border:2px dashed var(--azulC);background:linear-gradient(135deg,#f0f6ff,#fafcff);border-radius:12px;padding:24px;text-align:center;transition:.15s;cursor:pointer;margin-bottom:16px}
+  .drop.hi{border-color:var(--dorado);background:#fff9e0}
+  .drop h3{margin:0 0 4px;font-size:16px;color:var(--azul);font-weight:800}
+  .drop p{margin:2px 0;font-size:11px;color:var(--texto2)}
+  .drop .btn{margin-top:8px;display:inline-block;background:var(--azul);color:#fff;border:0;border-radius:6px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer}
+  .drop .btn:hover{background:var(--azul2)}
+  .drop.mini{padding:8px 14px;display:flex;align-items:center;gap:10px;text-align:left}
+  .drop.mini h3{font-size:12px;margin:0}
+  .drop.mini p{font-size:10px}
+  .drop.mini .btn{margin:0;padding:5px 12px;font-size:10px}
+  .drop.mini .spacer{flex:1}
+
+  .status-file{background:#e8f5e8;border:1px solid var(--verde);color:#155724;padding:6px 12px;border-radius:6px;font-size:11px;display:inline-flex;align-items:center;gap:8px}
+  .status-file b{color:var(--azul)}
+
+  .kpis{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:14px}
   .kp{background:var(--surface);border:1px solid var(--grisL);border-radius:8px;padding:8px 12px;border-left:4px solid var(--azul)}
   .kp-lb{font-size:9px;font-weight:600;text-transform:uppercase;color:var(--muted);letter-spacing:.3px}
-  .kp-v{font-size:20px;font-weight:800;color:var(--azul);line-height:1.1;margin-top:2px}
+  .kp-v{font-size:19px;font-weight:800;color:var(--azul);line-height:1.1;margin-top:2px}
   .kp-s{font-size:9.5px;color:var(--texto2);margin-top:2px}
 
   .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:end;background:var(--gris1);border:1px solid var(--grisL);border-radius:8px;padding:10px 14px;margin-bottom:12px}
   .toolbar .fld{display:flex;flex-direction:column;gap:3px}
   .toolbar label{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.3px}
-  .toolbar select,.toolbar input{border:1px solid #cfd4da;border-radius:5px;padding:5px 8px;font-size:12px;font-family:inherit;background:#fff;min-width:140px}
-  .toolbar input[type=search]{min-width:220px}
+  .toolbar select,.toolbar input{border:1px solid #cfd4da;border-radius:5px;padding:5px 8px;font-size:12px;font-family:inherit;background:#fff;min-width:130px}
+  .toolbar input[type=search]{min-width:210px}
+  .toolbar input[type=date]{min-width:120px}
   .toolbar .btn{background:var(--azul);color:#fff;border:0;border-radius:5px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer}
   .toolbar .btn.gh{background:var(--gris3)}
   .toolbar .btn:hover{background:var(--azul2)}
@@ -41,24 +57,29 @@
   h2{font-size:13px;font-weight:800;color:var(--azul);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.4px}
 
   table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--grisL);border-radius:6px;overflow:hidden}
-  th{background:var(--azul);color:#fff;font-weight:600;text-align:left;padding:6px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:2;cursor:pointer;user-select:none}
+  th{background:var(--azul);color:#fff;font-weight:600;text-align:left;padding:6px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:2;cursor:pointer;user-select:none;white-space:nowrap}
+  tr.colFilters th{top:26px;background:#e8ecf5;padding:3px 4px;cursor:default}
+  tr.colFilters input{width:100%;border:1px solid #c8cbd0;border-radius:3px;padding:2px 5px;font-size:10.5px;background:#fff;font-family:inherit;color:var(--texto);text-transform:none;font-weight:400;letter-spacing:0}
+  tr.colFilters input:focus{outline:none;border-color:var(--azulC);box-shadow:0 0 0 2px rgba(42,120,214,.15)}
+  tr.colFilters input::placeholder{color:#9ba0a6;font-style:italic}
   th.num,td.num{text-align:right}
   th.c,td.c{text-align:center}
   td{padding:4px 8px;border-bottom:1px solid var(--gris2);font-size:11px;vertical-align:top}
   tr:nth-child(even) td{background:var(--gris1)}
   tr:hover td{background:#fff9e5}
 
-  .tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9.5px;font-weight:700;color:#fff;letter-spacing:.2px}
+  .tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9.5px;font-weight:700;color:#fff;letter-spacing:.2px;white-space:nowrap}
   .t-ok{background:var(--verde)}
   .t-dif{background:var(--rojo)}
   .t-pen{background:var(--warn);color:#5a3d00}
   .t-neu{background:var(--gris3)}
+  .t-prep{background:var(--azulC)}
 
   .bar{position:relative;height:12px;background:var(--gris2);border-radius:3px;overflow:hidden;min-width:80px}
   .bar>div{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--verde),#26c247)}
   .bar.low>div{background:linear-gradient(90deg,var(--rojo),#ea6060)}
   .bar.mid>div{background:linear-gradient(90deg,var(--warn),#f7c556)}
-  .barlbl{font-size:10px;font-weight:700;color:var(--texto2);margin-left:6px}
+  .barlbl{font-size:10px;font-weight:700;color:var(--texto2);margin-left:6px;min-width:38px;text-align:right}
 
   .pager{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:8px;font-size:11px;color:var(--texto2)}
   .pager button{background:#fff;border:1px solid var(--grisL);border-radius:4px;padding:3px 9px;font-size:11px;cursor:pointer}
@@ -69,12 +90,20 @@
   .pos{color:var(--verde);font-weight:700}
   .z{color:var(--muted)}
 
-  .split{display:grid;grid-template-columns:1.05fr 1fr;gap:14px}
-  @media (max-width:1180px){.split{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(3,1fr)}}
+  .split{display:grid;grid-template-columns:1.15fr 1fr;gap:14px}
+  @media (max-width:1280px){.kpis{grid-template-columns:repeat(4,1fr)}}
+  @media (max-width:1000px){.split{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(3,1fr)}}
   @media (max-width:640px){.kpis{grid-template-columns:repeat(2,1fr)}.hdr{flex-direction:column;align-items:flex-start;gap:6px}.hdr .meta{text-align:left}}
 
-  .ftr{background:var(--azul);color:rgba(255,255,255,.7);padding:8px 24px;font-size:9.5px;display:flex;justify-content:space-between}
+  .ftr{background:var(--azul);color:rgba(255,255,255,.7);padding:8px 24px;font-size:9.5px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
   .ftr b{color:var(--dorado)}
+
+  .hide{display:none!important}
+  .empty{background:var(--gris1);border:1px dashed var(--grisL);border-radius:8px;padding:40px;text-align:center;color:var(--muted);font-size:12px}
+
+  #loader{position:fixed;inset:0;background:rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:12px}
+  #loader .sp{width:44px;height:44px;border:4px solid var(--gris2);border-top-color:var(--azul);border-radius:50%;animation:sp 1s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -82,162 +111,344 @@
 <div class="hdr">
   <div>
     <h1>Conteo <span>Rutas Preparadas</span></h1>
-    <div class="sub">Bodega 1111 · Revisi&oacute;n de cargas por auditor&iacute;a</div>
+    <div class="sub">Bodega 1111A001 &middot; An&aacute;lisis de conteos vs preparado</div>
   </div>
-  <div class="meta" id="metaHdr">Cargando&hellip;</div>
+  <div class="meta" id="metaHdr">Cargue un archivo Excel para comenzar</div>
 </div>
 
 <div class="wrap">
 
-  <div class="kpis" id="kpis"></div>
-
-  <div class="toolbar">
-    <div class="fld">
-      <label>Conteo</label>
-      <select id="fConteo">
-        <option value="1">Primer conteo</option>
-        <option value="2">Segundo conteo</option>
-        <option value="A">Ambos</option>
-      </select>
-    </div>
-    <div class="fld">
-      <label>Ruta / Almac&eacute;n</label>
-      <select id="fAlmacen"><option value="">Todas</option></select>
-    </div>
-    <div class="fld">
-      <label>Estado</label>
-      <select id="fEstado"><option value="">Todos</option></select>
-    </div>
-    <div class="fld">
-      <label>Auditor</label>
-      <select id="fAuditor"><option value="">Todos</option></select>
-    </div>
-    <div class="fld">
-      <label>Buscar SKU / nombre</label>
-      <input id="fBuscar" type="search" placeholder="c&oacute;digo, barra o nombre&hellip;">
-    </div>
-    <div class="fld">
-      <label>Solo diferencias</label>
-      <select id="fDif"><option value="">No</option><option value="1">S&iacute;</option></select>
-    </div>
-    <div class="fld" style="align-self:end">
-      <button class="btn gh" id="btnLimpiar">Limpiar</button>
-      <button class="btn" id="btnCSV">Exportar CSV</button>
-    </div>
+  <!-- Zona de carga inicial -->
+  <div id="dropZone" class="drop">
+    <h3>Arrastre aqu&iacute; el archivo Excel</h3>
+    <p>o haga clic para seleccionar &middot; formato <b>.xlsx</b> descargado desde el sistema</p>
+    <p style="margin-top:6px">Columnas esperadas: Fecha creacion, Almacen, Orden, Articulo, Descripcion, Cantidad, Count, Dif, Counted, Picked, Diferencia</p>
+    <button class="btn" id="btnPick">Seleccionar archivo</button>
+    <input type="file" id="fileIn" accept=".xlsx,.xls,.csv" style="display:none">
   </div>
 
-  <div class="split">
-    <div>
-      <h2>Resumen por ruta</h2>
-      <div style="max-height:340px;overflow:auto;border:1px solid var(--grisL);border-radius:6px">
-        <table id="tblRuta"><thead><tr>
-          <th data-k="ALMACEN">Ruta</th>
-          <th class="num" data-k="skus">SKUs</th>
-          <th class="num" data-k="cajas">Cajas</th>
-          <th class="num" data-k="dif">Dif.</th>
-          <th class="num" data-k="pctDif">%Dif</th>
-          <th class="num" data-k="pend">Pend</th>
-          <th class="c" data-k="pctAvance">Avance</th>
-        </tr></thead><tbody></tbody></table>
+  <!-- Zona minificada después de cargar -->
+  <div id="dropZoneMini" class="drop mini hide">
+    <div id="fileStatus"></div>
+    <span class="spacer"></span>
+    <button class="btn" id="btnPick2">Cargar otro archivo</button>
+  </div>
+
+  <!-- Contenido principal (oculto hasta cargar) -->
+  <div id="mainContent" class="hide">
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="toolbar">
+      <div class="fld">
+        <label>Almac&eacute;n</label>
+        <select id="fAlmacen"><option value="">Todos</option></select>
+      </div>
+      <div class="fld">
+        <label>Orden / Ruta</label>
+        <select id="fOrden"><option value="">Todas</option></select>
+      </div>
+      <div class="fld">
+        <label>Fecha desde</label>
+        <input id="fDesde" type="date">
+      </div>
+      <div class="fld">
+        <label>Fecha hasta</label>
+        <input id="fHasta" type="date">
+      </div>
+      <div class="fld">
+        <label>Counted</label>
+        <select id="fCounted"><option value="">Todos</option></select>
+      </div>
+      <div class="fld">
+        <label>Picked</label>
+        <select id="fPicked"><option value="">Todos</option></select>
+      </div>
+      <div class="fld">
+        <label>Diferencia</label>
+        <select id="fDiferencia"><option value="">Todos</option></select>
+      </div>
+      <div class="fld">
+        <label>Buscar SKU / desc.</label>
+        <input id="fBuscar" type="search" placeholder="c&oacute;digo o nombre&hellip;">
+      </div>
+      <div class="fld" style="align-self:end">
+        <button class="btn gh" id="btnLimpiar">Limpiar</button>
+        <button class="btn" id="btnCSV">Exportar CSV</button>
       </div>
     </div>
 
-    <div>
-      <h2>Distribuci&oacute;n por estado</h2>
-      <div id="chartEstado" style="border:1px solid var(--grisL);border-radius:6px;padding:14px;background:var(--surface)"></div>
+    <div class="split">
+      <div>
+        <h2>Resumen por Orden / Ruta</h2>
+        <div style="max-height:360px;overflow:auto;border:1px solid var(--grisL);border-radius:6px">
+          <table id="tblOrden"><thead><tr>
+            <th data-k="ORDEN">Orden</th>
+            <th data-k="FECHA">Fecha</th>
+            <th class="num" data-k="skus">SKUs</th>
+            <th class="num" data-k="cant">Teor.</th>
+            <th class="num" data-k="count">Fisico</th>
+            <th class="num" data-k="dif">|Dif|</th>
+            <th class="num" data-k="pctExa">%Exact</th>
+            <th class="c" data-k="pctExa2">Exactitud</th>
+          </tr></thead><tbody></tbody></table>
+        </div>
+      </div>
 
-      <h2 style="margin-top:14px">Top SKUs con diferencia</h2>
-      <div style="max-height:220px;overflow:auto;border:1px solid var(--grisL);border-radius:6px">
-        <table id="tblTopDif"><thead><tr>
-          <th>SKU</th>
-          <th>Descripci&oacute;n</th>
-          <th class="num">|Dif| total</th>
-          <th class="c">Rutas</th>
-        </tr></thead><tbody></tbody></table>
+      <div>
+        <h2>Estados del conteo</h2>
+        <div id="chartEstados" style="border:1px solid var(--grisL);border-radius:6px;padding:12px;background:var(--surface)"></div>
+
+        <h2 style="margin-top:14px">Top SKUs con diferencia</h2>
+        <div style="max-height:220px;overflow:auto;border:1px solid var(--grisL);border-radius:6px">
+          <table id="tblTopDif"><thead><tr>
+            <th>SKU</th>
+            <th>Descripci&oacute;n</th>
+            <th class="num">|Dif| total</th>
+            <th class="c">Ord</th>
+          </tr></thead><tbody></tbody></table>
+        </div>
       </div>
     </div>
+
+    <h2 style="margin-top:18px">Detalle (<span id="detCnt">0</span> filas)</h2>
+    <div style="max-height:520px;overflow:auto;border:1px solid var(--grisL);border-radius:6px">
+      <table id="tblDet"><thead>
+      <tr>
+        <th data-k="FECHA">Fecha</th>
+        <th data-k="ALMACEN">Almac&eacute;n</th>
+        <th data-k="ORDEN">Orden</th>
+        <th data-k="ARTICULO">SKU</th>
+        <th data-k="DESCRIPCION">Descripci&oacute;n</th>
+        <th class="num" data-k="CANTIDAD">Cant.</th>
+        <th class="num" data-k="COUNT">Count</th>
+        <th class="num" data-k="DIF">Dif</th>
+        <th class="c" data-k="COUNTED">Counted</th>
+        <th class="c" data-k="PICKED">Picked</th>
+        <th class="c" data-k="DIFERENCIA">Diferencia</th>
+      </tr>
+      <tr class="colFilters">
+        <th><input type="search" data-col="FECHA"       placeholder="dd/mm/aaaa"></th>
+        <th><input type="search" data-col="ALMACEN"     placeholder="filtrar&hellip;"></th>
+        <th><input type="search" data-col="ORDEN"       placeholder="filtrar&hellip;"></th>
+        <th><input type="search" data-col="ARTICULO"    placeholder="SKU&hellip;"></th>
+        <th><input type="search" data-col="DESCRIPCION" placeholder="descripci&oacute;n&hellip;"></th>
+        <th><input type="search" data-col="CANTIDAD"    placeholder=">10, <100, =0"></th>
+        <th><input type="search" data-col="COUNT"       placeholder=">10, <100, =0"></th>
+        <th><input type="search" data-col="DIF"         placeholder=">0, <0, !=0"></th>
+        <th><input type="search" data-col="COUNTED"     placeholder="filtrar&hellip;"></th>
+        <th><input type="search" data-col="PICKED"      placeholder="filtrar&hellip;"></th>
+        <th><input type="search" data-col="DIFERENCIA"  placeholder="filtrar&hellip;"></th>
+      </tr>
+      </thead><tbody></tbody></table>
+    </div>
+    <div class="pager">
+      <span>Filas por p&aacute;gina:
+        <select id="pageSize"><option>50</option><option selected>200</option><option>500</option><option>2000</option></select>
+      </span>
+      <button id="pgFirst">&laquo;</button>
+      <button id="pgPrev">&lsaquo;</button>
+      <span>P&aacute;gina <b id="pgCur">1</b> de <b id="pgTot">1</b></span>
+      <button id="pgNext">&rsaquo;</button>
+      <button id="pgLast">&raquo;</button>
+    </div>
+
   </div>
 
-  <h2 style="margin-top:18px">Detalle (<span id="detCnt">0</span> filas)</h2>
-  <div style="max-height:520px;overflow:auto;border:1px solid var(--grisL);border-radius:6px">
-    <table id="tblDet"><thead><tr>
-      <th class="c" data-k="src">C</th>
-      <th data-k="FECHA_CREACION">Fecha</th>
-      <th data-k="ALMACEN">Ruta</th>
-      <th data-k="USUARIO_NOMBRE">Auditor</th>
-      <th data-k="SKU_CODIGO">SKU</th>
-      <th data-k="SKU_NOMBRE">Descripci&oacute;n</th>
-      <th class="num" data-k="CAJAS">Cajas</th>
-      <th class="num" data-k="UNIDADES">Und</th>
-      <th class="num" data-k="CONTEO_FISICO">F&iacute;sico</th>
-      <th class="num" data-k="CANTIDAD_SAP">Te&oacute;rico</th>
-      <th class="num" data-k="DIFERENCIA">Dif.</th>
-      <th data-k="ESTADO_NOMBRE">Estado</th>
-      <th data-k="ID_W2W">W2W</th>
-    </tr></thead><tbody></tbody></table>
-  </div>
-  <div class="pager">
-    <span>Filas por p&aacute;gina:
-      <select id="pageSize"><option>50</option><option selected>200</option><option>500</option><option>2000</option></select>
-    </span>
-    <button id="pgFirst">&laquo;</button>
-    <button id="pgPrev">&lsaquo;</button>
-    <span>P&aacute;gina <b id="pgCur">1</b> de <b id="pgTot">1</b></span>
-    <button id="pgNext">&rsaquo;</button>
-    <button id="pgLast">&raquo;</button>
+  <!-- Estado vacío -->
+  <div id="emptyMsg" class="empty">
+    <div style="font-size:14px;font-weight:700;color:var(--texto2);margin-bottom:6px">Sin datos cargados</div>
+    <div>Arrastre un archivo Excel arriba, o haga clic para seleccionarlo</div>
   </div>
 
 </div>
 
 <div class="ftr">
-  <div>Fuente: <b>LOGISTICA.REVISION_CARGAS_CONTEO_1 / _2</b> &middot; SQL 172.16.5.43/IN_E</div>
-  <div>Me Llega S.A. &middot; <b>Bodega 1111</b> &middot; Actualiza con <b>ACTUALIZAR_CONTEO.bat</b></div>
+  <div>Fuente: Excel del sistema &middot; procesado local en su navegador (los datos no salen de su equipo)</div>
+  <div>Me Llega S.A. &middot; <b>Bodega 1111A001</b></div>
 </div>
 
-<script src="conteo_data.js"></script>
+<div id="loader" class="hide"><div class="sp"></div><div style="color:var(--azul);font-weight:700">Procesando archivo&hellip;</div></div>
+
+<script src="xlsx.full.min.js"></script>
 <script>
 (function(){
-  const D = window.CONTEO_DATA || {conteo1:[],conteo2:[]};
-  const c1 = (D.conteo1||[]).map(r => ({...r, __src:1}));
-  const c2 = (D.conteo2||[]).map(r => ({...r, __src:2}));
-
-  // === Meta header ==================================================
+  const $ = id => document.getElementById(id);
   const fmt = n => n==null||isNaN(n)?'':Number(n).toLocaleString('es-GT',{maximumFractionDigits:2});
   const num = v => (v==null||v==='')?0:Number(v)||0;
   const abs = v => Math.abs(num(v));
+  const trim = v => v==null ? '' : String(v).trim();
 
-  document.getElementById('metaHdr').innerHTML =
-    'Generado: <b>'+ (D.generado||'').replace('T',' ') +'</b><br>'+
-    'Primer conteo: <b>'+ c1.length.toLocaleString('es-GT') +'</b> &nbsp; Segundo conteo: <b>'+ c2.length.toLocaleString('es-GT') +'</b>';
+  let rawRows = [];  // {FECHA, ALMACEN, ORDEN, ARTICULO, DESCRIPCION, CANTIDAD, COUNT, DIF, COUNTED, PICKED, DIFERENCIA}
 
-  // === Pobla filtros =================================================
+  // === Parse fecha dd/mm/yyyy o Date de Excel ========================
+  function parseFecha(v){
+    if(v==null||v==='') return null;
+    if(v instanceof Date) return v;
+    if(typeof v === 'number'){
+      // Excel serial date
+      const d = new Date(Math.round((v - 25569) * 86400 * 1000));
+      return isNaN(d)?null:d;
+    }
+    const s = String(v).trim();
+    // dd/mm/yyyy o dd-mm-yyyy
+    let m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+    if(m){
+      let y = parseInt(m[3]); if(y<100) y += 2000;
+      const d = new Date(y, parseInt(m[2])-1, parseInt(m[1]));
+      return isNaN(d)?null:d;
+    }
+    // yyyy-mm-dd
+    m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if(m){ const d = new Date(+m[1], +m[2]-1, +m[3]); return isNaN(d)?null:d; }
+    const d = new Date(s);
+    return isNaN(d)?null:d;
+  }
+  const fmtFecha = d => {
+    if(!d) return '';
+    const p = n => String(n).padStart(2,'0');
+    return `${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()}`;
+  };
+  const isoFecha = d => {
+    if(!d) return '';
+    const p = n => String(n).padStart(2,'0');
+    return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+  };
+
+  // === Carga de archivo ==============================================
+  function pickFile(){ $('fileIn').click(); }
+  $('btnPick').onclick = pickFile;
+  $('btnPick2').onclick = pickFile;
+  $('dropZone').onclick = e => { if(e.target.id!=='btnPick') pickFile(); };
+
+  ['dragenter','dragover'].forEach(ev=>{
+    document.addEventListener(ev, e=>{
+      e.preventDefault();
+      $('dropZone').classList.add('hi');
+      if(!$('dropZoneMini').classList.contains('hide')) $('dropZoneMini').classList.add('hi');
+    });
+  });
+  ['dragleave','drop'].forEach(ev=>{
+    document.addEventListener(ev, e=>{
+      e.preventDefault();
+      $('dropZone').classList.remove('hi');
+      $('dropZoneMini').classList.remove('hi');
+    });
+  });
+  document.addEventListener('drop', e=>{
+    e.preventDefault();
+    if(e.dataTransfer.files && e.dataTransfer.files.length){
+      loadFile(e.dataTransfer.files[0]);
+    }
+  });
+  $('fileIn').onchange = e => { if(e.target.files.length) loadFile(e.target.files[0]); };
+
+  function loadFile(file){
+    $('loader').classList.remove('hide');
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try{
+        const wb = XLSX.read(ev.target.result, {type:'array', cellDates:true});
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, {defval:'', raw:true});
+        if(!rows.length){
+          alert('El archivo no tiene filas de datos.');
+          $('loader').classList.add('hide');
+          return;
+        }
+        // Normalizar columnas (case-insensitive, ignora tildes/espacios)
+        const norm = s => trim(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,'');
+        const first = rows[0];
+        const map = {};
+        Object.keys(first).forEach(k => { map[norm(k)] = k; });
+        const pick = (row, ...names) => {
+          for(const n of names){
+            const k = map[norm(n)];
+            if(k!==undefined && row[k]!=='' && row[k]!=null) return row[k];
+          }
+          return '';
+        };
+        rawRows = rows.map(r => ({
+          FECHA:       parseFecha(pick(r,'Fecha creacion','FechaCreacion','Fecha')),
+          ALMACEN:     trim(pick(r,'Almacen','Warehouse')),
+          ORDEN:       trim(pick(r,'Orden','Order','Wave','Ruta')),
+          ARTICULO:    trim(pick(r,'Articulo','SKU','Codigo','ItemCode')),
+          DESCRIPCION: trim(pick(r,'Descripcion','ItemName','Descripción')),
+          CANTIDAD:    num(pick(r,'Cantidad','Qty','Teorico')),
+          COUNT:       num(pick(r,'Count','Conteo','Fisico')),
+          DIF:         num(pick(r,'Dif','Diff','DiferenciaNum')),
+          COUNTED:     trim(pick(r,'Counted','EstadoConteo')),
+          PICKED:      trim(pick(r,'Picked','EstadoPicking')),
+          DIFERENCIA:  trim(pick(r,'Diferencia','EstadoDif','ConDiferencia')),
+        }));
+
+        $('fileStatus').innerHTML = `<span class="status-file">Archivo cargado: <b>${file.name}</b> &middot; ${rawRows.length.toLocaleString('es-GT')} filas</span>`;
+        $('metaHdr').innerHTML = `Archivo: <b>${file.name}</b><br>Filas: <b>${rawRows.length.toLocaleString('es-GT')}</b>`;
+        $('dropZone').classList.add('hide');
+        $('dropZoneMini').classList.remove('hide');
+        $('mainContent').classList.remove('hide');
+        $('emptyMsg').classList.add('hide');
+
+        initFilters();
+        refresh();
+        $('loader').classList.add('hide');
+      }catch(err){
+        console.error(err);
+        alert('Error procesando el archivo: '+err.message);
+        $('loader').classList.add('hide');
+      }
+    };
+    reader.onerror = () => { alert('No se pudo leer el archivo'); $('loader').classList.add('hide'); };
+    reader.readAsArrayBuffer(file);
+  }
+
+  // === Filtros =======================================================
   function opts(sel, arr){
-    const el = document.getElementById(sel);
+    const el = $(sel);
     const cur = el.value;
-    el.innerHTML = '<option value="">Todos</option>' + arr.filter(Boolean).sort().map(v=>`<option>${v}</option>`).join('');
+    const first = el.querySelector('option').outerHTML;
+    el.innerHTML = first + arr.filter(Boolean).map(v=>`<option>${v}</option>`).join('');
     el.value = cur;
   }
-  const uniq = (arr,k) => [...new Set(arr.map(r=>r[k]).filter(v=>v!=null && v!==''))];
-  opts('fAlmacen', uniq(c1.concat(c2),'ALMACEN'));
-  opts('fEstado',  uniq(c1.concat(c2),'ESTADO_NOMBRE'));
-  opts('fAuditor', uniq(c1.concat(c2),'USUARIO_NOMBRE'));
+  const uniqSorted = (arr,k) => [...new Set(arr.map(r=>r[k]).filter(v=>v!=null && v!==''))].sort();
 
-  // === Filtrado ======================================================
+  function initFilters(){
+    opts('fAlmacen',    uniqSorted(rawRows,'ALMACEN'));
+    opts('fOrden',      uniqSorted(rawRows,'ORDEN'));
+    opts('fCounted',    uniqSorted(rawRows,'COUNTED'));
+    opts('fPicked',     uniqSorted(rawRows,'PICKED'));
+    opts('fDiferencia', uniqSorted(rawRows,'DIFERENCIA'));
+    // rango de fechas
+    const fechas = rawRows.map(r=>r.FECHA).filter(Boolean).sort((a,b)=>a-b);
+    if(fechas.length){
+      $('fDesde').value = '';
+      $('fHasta').value = '';
+      $('fDesde').min = isoFecha(fechas[0]);
+      $('fDesde').max = isoFecha(fechas[fechas.length-1]);
+      $('fHasta').min = isoFecha(fechas[0]);
+      $('fHasta').max = isoFecha(fechas[fechas.length-1]);
+    }
+  }
+
   function filtered(){
-    const src = document.getElementById('fConteo').value;
-    const alm = document.getElementById('fAlmacen').value;
-    const est = document.getElementById('fEstado').value;
-    const aud = document.getElementById('fAuditor').value;
-    const q   = document.getElementById('fBuscar').value.trim().toLowerCase();
-    const dif = document.getElementById('fDif').value;
-    let base = src==='1' ? c1.slice() : src==='2' ? c2.slice() : c1.concat(c2);
-    return base.filter(r=>{
+    const alm = $('fAlmacen').value;
+    const ord = $('fOrden').value;
+    const desde = $('fDesde').value ? new Date($('fDesde').value+'T00:00:00') : null;
+    const hasta = $('fHasta').value ? new Date($('fHasta').value+'T23:59:59') : null;
+    const cnt = $('fCounted').value;
+    const pck = $('fPicked').value;
+    const dif = $('fDiferencia').value;
+    const q   = $('fBuscar').value.trim().toLowerCase();
+    return rawRows.filter(r=>{
       if(alm && r.ALMACEN!==alm) return false;
-      if(est && r.ESTADO_NOMBRE!==est) return false;
-      if(aud && r.USUARIO_NOMBRE!==aud) return false;
-      if(dif==='1' && num(r.DIFERENCIA)===0) return false;
+      if(ord && r.ORDEN!==ord) return false;
+      if(desde && (!r.FECHA || r.FECHA<desde)) return false;
+      if(hasta && (!r.FECHA || r.FECHA>hasta)) return false;
+      if(cnt && r.COUNTED!==cnt) return false;
+      if(pck && r.PICKED!==pck) return false;
+      if(dif && r.DIFERENCIA!==dif) return false;
       if(q){
-        const hay = ((r.SKU_CODIGO||'')+' '+(r.SKU_NOMBRE||'')+' '+(r.SKU_BARRA||'')).toLowerCase();
+        const hay = ((r.ARTICULO||'')+' '+(r.DESCRIPCION||'')+' '+(r.ORDEN||'')).toLowerCase();
         if(!hay.includes(q)) return false;
       }
       return true;
@@ -247,108 +458,120 @@
   // === KPIs ==========================================================
   function renderKpis(rows){
     const totFilas = rows.length;
-    const rutas = new Set(rows.map(r=>r.ALMACEN).filter(Boolean));
-    const skus  = new Set(rows.map(r=>r.SKU_CODIGO).filter(Boolean));
-    const cajas = rows.reduce((s,r)=>s+num(r.CAJAS),0);
-    const dif   = rows.reduce((s,r)=>s+abs(r.DIFERENCIA),0);
-    const conDif = rows.filter(r=>num(r.DIFERENCIA)!==0).length;
-    const pend  = rows.filter(r=>String(r.TEXTO1||'').toUpperCase()==='PENDIENTE' || String(r.ESTADO_NOMBRE||'').toUpperCase()==='PENDIENTE').length;
+    const ordenes = new Set(rows.map(r=>r.ORDEN).filter(Boolean));
+    const skus  = new Set(rows.map(r=>r.ARTICULO).filter(Boolean));
+    const cant  = rows.reduce((s,r)=>s+num(r.CANTIDAD),0);
+    const count = rows.reduce((s,r)=>s+num(r.COUNT),0);
+    const dif   = rows.reduce((s,r)=>s+abs(r.DIF),0);
+    const conDif = rows.filter(r=>String(r.DIFERENCIA||'').toUpperCase().includes('CON DIF') || num(r.DIF)!==0).length;
+    const sinContar = rows.filter(r=>String(r.COUNTED||'').toUpperCase().includes('SIN') || !r.COUNTED).length;
+    const pctExa = cant>0 ? (1 - dif/cant)*100 : 0;
 
-    document.getElementById('kpis').innerHTML = `
-      <div class="kp"><div class="kp-lb">Rutas</div><div class="kp-v">${rutas.size}</div><div class="kp-s">almacenes distintos</div></div>
-      <div class="kp" style="border-left-color:var(--azulC)"><div class="kp-lb">Registros</div><div class="kp-v">${totFilas.toLocaleString('es-GT')}</div><div class="kp-s">l&iacute;neas contadas</div></div>
-      <div class="kp" style="border-left-color:var(--dorado)"><div class="kp-lb">SKUs</div><div class="kp-v">${skus.size.toLocaleString('es-GT')}</div><div class="kp-s">c&oacute;digos distintos</div></div>
-      <div class="kp" style="border-left-color:var(--verde)"><div class="kp-lb">Cajas</div><div class="kp-v">${fmt(cajas)}</div><div class="kp-s">total contadas</div></div>
-      <div class="kp" style="border-left-color:var(--rojo)"><div class="kp-lb">Con diferencia</div><div class="kp-v">${conDif.toLocaleString('es-GT')}</div><div class="kp-s">|dif| total: ${fmt(dif)}</div></div>
-      <div class="kp" style="border-left-color:var(--warn)"><div class="kp-lb">Pendientes</div><div class="kp-v">${pend.toLocaleString('es-GT')}</div><div class="kp-s">por auditar</div></div>
+    $('kpis').innerHTML = `
+      <div class="kp"><div class="kp-lb">Registros</div><div class="kp-v">${totFilas.toLocaleString('es-GT')}</div><div class="kp-s">l&iacute;neas</div></div>
+      <div class="kp" style="border-left-color:var(--azulC)"><div class="kp-lb">&Oacute;rdenes</div><div class="kp-v">${ordenes.size.toLocaleString('es-GT')}</div><div class="kp-s">rutas preparadas</div></div>
+      <div class="kp" style="border-left-color:var(--dorado)"><div class="kp-lb">SKUs</div><div class="kp-v">${skus.size.toLocaleString('es-GT')}</div><div class="kp-s">c&oacute;digos</div></div>
+      <div class="kp" style="border-left-color:var(--verde)"><div class="kp-lb">Teor&iacute;co</div><div class="kp-v">${fmt(cant)}</div><div class="kp-s">Fisico: ${fmt(count)}</div></div>
+      <div class="kp" style="border-left-color:var(--rojo)"><div class="kp-lb">|Diferencia|</div><div class="kp-v">${fmt(dif)}</div><div class="kp-s">${conDif.toLocaleString('es-GT')} l&iacute;neas c/dif</div></div>
+      <div class="kp" style="border-left-color:var(--warn)"><div class="kp-lb">Sin contar</div><div class="kp-v">${sinContar.toLocaleString('es-GT')}</div><div class="kp-s">pendientes</div></div>
+      <div class="kp" style="border-left-color:${pctExa>=95?'var(--verde)':pctExa>=80?'var(--warn)':'var(--rojo)'}"><div class="kp-lb">Exactitud</div><div class="kp-v">${pctExa.toFixed(1)}%</div><div class="kp-s">1 - |dif|/te&oacute;rico</div></div>
     `;
   }
 
-  // === Resumen por Ruta ==============================================
-  let rutaSortKey = 'pctDif', rutaSortDir = -1;
-  function renderRuta(rows){
+  // === Resumen por Orden =============================================
+  let ordSortKey = 'dif', ordSortDir = -1;
+  function renderOrden(rows){
     const grp = {};
     rows.forEach(r=>{
-      const k = r.ALMACEN||'—';
-      if(!grp[k]) grp[k] = {ALMACEN:k, skus:new Set(), cajas:0, dif:0, pend:0, total:0, ok:0};
-      grp[k].skus.add(r.SKU_CODIGO);
-      grp[k].cajas += num(r.CAJAS);
-      grp[k].dif   += abs(r.DIFERENCIA);
-      grp[k].total += 1;
-      const pen = String(r.TEXTO1||'').toUpperCase()==='PENDIENTE' || String(r.ESTADO_NOMBRE||'').toUpperCase()==='PENDIENTE';
-      if(pen) grp[k].pend += 1;
-      if(!pen && num(r.DIFERENCIA)===0) grp[k].ok += 1;
+      const k = r.ORDEN||'—';
+      if(!grp[k]) grp[k] = {ORDEN:k, FECHA:r.FECHA, skus:new Set(), cant:0, count:0, dif:0};
+      grp[k].skus.add(r.ARTICULO);
+      grp[k].cant  += num(r.CANTIDAD);
+      grp[k].count += num(r.COUNT);
+      grp[k].dif   += abs(r.DIF);
     });
     const arr = Object.values(grp).map(g=>{
-      const skus = g.skus.size;
-      const pctDif = g.cajas>0 ? (g.dif/g.cajas)*100 : 0;
-      const pctAvance = g.total>0 ? ((g.total-g.pend)/g.total)*100 : 0;
-      return {ALMACEN:g.ALMACEN, skus, cajas:g.cajas, dif:g.dif, pend:g.pend, pctDif, pctAvance};
+      const pctExa = g.cant>0 ? (1 - g.dif/g.cant)*100 : (g.count===0 && g.dif===0 ? 100 : 0);
+      return {ORDEN:g.ORDEN, FECHA:g.FECHA, skus:g.skus.size, cant:g.cant, count:g.count, dif:g.dif, pctExa};
     });
     arr.sort((a,b)=>{
-      const va = a[rutaSortKey], vb = b[rutaSortKey];
-      if(typeof va==='number') return (va-vb)*rutaSortDir;
-      return String(va).localeCompare(String(vb))*rutaSortDir;
+      let va = a[ordSortKey], vb = b[ordSortKey];
+      if(ordSortKey==='FECHA'){ va=a.FECHA?a.FECHA.getTime():0; vb=b.FECHA?b.FECHA.getTime():0; }
+      if(typeof va==='number') return (va-vb)*ordSortDir;
+      return String(va??'').localeCompare(String(vb??''))*ordSortDir;
     });
-    const tb = document.querySelector('#tblRuta tbody');
+    const tb = document.querySelector('#tblOrden tbody');
     tb.innerHTML = arr.map(g=>{
-      const cls = g.pctAvance>=90?'':g.pctAvance>=50?'mid':'low';
+      const cls = g.pctExa>=95?'':g.pctExa>=80?'mid':'low';
       return `<tr>
-        <td><b>${g.ALMACEN}</b></td>
+        <td><b>${g.ORDEN}</b></td>
+        <td>${fmtFecha(g.FECHA)}</td>
         <td class="num">${g.skus}</td>
-        <td class="num">${fmt(g.cajas)}</td>
+        <td class="num">${fmt(g.cant)}</td>
+        <td class="num">${fmt(g.count)}</td>
         <td class="num ${g.dif>0?'neg':'z'}">${fmt(g.dif)}</td>
-        <td class="num ${g.pctDif>0?'neg':'z'}">${g.pctDif.toFixed(1)}%</td>
-        <td class="num ${g.pend>0?'neg':'z'}">${g.pend}</td>
+        <td class="num ${g.pctExa>=95?'pos':g.pctExa<80?'neg':''}">${g.pctExa.toFixed(1)}%</td>
         <td class="c" style="min-width:130px">
           <div style="display:flex;align-items:center">
-            <div class="bar ${cls}"><div style="width:${g.pctAvance.toFixed(1)}%"></div></div>
-            <span class="barlbl">${g.pctAvance.toFixed(0)}%</span>
+            <div class="bar ${cls}"><div style="width:${Math.max(0,Math.min(100,g.pctExa)).toFixed(1)}%"></div></div>
+            <span class="barlbl">${g.pctExa.toFixed(0)}%</span>
           </div>
         </td>
       </tr>`;
-    }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:14px">Sin datos</td></tr>';
+    }).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:14px">Sin datos</td></tr>';
   }
-  document.querySelectorAll('#tblRuta th').forEach(th=>{
+  document.querySelectorAll('#tblOrden th').forEach(th=>{
     th.addEventListener('click', ()=>{
       const k = th.dataset.k;
-      if(rutaSortKey===k) rutaSortDir *= -1; else {rutaSortKey=k; rutaSortDir = (k==='ALMACEN')?1:-1;}
-      renderRuta(filtered());
+      if(ordSortKey===k) ordSortDir *= -1;
+      else { ordSortKey=k; ordSortDir = (k==='ORDEN')?1:-1; }
+      renderOrden(filtered());
     });
   });
 
-  // === Distribución por estado =======================================
-  function renderChartEstado(rows){
-    const grp = {};
-    rows.forEach(r=>{ const k = r.ESTADO_NOMBRE || '(sin estado)'; grp[k] = (grp[k]||0)+1; });
-    const arr = Object.entries(grp).sort((a,b)=>b[1]-a[1]);
-    const total = arr.reduce((s,x)=>s+x[1],0) || 1;
-    const colorFor = (k)=>{
-      const up = k.toUpperCase();
-      if(up.includes('OK')||up.includes('SIN DIF')) return 'var(--verde)';
-      if(up.includes('DIF')) return 'var(--rojo)';
-      if(up.includes('PEND')) return 'var(--warn)';
+  // === Estados (Counted, Picked, Diferencia) =========================
+  function renderEstados(rows){
+    const cats = [
+      {key:'COUNTED',    lbl:'Counted'},
+      {key:'PICKED',     lbl:'Picked'},
+      {key:'DIFERENCIA', lbl:'Diferencia'},
+    ];
+    const colorFor = (v)=>{
+      const up = (v||'').toUpperCase();
+      if(up.includes('OK')||up.includes('SIN DIF')||up==='CONTADO'||up==='PREPARADO') return 'var(--verde)';
+      if(up.includes('CON DIF')) return 'var(--rojo)';
+      if(up.includes('PEND')||up.includes('SIN CONT')||up.includes('SIN PREP')||up==='') return 'var(--warn)';
       return 'var(--azulC)';
     };
-    document.getElementById('chartEstado').innerHTML = arr.map(([k,v])=>{
-      const pct = v/total*100;
-      return `<div style="display:flex;align-items:center;gap:8px;margin:5px 0">
-        <div style="width:110px;font-size:11px;font-weight:700;color:var(--texto2)">${k}</div>
-        <div class="bar" style="flex:1;height:16px"><div style="width:${pct.toFixed(1)}%;background:${colorFor(k)}"></div></div>
-        <div style="min-width:80px;text-align:right;font-size:11px"><b>${v.toLocaleString('es-GT')}</b> <span style="color:var(--muted)">(${pct.toFixed(1)}%)</span></div>
-      </div>`;
-    }).join('') || '<div style="text-align:center;color:var(--muted);padding:14px">Sin datos</div>';
+    let html = '';
+    cats.forEach(c=>{
+      const grp = {};
+      rows.forEach(r=>{ const k = r[c.key] || '(vac&iacute;o)'; grp[k] = (grp[k]||0)+1; });
+      const arr = Object.entries(grp).sort((a,b)=>b[1]-a[1]);
+      const total = arr.reduce((s,x)=>s+x[1],0) || 1;
+      html += `<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:800;color:var(--azul);margin-bottom:4px">${c.lbl}</div>`;
+      html += arr.map(([k,v])=>{
+        const pct = v/total*100;
+        return `<div style="display:flex;align-items:center;gap:8px;margin:3px 0">
+          <div style="width:110px;font-size:10.5px;font-weight:600;color:var(--texto2)">${k}</div>
+          <div class="bar" style="flex:1;height:14px"><div style="width:${pct.toFixed(1)}%;background:${colorFor(k)}"></div></div>
+          <div style="min-width:90px;text-align:right;font-size:10.5px"><b>${v.toLocaleString('es-GT')}</b> <span style="color:var(--muted)">(${pct.toFixed(1)}%)</span></div>
+        </div>`;
+      }).join('');
+      html += '</div>';
+    });
+    $('chartEstados').innerHTML = html || '<div style="text-align:center;color:var(--muted);padding:14px">Sin datos</div>';
   }
 
   // === Top SKUs con diferencia =======================================
   function renderTopDif(rows){
     const grp = {};
     rows.forEach(r=>{
-      if(num(r.DIFERENCIA)===0) return;
-      const k = r.SKU_CODIGO || '—';
-      if(!grp[k]) grp[k] = {sku:k, nom:r.SKU_NOMBRE||'', dif:0, rutas:new Set()};
-      grp[k].dif += abs(r.DIFERENCIA);
-      if(r.ALMACEN) grp[k].rutas.add(r.ALMACEN);
+      if(num(r.DIF)===0) return;
+      const k = r.ARTICULO || '—';
+      if(!grp[k]) grp[k] = {sku:k, nom:r.DESCRIPCION||'', dif:0, ord:new Set()};
+      grp[k].dif += abs(r.DIF);
+      if(r.ORDEN) grp[k].ord.add(r.ORDEN);
     });
     const arr = Object.values(grp).sort((a,b)=>b.dif-a.dif).slice(0,50);
     const tb = document.querySelector('#tblTopDif tbody');
@@ -356,16 +579,71 @@
       <td><code>${g.sku}</code></td>
       <td>${(g.nom||'').substring(0,55)}</td>
       <td class="num neg">${fmt(g.dif)}</td>
-      <td class="c">${g.rutas.size}</td>
+      <td class="c">${g.ord.size}</td>
     </tr>`).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:14px">Sin diferencias</td></tr>';
   }
 
   // === Detalle (paginado) ============================================
-  let detRows = [], detSortKey = 'FECHA_CREACION', detSortDir = -1, detPage = 1;
+  let detRows = [], detSortKey = 'FECHA', detSortDir = -1, detPage = 1;
+
+  // Filtros por columna: {FECHA:'...', ALMACEN:'...', ...}
+  function colFilterFns(){
+    const inputs = document.querySelectorAll('#tblDet tr.colFilters input');
+    const fns = [];
+    inputs.forEach(inp=>{
+      const raw = inp.value.trim();
+      if(!raw) return;
+      const col = inp.dataset.col;
+      // Operadores numericos: >, <, >=, <=, =, !=, entre a..b
+      const m = raw.match(/^\s*(>=|<=|!=|>|<|=)\s*(-?\d+(?:[.,]\d+)?)\s*$/);
+      if(m){
+        const op = m[1], n = parseFloat(m[2].replace(',','.'));
+        fns.push(r=>{
+          const v = Number(r[col]);
+          if(isNaN(v)) return false;
+          switch(op){
+            case '>':  return v>n;
+            case '<':  return v<n;
+            case '>=': return v>=n;
+            case '<=': return v<=n;
+            case '=':  return v===n;
+            case '!=': return v!==n;
+          }
+          return true;
+        });
+        return;
+      }
+      // Rango numerico a..b
+      const mr = raw.match(/^\s*(-?\d+(?:[.,]\d+)?)\s*\.\.\s*(-?\d+(?:[.,]\d+)?)\s*$/);
+      if(mr){
+        const a = parseFloat(mr[1].replace(',','.')), b = parseFloat(mr[2].replace(',','.'));
+        fns.push(r=>{
+          const v = Number(r[col]);
+          return !isNaN(v) && v>=Math.min(a,b) && v<=Math.max(a,b);
+        });
+        return;
+      }
+      // Substring case-insensitive (soporta multiples terminos separados por espacios: todos deben coincidir)
+      const terms = raw.toLowerCase().split(/\s+/).filter(Boolean);
+      fns.push(r=>{
+        let hay;
+        if(col==='FECHA') hay = fmtFecha(r.FECHA);
+        else hay = r[col];
+        hay = String(hay==null?'':hay).toLowerCase();
+        return terms.every(t=>hay.includes(t));
+      });
+    });
+    return fns;
+  }
+
   function detSorted(){
-    const rows = detRows.slice();
+    let rows = detRows;
+    const fns = colFilterFns();
+    if(fns.length) rows = rows.filter(r=>fns.every(fn=>fn(r)));
+    rows = rows.slice();
     rows.sort((a,b)=>{
-      const va = a[detSortKey], vb = b[detSortKey];
+      let va = a[detSortKey], vb = b[detSortKey];
+      if(detSortKey==='FECHA'){ va=a.FECHA?a.FECHA.getTime():0; vb=b.FECHA?b.FECHA.getTime():0; return (va-vb)*detSortDir; }
       const na = Number(va), nb = Number(vb);
       if(!isNaN(na)&&!isNaN(nb)&&va!==''&&vb!=='') return (na-nb)*detSortDir;
       return String(va??'').localeCompare(String(vb??''))*detSortDir;
@@ -374,74 +652,82 @@
   }
   function renderDet(){
     const rows = detSorted();
-    const ps = parseInt(document.getElementById('pageSize').value)||200;
+    const ps = parseInt($('pageSize').value)||200;
     const tot = Math.max(1, Math.ceil(rows.length/ps));
     if(detPage>tot) detPage = tot;
     const slice = rows.slice((detPage-1)*ps, detPage*ps);
-    document.getElementById('detCnt').textContent = rows.length.toLocaleString('es-GT');
-    document.getElementById('pgCur').textContent = detPage;
-    document.getElementById('pgTot').textContent = tot;
-    document.getElementById('pgFirst').disabled = detPage<=1;
-    document.getElementById('pgPrev').disabled  = detPage<=1;
-    document.getElementById('pgNext').disabled  = detPage>=tot;
-    document.getElementById('pgLast').disabled  = detPage>=tot;
+    $('detCnt').textContent = rows.length.toLocaleString('es-GT');
+    $('pgCur').textContent = detPage;
+    $('pgTot').textContent = tot;
+    $('pgFirst').disabled = detPage<=1;
+    $('pgPrev').disabled  = detPage<=1;
+    $('pgNext').disabled  = detPage>=tot;
+    $('pgLast').disabled  = detPage>=tot;
 
-    const tagFor = (est)=>{
-      const up = (est||'').toUpperCase();
-      if(up.includes('OK')||up.includes('SIN DIF')) return `<span class="tag t-ok">${est}</span>`;
-      if(up.includes('DIF')) return `<span class="tag t-dif">${est}</span>`;
-      if(up.includes('PEND')) return `<span class="tag t-pen">${est}</span>`;
-      if(!est) return '<span class="z">—</span>';
-      return `<span class="tag t-neu">${est}</span>`;
+    const tagFor = (v)=>{
+      if(!v) return '<span class="z">—</span>';
+      const up = v.toUpperCase();
+      if(up==='CONTADO'||up==='PREPARADO'||up.includes('SIN DIF')) return `<span class="tag t-ok">${v}</span>`;
+      if(up.includes('CON DIF')) return `<span class="tag t-dif">${v}</span>`;
+      if(up.includes('SIN CONT')||up.includes('SIN PREP')||up.includes('PEND')) return `<span class="tag t-pen">${v}</span>`;
+      return `<span class="tag t-neu">${v}</span>`;
     };
-    const fecha = f => f ? String(f).replace('T',' ').substring(0,19) : '';
 
     const tb = document.querySelector('#tblDet tbody');
     tb.innerHTML = slice.map(r=>`<tr>
-      <td class="c"><span class="tag ${r.__src===1?'t-neu':'t-neu'}" style="background:${r.__src===1?'var(--azulC)':'var(--naranja)'}">${r.__src}</span></td>
-      <td>${fecha(r.FECHA_CREACION)}</td>
-      <td><b>${r.ALMACEN||''}</b></td>
-      <td>${r.USUARIO_NOMBRE||r.USUARIO_CODIGO||''}</td>
-      <td><code>${r.SKU_CODIGO||''}</code></td>
-      <td>${(r.SKU_NOMBRE||'').substring(0,60)}</td>
-      <td class="num">${fmt(r.CAJAS)}</td>
-      <td class="num">${fmt(r.UNIDADES)}</td>
-      <td class="num">${fmt(r.CONTEO_FISICO)}</td>
-      <td class="num">${fmt(r.CANTIDAD_SAP)}</td>
-      <td class="num ${num(r.DIFERENCIA)>0?'neg':num(r.DIFERENCIA)<0?'pos':'z'}">${fmt(r.DIFERENCIA)}</td>
-      <td>${tagFor(r.ESTADO_NOMBRE)}</td>
-      <td class="z">${r.ID_W2W||''}</td>
-    </tr>`).join('') || '<tr><td colspan="13" style="text-align:center;color:var(--muted);padding:14px">Sin registros</td></tr>';
+      <td>${fmtFecha(r.FECHA)}</td>
+      <td>${r.ALMACEN||''}</td>
+      <td><b>${r.ORDEN||''}</b></td>
+      <td><code>${r.ARTICULO||''}</code></td>
+      <td>${(r.DESCRIPCION||'').substring(0,60)}</td>
+      <td class="num">${fmt(r.CANTIDAD)}</td>
+      <td class="num">${fmt(r.COUNT)}</td>
+      <td class="num ${num(r.DIF)>0?'pos':num(r.DIF)<0?'neg':'z'}">${fmt(r.DIF)}</td>
+      <td class="c">${tagFor(r.COUNTED)}</td>
+      <td class="c">${tagFor(r.PICKED)}</td>
+      <td class="c">${tagFor(r.DIFERENCIA)}</td>
+    </tr>`).join('') || '<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:14px">Sin registros</td></tr>';
   }
-  document.querySelectorAll('#tblDet th').forEach(th=>{
+  // Sort solo en la primera fila de headers (no en la fila de filtros)
+  document.querySelectorAll('#tblDet thead tr:first-child th').forEach(th=>{
     th.addEventListener('click', ()=>{
       const k = th.dataset.k;
+      if(!k) return;
       if(detSortKey===k) detSortDir *= -1; else {detSortKey=k; detSortDir=-1;}
       renderDet();
     });
   });
-  document.getElementById('pgFirst').onclick = ()=>{detPage=1; renderDet();};
-  document.getElementById('pgPrev').onclick  = ()=>{detPage=Math.max(1,detPage-1); renderDet();};
-  document.getElementById('pgNext').onclick  = ()=>{detPage=detPage+1; renderDet();};
-  document.getElementById('pgLast').onclick  = ()=>{detPage=1e9; renderDet();};
-  document.getElementById('pageSize').onchange = ()=>{detPage=1; renderDet();};
+  // Inputs de filtro por columna
+  document.querySelectorAll('#tblDet tr.colFilters input').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      clearTimeout(window.__td);
+      window.__td = setTimeout(()=>{ detPage=1; renderDet(); }, 180);
+    });
+    // Evitar que un click en el input dispare el sort del th
+    inp.addEventListener('click', e=>e.stopPropagation());
+  });
+  $('pgFirst').onclick = ()=>{detPage=1; renderDet();};
+  $('pgPrev').onclick  = ()=>{detPage=Math.max(1,detPage-1); renderDet();};
+  $('pgNext').onclick  = ()=>{detPage=detPage+1; renderDet();};
+  $('pgLast').onclick  = ()=>{detPage=1e9; renderDet();};
+  $('pageSize').onchange = ()=>{detPage=1; renderDet();};
 
   // === Exportar CSV ==================================================
-  document.getElementById('btnCSV').onclick = ()=>{
+  $('btnCSV').onclick = ()=>{
     const rows = detSorted();
     if(!rows.length){ alert('Sin filas para exportar'); return; }
-    const cols = ['__src','FECHA_CREACION','CENTRO','ALMACEN','USUARIO_CODIGO','USUARIO_NOMBRE','SKU_CODIGO','SKU_NOMBRE','SKU_BARRA','CAJAS','PAQUETES','UNIDADES','CONTEO_FISICO','CANTIDAD_SAP','DIFERENCIA','ESTADO_NOMBRE','TEXTO1','ID_W2W'];
+    const cols = ['FECHA','ALMACEN','ORDEN','ARTICULO','DESCRIPCION','CANTIDAD','COUNT','DIF','COUNTED','PICKED','DIFERENCIA'];
     const esc = v => {
       if(v==null) return '';
       const s = String(v);
       if(/[",;\n]/.test(s)) return '"'+s.replace(/"/g,'""')+'"';
       return s;
     };
-    const csv = [cols.join(';'), ...rows.map(r=>cols.map(c=>esc(c==='__src'?('C'+r.__src):r[c])).join(';'))].join('\r\n');
+    const csv = [cols.join(';'), ...rows.map(r=>cols.map(c=>esc(c==='FECHA'?fmtFecha(r.FECHA):r[c])).join(';'))].join('\r\n');
     const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = 'conteo_rutas_1111.csv';
+    a.href = url; a.download = 'conteo_rutas_filtrado.csv';
     document.body.appendChild(a); a.click(); a.remove();
     URL.revokeObjectURL(url);
   };
@@ -450,21 +736,20 @@
   function refresh(){
     const rows = filtered();
     renderKpis(rows);
-    renderRuta(rows);
-    renderChartEstado(rows);
+    renderOrden(rows);
+    renderEstados(rows);
     renderTopDif(rows);
     detRows = rows; detPage = 1;
     renderDet();
   }
-  ['fConteo','fAlmacen','fEstado','fAuditor','fDif'].forEach(id=>document.getElementById(id).onchange = refresh);
-  document.getElementById('fBuscar').oninput = ()=>{ clearTimeout(window.__t); window.__t = setTimeout(refresh, 200); };
-  document.getElementById('btnLimpiar').onclick = ()=>{
-    ['fConteo','fAlmacen','fEstado','fAuditor','fDif'].forEach(id=>document.getElementById(id).value = id==='fConteo'?'1':'');
-    document.getElementById('fBuscar').value = '';
+  ['fAlmacen','fOrden','fDesde','fHasta','fCounted','fPicked','fDiferencia'].forEach(id=>$(id).onchange = refresh);
+  $('fBuscar').oninput = ()=>{ clearTimeout(window.__t); window.__t = setTimeout(refresh, 200); };
+  $('btnLimpiar').onclick = ()=>{
+    ['fAlmacen','fOrden','fCounted','fPicked','fDiferencia'].forEach(id=>$(id).value='');
+    $('fDesde').value = ''; $('fHasta').value = ''; $('fBuscar').value = '';
+    document.querySelectorAll('#tblDet tr.colFilters input').forEach(inp=>inp.value='');
     refresh();
   };
-
-  refresh();
 })();
 </script>
 </body>
