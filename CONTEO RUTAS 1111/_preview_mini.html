@@ -58,6 +58,10 @@
 
   table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--grisL);border-radius:6px;overflow:hidden}
   th{background:var(--azul);color:#fff;font-weight:600;text-align:left;padding:6px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:2;cursor:pointer;user-select:none;white-space:nowrap}
+  tr.colFilters th{top:26px;background:#e8ecf5;padding:3px 4px;cursor:default}
+  tr.colFilters input{width:100%;border:1px solid #c8cbd0;border-radius:3px;padding:2px 5px;font-size:10.5px;background:#fff;font-family:inherit;color:var(--texto);text-transform:none;font-weight:400;letter-spacing:0}
+  tr.colFilters input:focus{outline:none;border-color:var(--azulC);box-shadow:0 0 0 2px rgba(42,120,214,.15)}
+  tr.colFilters input::placeholder{color:#9ba0a6;font-style:italic}
   th.num,td.num{text-align:right}
   th.c,td.c{text-align:center}
   td{padding:4px 8px;border-bottom:1px solid var(--gris2);font-size:11px;vertical-align:top}
@@ -209,7 +213,8 @@
 
     <h2 style="margin-top:18px">Detalle (<span id="detCnt">0</span> filas)</h2>
     <div style="max-height:520px;overflow:auto;border:1px solid var(--grisL);border-radius:6px">
-      <table id="tblDet"><thead><tr>
+      <table id="tblDet"><thead>
+      <tr>
         <th data-k="FECHA">Fecha</th>
         <th data-k="ALMACEN">Almac&eacute;n</th>
         <th data-k="ORDEN">Orden</th>
@@ -221,7 +226,21 @@
         <th class="c" data-k="COUNTED">Counted</th>
         <th class="c" data-k="PICKED">Picked</th>
         <th class="c" data-k="DIFERENCIA">Diferencia</th>
-      </tr></thead><tbody></tbody></table>
+      </tr>
+      <tr class="colFilters">
+        <th><input type="search" data-col="FECHA"       placeholder="dd/mm/aaaa"></th>
+        <th><input type="search" data-col="ALMACEN"     placeholder="filtrar&hellip;"></th>
+        <th><input type="search" data-col="ORDEN"       placeholder="filtrar&hellip;"></th>
+        <th><input type="search" data-col="ARTICULO"    placeholder="SKU&hellip;"></th>
+        <th><input type="search" data-col="DESCRIPCION" placeholder="descripci&oacute;n&hellip;"></th>
+        <th><input type="search" data-col="CANTIDAD"    placeholder=">10, <100, =0"></th>
+        <th><input type="search" data-col="COUNT"       placeholder=">10, <100, =0"></th>
+        <th><input type="search" data-col="DIF"         placeholder=">0, <0, !=0"></th>
+        <th><input type="search" data-col="COUNTED"     placeholder="filtrar&hellip;"></th>
+        <th><input type="search" data-col="PICKED"      placeholder="filtrar&hellip;"></th>
+        <th><input type="search" data-col="DIFERENCIA"  placeholder="filtrar&hellip;"></th>
+      </tr>
+      </thead><tbody></tbody></table>
     </div>
     <div class="pager">
       <span>Filas por p&aacute;gina:
@@ -567,8 +586,62 @@
 
   // === Detalle (paginado) ============================================
   let detRows = [], detSortKey = 'FECHA', detSortDir = -1, detPage = 1;
+
+  // Filtros por columna: {FECHA:'...', ALMACEN:'...', ...}
+  function colFilterFns(){
+    const inputs = document.querySelectorAll('#tblDet tr.colFilters input');
+    const fns = [];
+    inputs.forEach(inp=>{
+      const raw = inp.value.trim();
+      if(!raw) return;
+      const col = inp.dataset.col;
+      // Operadores numericos: >, <, >=, <=, =, !=, entre a..b
+      const m = raw.match(/^\s*(>=|<=|!=|>|<|=)\s*(-?\d+(?:[.,]\d+)?)\s*$/);
+      if(m){
+        const op = m[1], n = parseFloat(m[2].replace(',','.'));
+        fns.push(r=>{
+          const v = Number(r[col]);
+          if(isNaN(v)) return false;
+          switch(op){
+            case '>':  return v>n;
+            case '<':  return v<n;
+            case '>=': return v>=n;
+            case '<=': return v<=n;
+            case '=':  return v===n;
+            case '!=': return v!==n;
+          }
+          return true;
+        });
+        return;
+      }
+      // Rango numerico a..b
+      const mr = raw.match(/^\s*(-?\d+(?:[.,]\d+)?)\s*\.\.\s*(-?\d+(?:[.,]\d+)?)\s*$/);
+      if(mr){
+        const a = parseFloat(mr[1].replace(',','.')), b = parseFloat(mr[2].replace(',','.'));
+        fns.push(r=>{
+          const v = Number(r[col]);
+          return !isNaN(v) && v>=Math.min(a,b) && v<=Math.max(a,b);
+        });
+        return;
+      }
+      // Substring case-insensitive (soporta multiples terminos separados por espacios: todos deben coincidir)
+      const terms = raw.toLowerCase().split(/\s+/).filter(Boolean);
+      fns.push(r=>{
+        let hay;
+        if(col==='FECHA') hay = fmtFecha(r.FECHA);
+        else hay = r[col];
+        hay = String(hay==null?'':hay).toLowerCase();
+        return terms.every(t=>hay.includes(t));
+      });
+    });
+    return fns;
+  }
+
   function detSorted(){
-    const rows = detRows.slice();
+    let rows = detRows;
+    const fns = colFilterFns();
+    if(fns.length) rows = rows.filter(r=>fns.every(fn=>fn(r)));
+    rows = rows.slice();
     rows.sort((a,b)=>{
       let va = a[detSortKey], vb = b[detSortKey];
       if(detSortKey==='FECHA'){ va=a.FECHA?a.FECHA.getTime():0; vb=b.FECHA?b.FECHA.getTime():0; return (va-vb)*detSortDir; }
@@ -616,12 +689,23 @@
       <td class="c">${tagFor(r.DIFERENCIA)}</td>
     </tr>`).join('') || '<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:14px">Sin registros</td></tr>';
   }
-  document.querySelectorAll('#tblDet th').forEach(th=>{
+  // Sort solo en la primera fila de headers (no en la fila de filtros)
+  document.querySelectorAll('#tblDet thead tr:first-child th').forEach(th=>{
     th.addEventListener('click', ()=>{
       const k = th.dataset.k;
+      if(!k) return;
       if(detSortKey===k) detSortDir *= -1; else {detSortKey=k; detSortDir=-1;}
       renderDet();
     });
+  });
+  // Inputs de filtro por columna
+  document.querySelectorAll('#tblDet tr.colFilters input').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      clearTimeout(window.__td);
+      window.__td = setTimeout(()=>{ detPage=1; renderDet(); }, 180);
+    });
+    // Evitar que un click en el input dispare el sort del th
+    inp.addEventListener('click', e=>e.stopPropagation());
   });
   $('pgFirst').onclick = ()=>{detPage=1; renderDet();};
   $('pgPrev').onclick  = ()=>{detPage=Math.max(1,detPage-1); renderDet();};
@@ -664,6 +748,7 @@
   $('btnLimpiar').onclick = ()=>{
     ['fAlmacen','fOrden','fCounted','fPicked','fDiferencia'].forEach(id=>$(id).value='');
     $('fDesde').value = ''; $('fHasta').value = ''; $('fBuscar').value = '';
+    document.querySelectorAll('#tblDet tr.colFilters input').forEach(inp=>inp.value='');
     refresh();
   };
 })();
