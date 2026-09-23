@@ -176,7 +176,8 @@
       "Bash(echo \"Exit code: $?\")",
       "PowerShell(& \"C:\\\\Users\\\\trujillo.c\\\\AppData\\\\Local\\\\Python\\\\pythoncore-3.14-64\\\\python.exe\" \"C:\\\\Users\\\\trujillo.c\\\\OneDrive - Me Llega, S.A\\\\Escritorio\\\\TRUJILLO.C\\\\PROYECTO ALMACENAMIENTO\\\\detector_exceso_lps.py\")",
       "Read(//c/Users/trujillo.c/OneDrive - Me Llega, S.A/Escritorio/TRUJILLO.C/PROYECTO ALMACENAMIENTO/**)",
-      "Bash(\"C:\\\\Users\\\\trujillo.c\\\\AppData\\\\Local\\\\Python\\\\pythoncore-3.14-64\\\\python.exe\" \"detector_exceso_lps.py\")"
+      "Bash(\"C:\\\\Users\\\\trujillo.c\\\\AppData\\\\Local\\\\Python\\\\pythoncore-3.14-64\\\\python.exe\" \"detector_exceso_lps.py\")",
+      "PowerShell(& \"C:\\\\Users\\\\trujillo.c\\\\AppData\\\\Local\\\\Python\\\\pythoncore-3.14-64\\\\python.exe\" \"C:\\\\Users\\\\trujillo.c\\\\OneDrive - Me Llega, S.A\\\\Escritorio\\\\TRUJILLO.C\\\\PROYECTO ALMACENAMIENTO\\\\detector_exceso_lps.py\" | Select-Object -Last 5; \"EXIT=$LASTEXITCODE\")"
     ]
   }
 }
