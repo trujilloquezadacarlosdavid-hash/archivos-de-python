@@ -2172,3 +2172,18 @@ Traceback (most recent call last):
     conn = pyodbc.connect(SQL, timeout=30)
 pyodbc.OperationalError: ('08001', '[08001] [Microsoft][ODBC Driver 17 for SQL Server]Unable to complete login process due to delay in opening server connection (0) (SQLDriverConnect)')
 [jue 24/09/2026 12:47:12.31] Refresco completado 
+Conectando a SQL...
+SKUs Kraft Heinz: 83
+Calculando metricas...
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\INFOGRAFIA_SOP_DIRECTOR.html (23 KB)
+  Stock 103,931 | Despacho 361,388 | Recibido 234,373 | Riesgo 50,336 (48.4%) | PLNER 13,082 | Rotacion 76d
+Listo.
+Conectando a SQL...
+SKUs Kraft Heinz: 83
+Extrayendo detalle a nivel LP...
+  1687 LPs Heinz
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\DETALLE_HEINZ.html  (401 KB)
+  Planeacion: 13,082 cajas / 13 SKUs / 115 LPs
+  Vencido: 27,458 | <=30d: 15,214 | 31-60d: 2,558 | 61-90d: 5,106 | Vigente: 53,595
+Listo.
+[jue 24/09/2026 13:35:58.27] Refresco completado 
