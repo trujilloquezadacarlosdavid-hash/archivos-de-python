@@ -172,16 +172,7 @@
       "Bash(\"C:/Users/trujillo.c/AppData/Local/Python/pythoncore-3.14-64/python.exe\" \"C:/Users/trujillo.c/OneDrive - Me Llega, S.A/Escritorio/TRUJILLO.C/PROYECTO ALMACENAMIENTO/detector_exceso_lps.py\")",
       "Bash(rm -f \"C:/Users/trujillo.c/OneDrive - Me Llega, S.A/Escritorio/TRUJILLO.C/PROYECTO ALMACENAMIENTO/_print_list.txt\" && echo \"lista eliminada\")",
       "Bash(echo \"EXIT=$?\")",
-      "Bash(\"/c/Users/trujillo.c/AppData/Local/Python/pythoncore-3.14-64/python.exe\" \"/c/Users/trujillo.c/OneDrive - Me Llega, S.A/Escritorio/TRUJILLO.C/PROYECTO ALMACENAMIENTO/detector_exceso_lps.py\")",
-      "Bash(echo \"Exit code: $?\")",
-      "PowerShell(& \"C:\\\\Users\\\\trujillo.c\\\\AppData\\\\Local\\\\Python\\\\pythoncore-3.14-64\\\\python.exe\" \"C:\\\\Users\\\\trujillo.c\\\\OneDrive - Me Llega, S.A\\\\Escritorio\\\\TRUJILLO.C\\\\PROYECTO ALMACENAMIENTO\\\\detector_exceso_lps.py\")",
-      "Read(//c/Users/trujillo.c/OneDrive - Me Llega, S.A/Escritorio/TRUJILLO.C/PROYECTO ALMACENAMIENTO/**)",
-      "Bash(\"C:\\\\Users\\\\trujillo.c\\\\AppData\\\\Local\\\\Python\\\\pythoncore-3.14-64\\\\python.exe\" \"detector_exceso_lps.py\")",
-      "PowerShell(& \"C:\\\\Users\\\\trujillo.c\\\\AppData\\\\Local\\\\Python\\\\pythoncore-3.14-64\\\\python.exe\" \"C:\\\\Users\\\\trujillo.c\\\\OneDrive - Me Llega, S.A\\\\Escritorio\\\\TRUJILLO.C\\\\PROYECTO ALMACENAMIENTO\\\\detector_exceso_lps.py\" | Select-Object -Last 5; \"EXIT=$LASTEXITCODE\")",
-      "PowerShell(& \"C:\\\\Users\\\\trujillo.c\\\\AppData\\\\Local\\\\Python\\\\pythoncore-3.14-64\\\\python.exe\" \"C:\\\\Users\\\\trujillo.c\\\\OneDrive - Me Llega, S.A\\\\Escritorio\\\\TRUJILLO.C\\\\PROYECTO ALMACENAMIENTO\\\\detector_exceso_lps.py\" 2>&1 | Select-Object -Last 5; \"EXIT: $LASTEXITCODE\")",
-      "PowerShell(& \"C:\\\\Users\\\\trujillo.c\\\\AppData\\\\Local\\\\Python\\\\pythoncore-3.14-64\\\\python.exe\" \"C:\\\\Users\\\\trujillo.c\\\\OneDrive - Me Llega, S.A\\\\Escritorio\\\\TRUJILLO.C\\\\PROYECTO ALMACENAMIENTO\\\\detector_exceso_lps.py\" | Select-Object -Last 5; \"EXIT: $LASTEXITCODE\")",
-      "Bash(\"C:\\\\Users\\\\trujillo.c\\\\AppData\\\\Local\\\\Python\\\\pythoncore-3.14-64\\\\python.exe\" \"C:\\\\Users\\\\trujillo.c\\\\OneDrive - Me Llega, S.A\\\\Escritorio\\\\TRUJILLO.C\\\\PROYECTO MEDICION EMPLEADOS\\\\enviar_grupo_verificado.py\" --texto \"EXCESO DE LPs - Josue Hernandez \\(3 posiciones, 4 LPs de exceso\\)\" \"C:\\\\Users\\\\trujillo.c\\\\OneDrive - Me Llega, S.A\\\\Escritorio\\\\TRUJILLO.C\\\\PROYECTO ALMACENAMIENTO\\\\_exceso_Josue_Hernandez.png\")",
-      "PowerShell(& \"C:\\\\Users\\\\trujillo.c\\\\AppData\\\\Local\\\\Python\\\\pythoncore-3.14-64\\\\python.exe\" \"C:\\\\Users\\\\trujillo.c\\\\OneDrive - Me Llega, S.A\\\\Escritorio\\\\TRUJILLO.C\\\\PROYECTO ALMACENAMIENTO\\\\detector_exceso_lps.py\" 2>&1 | Select-Object -Last 5; \"EXIT=$LASTEXITCODE\")"
+      "Bash(\"/c/Users/trujillo.c/AppData/Local/Python/pythoncore-3.14-64/python.exe\" \"/c/Users/trujillo.c/OneDrive - Me Llega, S.A/Escritorio/TRUJILLO.C/PROYECTO ALMACENAMIENTO/detector_exceso_lps.py\")"
     ]
   }
 }
