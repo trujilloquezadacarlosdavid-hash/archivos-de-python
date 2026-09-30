@@ -793,3 +793,55 @@ Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PH
   Vencido: 28,556 | <=30d: 14,846 | 31-60d: 3,105 | 61-90d: 4,371 | Vigente: 68,724
 Listo.
 [mar 29/09/2026 20:33:54.79] Refresco completado 
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Calculando metricas...
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\INFOGRAFIA_SOP_DIRECTOR.html (23 KB)
+  Stock 119,611 | Despacho 367,580 | Recibido 255,324 | Riesgo 50,912 (42.6%) | PLNER 20,087 | Rotacion 89d
+Listo.
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Extrayendo detalle a nivel LP...
+Traceback (most recent call last):
+  File "C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\EXTRAER_DETALLE_HEINZ.py", line 45, in <module>
+    cur.execute(f"""
+    ~~~~~~~~~~~^^^^^
+    SELECT i.Location, i.ItemCode, i.ItemName, i.Status, i.BlockedCode, i.License,
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    ORDER BY i.ExpirationDate, i.ItemCode
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    """, skus)
+    ^^^^^^^^^^
+pyodbc.OperationalError: ('08S01', '[08S01] [Microsoft][ODBC Driver 17 for SQL Server]TCP Provider: Se ha anulado una conexi�n establecida por el software en su equipo host..\r\n (10053) (SQLExecDirectW); [08S01] [Microsoft][ODBC Driver 17 for SQL Server]Communication link failure (10053)')
+[mié 30/09/2026  2:43:44.18] Refresco completado 
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Calculando metricas...
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\INFOGRAFIA_SOP_DIRECTOR.html (23 KB)
+  Stock 119,611 | Despacho 367,580 | Recibido 265,124 | Riesgo 50,912 (42.6%) | PLNER 20,087 | Rotacion 89d
+Listo.
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Extrayendo detalle a nivel LP...
+  1814 LPs Heinz
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\DETALLE_HEINZ.html  (431 KB)
+  Planeacion: 20,087 cajas / 12 SKUs / 149 LPs
+  Vencido: 29,386 | <=30d: 14,026 | 31-60d: 3,254 | 61-90d: 4,246 | Vigente: 68,700
+Listo.
+[mié 30/09/2026  3:37:32.93] Refresco completado 
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Calculando metricas...
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\INFOGRAFIA_SOP_DIRECTOR.html (23 KB)
+  Stock 122,619 | Despacho 367,580 | Recibido 268,848 | Riesgo 50,912 (41.5%) | PLNER 20,087 | Rotacion 91d
+Listo.
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Extrayendo detalle a nivel LP...
+  1832 LPs Heinz
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\DETALLE_HEINZ.html  (436 KB)
+  Planeacion: 20,087 cajas / 12 SKUs / 149 LPs
+  Vencido: 29,386 | <=30d: 14,026 | 31-60d: 3,254 | 61-90d: 4,246 | Vigente: 71,708
+Listo.
+[mié 30/09/2026  4:33:39.48] Refresco completado 

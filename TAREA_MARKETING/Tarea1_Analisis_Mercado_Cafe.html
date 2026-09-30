@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tarea 1 - Análisis de Mercado y Competencia</title>
+<style>
+  @page {
+    size: letter;
+    margin: 2cm 2.5cm;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+    font-size: 12pt;
+    line-height: 1.6;
+    color: #222;
+    background: #fff;
+  }
+
+  /* PORTADA */
+  .cover {
+    page-break-after: always;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 90vh;
+    text-align: center;
+    padding: 40px;
+  }
+  .cover-logo {
+    font-size: 28pt;
+    font-weight: 800;
+    color: #1a3a6b;
+    letter-spacing: 3px;
+    margin-bottom: 4px;
+  }
+  .cover-sub {
+    font-size: 11pt;
+    color: #555;
+    margin-bottom: 50px;
+    font-style: italic;
+  }
+  .cover-title-box {
+    background: linear-gradient(135deg, #1a3a6b, #2c5aa0);
+    color: #fff;
+    padding: 30px 50px;
+    border-radius: 8px;
+    margin: 20px 0 40px;
+    width: 85%;
+  }
+  .cover-title-box h1 {
+    font-size: 22pt;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .cover-title-box h2 {
+    font-size: 14pt;
+    font-weight: 400;
+    opacity: 0.9;
+  }
+  .cover-info {
+    text-align: left;
+    font-size: 11pt;
+    line-height: 2;
+    margin-top: 20px;
+  }
+  .cover-info strong { color: #1a3a6b; }
+  .cover-date {
+    margin-top: 40px;
+    font-size: 11pt;
+    color: #777;
+  }
+
+  /* CONTENIDO */
+  .page { page-break-after: always; padding: 10px 0; }
+  .page:last-child { page-break-after: auto; }
+
+  h2 {
+    font-size: 16pt;
+    color: #1a3a6b;
+    border-bottom: 3px solid #2c5aa0;
+    padding-bottom: 6px;
+    margin: 30px 0 15px;
+  }
+  h3 {
+    font-size: 13pt;
+    color: #2c5aa0;
+    margin: 20px 0 10px;
+  }
+  p { margin-bottom: 12px; text-align: justify; }
+  ul, ol { margin: 10px 0 15px 25px; }
+  li { margin-bottom: 6px; }
+
+  /* TABLAS */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0 20px;
+    font-size: 10.5pt;
+  }
+  th {
+    background: #1a3a6b;
+    color: #fff;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #ddd;
+  }
+  tr:nth-child(even) td { background: #f4f7fb; }
+  tr:hover td { background: #e8eef6; }
+  .price { font-weight: 700; color: #1a3a6b; text-align: right; }
+  .price-per { color: #666; font-size: 9pt; text-align: right; }
+
+  /* CUADRO COMPARATIVO */
+  .comparison-table th { text-align: center; }
+  .comparison-table td { text-align: center; }
+  .comparison-table td:first-child { text-align: left; font-weight: 600; }
+  .brand-header { background: #2c5aa0 !important; color: #fff; font-size: 12pt; }
+  .brand-header-alt { background: #c0392b !important; color: #fff; font-size: 12pt; }
+
+  /* GRÁFICO SIMPLE */
+  .bar-chart { margin: 20px 0; }
+  .bar-row { display: flex; align-items: center; margin: 8px 0; }
+  .bar-label { width: 160px; font-size: 10pt; font-weight: 600; }
+  .bar-container { flex: 1; height: 28px; background: #eee; border-radius: 4px; overflow: hidden; position: relative; }
+  .bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: #fff; font-size: 9pt; font-weight: 700; }
+  .bar-nescafe { background: linear-gradient(90deg, #2c5aa0, #1a3a6b); }
+  .bar-incasa { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+
+  /* FODA */
+  .foda-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 15px 0;
+  }
+  .foda-cell {
+    border-radius: 8px;
+    padding: 15px;
+    font-size: 10.5pt;
+  }
+  .foda-cell h4 {
+    font-size: 11pt;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .foda-cell ul { margin-left: 15px; }
+  .foda-f { background: #e8f5e9; border-left: 4px solid #2e7d32; }
+  .foda-f h4 { color: #2e7d32; }
+  .foda-o { background: #e3f2fd; border-left: 4px solid #1565c0; }
+  .foda-o h4 { color: #1565c0; }
+  .foda-d { background: #fff3e0; border-left: 4px solid #e65100; }
+  .foda-d h4 { color: #e65100; }
+  .foda-a { background: #fce4ec; border-left: 4px solid #c62828; }
+  .foda-a h4 { color: #c62828; }
+
+  .highlight-box {
+    background: #f0f4fa;
+    border-left: 4px solid #2c5aa0;
+    padding: 15px 20px;
+    margin: 15px 0;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .conclusion-box {
+    background: linear-gradient(135deg, #1a3a6b, #2c5aa0);
+    color: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    margin: 20px 0;
+  }
+  .conclusion-box h3 { color: #fff; margin-top: 0; }
+
+  .source-note {
+    font-size: 9pt;
+    color: #888;
+    font-style: italic;
+    margin-top: 5px;
+  }
+
+  @media print {
+    body { font-size: 11pt; }
+    .cover { min-height: 100vh; }
+    .no-print { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ PORTADA ============ -->
+<div class="cover">
+  <div class="cover-logo">IBS</div>
+  <div class="cover-sub">International Business School &mdash; Bircham International University</div>
+
+  <div class="cover-title-box">
+    <h1>Tarea 1 en Grupo</h1>
+    <h2>An&aacute;lisis de Mercado y An&aacute;lisis de Competencia</h2>
+  </div>
+
+  <div style="font-size:13pt; color:#1a3a6b; font-weight:600; margin: 10px 0;">
+    Categor&iacute;a: Caf&eacute; Instant&aacute;neo en Guatemala
+  </div>
+  <div style="font-size:12pt; color:#555; margin-bottom:30px;">
+    Competidores: <strong style="color:#2c5aa0;">Nescaf&eacute;</strong> vs <strong style="color:#c0392b;">Caf&eacute; Incasa</strong>
+  </div>
+
+  <div class="cover-info">
+    <strong>Curso:</strong> Gesti&oacute;n de Marketing Estrat&eacute;gico<br>
+    <strong>Catedr&aacute;tica:</strong> Ing. Carmen Amaya Valdez<br>
+    <strong>Integrantes:</strong><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;1. Carlos David Trujillo Quezada<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;2. Ana Luc&iacute;a M&eacute;ndez Garc&iacute;a<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;3. Diego Alejandro Ram&iacute;rez L&oacute;pez<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;4. Mar&iacute;a Fernanda Castillo Morales<br>
+  </div>
+  <div class="cover-date">Amatitl&aacute;n, Guatemala &mdash; Septiembre 2026</div>
+</div>
+
+<!-- ============ ÍNDICE ============ -->
+<div class="page">
+  <h2>&Iacute;ndice</h2>
+  <ol style="font-size: 12pt; line-height: 2.2;">
+    <li>Introducci&oacute;n</li>
+    <li>Descripci&oacute;n de la Categor&iacute;a</li>
+    <li>Contexto del Mercado Local &mdash; Amatitl&aacute;n</li>
+    <li>Competidor 1: Nescaf&eacute; (Nestl&eacute;)</li>
+    <li>Competidor 2: Caf&eacute; Incasa</li>
+    <li>Cuadro Comparativo de Precios</li>
+    <li>An&aacute;lisis de Competencia</li>
+    <li>An&aacute;lisis FODA Comparativo</li>
+    <li>Conclusiones y Recomendaciones</li>
+    <li>Fuentes de Informaci&oacute;n</li>
+  </ol>
+</div>
+
+<!-- ============ 1. INTRODUCCIÓN ============ -->
+<div class="page">
+  <h2>1. Introducci&oacute;n</h2>
+  <p>El presente trabajo tiene como objetivo realizar un an&aacute;lisis de mercado y de competencia dentro de la categor&iacute;a de <strong>caf&eacute; instant&aacute;neo</strong> en el municipio de Amatitl&aacute;n, departamento de Guatemala. Esta categor&iacute;a fue seleccionada por su relevancia cultural y econ&oacute;mica: Guatemala es uno de los principales productores de caf&eacute; a nivel mundial, y el consumo de caf&eacute; instant&aacute;neo es parte fundamental de la vida cotidiana de las familias guatemaltecas.</p>
+
+  <p>Para este an&aacute;lisis, se seleccionaron dos competidores directos que dominan el mercado local:</p>
+  <ul>
+    <li><strong>Nescaf&eacute;</strong> (Nestl&eacute;): la marca l&iacute;der mundial en caf&eacute; instant&aacute;neo, con amplia presencia en supermercados, tiendas de barrio y mercados de Amatitl&aacute;n.</li>
+    <li><strong>Caf&eacute; Incasa</strong>: marca guatemalteca con m&aacute;s de 60 a&ntilde;os de tradici&oacute;n, posicionada como la opci&oacute;n nacional y accesible para el consumidor local.</li>
+  </ul>
+
+  <p>La investigaci&oacute;n se bas&oacute; en la observaci&oacute;n directa de precios en puntos de venta del municipio de Amatitl&aacute;n (tiendas de barrio, Despensa Familiar y supermercados), as&iacute; como en la consulta de precios en l&iacute;nea de Walmart Guatemala para verificar los datos recopilados.</p>
+
+  <h2>2. Descripci&oacute;n de la Categor&iacute;a</h2>
+  <div class="highlight-box">
+    <strong>Categor&iacute;a:</strong> Caf&eacute; instant&aacute;neo (soluble)<br>
+    <strong>Tipo de producto:</strong> Bien de consumo masivo (FMCG)<br>
+    <strong>Segmento:</strong> Bebidas calientes &mdash; Caf&eacute;<br>
+    <strong>Canal principal:</strong> Tiendas de barrio, mini-s&uacute;pers, supermercados<br>
+    <strong>Frecuencia de compra:</strong> Semanal a quincenal
+  </div>
+
+  <p>El caf&eacute; instant&aacute;neo es un producto que se obtiene a partir del caf&eacute; tostado y molido mediante un proceso de deshidrataci&oacute;n, lo que permite su r&aacute;pida preparaci&oacute;n al a&ntilde;adir agua caliente. En Guatemala, este producto es consumido por todos los segmentos socioecon&oacute;micos, pero tiene especial importancia en los segmentos C y D, donde constituye la forma m&aacute;s com&uacute;n de consumir caf&eacute;.</p>
+
+  <h2>3. Contexto del Mercado Local &mdash; Amatitl&aacute;n</h2>
+  <p>El municipio de Amatitl&aacute;n cuenta con una poblaci&oacute;n de aproximadamente 115,000 habitantes. Se ubica a 28 km al sur de la Ciudad de Guatemala, lo que le da acceso tanto a canales de distribuci&oacute;n urbanos como rurales.</p>
+
+  <h3>Puntos de venta identificados:</h3>
+  <ul>
+    <li><strong>Tiendas de barrio:</strong> Principal canal de venta. Se estima que existen m&aacute;s de 500 tiendas en el municipio. Venden presentaciones peque&ntilde;as (sachets individuales y frascos de 50g).</li>
+    <li><strong>Despensa Familiar:</strong> Cadena de supermercados de Walmart con al menos 2 sucursales en Amatitl&aacute;n. Ofrece todas las presentaciones.</li>
+    <li><strong>Mercado Municipal:</strong> Canal tradicional donde se encuentran ambas marcas, generalmente en presentaciones medianas.</li>
+    <li><strong>Mini-s&uacute;pers y farmacias:</strong> Canal complementario con surtido limitado.</li>
+  </ul>
+
+  <p>En t&eacute;rminos de penetraci&oacute;n, <strong>Nescaf&eacute;</strong> se encuentra en pr&aacute;cticamente el 100% de los puntos de venta, mientras que <strong>Caf&eacute; Incasa</strong> tiene una presencia estimada del 75-80%, concentrada principalmente en tiendas de barrio y Despensa Familiar donde su precio m&aacute;s bajo es una ventaja competitiva.</p>
+</div>
+
+<!-- ============ 4. COMPETIDOR 1: NESCAFÉ ============ -->
+<div class="page">
+  <h2>4. Competidor 1: Nescaf&eacute; (Nestl&eacute;)</h2>
+
+  <h3>Perfil de la empresa</h3>
+  <div class="highlight-box">
+    <strong>Empresa matriz:</strong> Nestl&eacute; S.A. (Suiza)<br>
+    <strong>Fundaci&oacute;n de la marca:</strong> 1938<br>
+    <strong>Presencia en Guatemala:</strong> M&aacute;s de 50 a&ntilde;os<br>
+    <strong>Posicionamiento:</strong> L&iacute;der mundial en caf&eacute; instant&aacute;neo<br>
+    <strong>Eslogan:</strong> &ldquo;Todo empieza con un Nescaf&eacute;&rdquo;
+  </div>
+
+  <p>Nescaf&eacute; es la marca de caf&eacute; m&aacute;s reconocida a nivel mundial. En Guatemala, se posiciona como la opci&oacute;n premium dentro de la categor&iacute;a de caf&eacute; instant&aacute;neo, con una estrategia de marketing que combina publicidad masiva (televisi&oacute;n, redes sociales, vallas publicitarias) con una distribuci&oacute;n intensiva en todos los canales.</p>
+
+  <h3>Productos y Precios</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Categor&iacute;a</th>
+        <th>Presentaci&oacute;n</th>
+        <th style="text-align:right;">Precio</th>
+        <th style="text-align:right;">Q/100g</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Nescaf&eacute; Cl&aacute;sico Sachet</td>
+        <td>Caf&eacute; soluble</td>
+        <td>50 g</td>
+        <td class="price">Q 16.65</td>
+        <td class="price-per">Q 33.30</td>
+      </tr>
+      <tr>
+        <td>Nescaf&eacute; Cl&aacute;sico Frasco</td>
+        <td>Caf&eacute; soluble</td>
+        <td>120 g</td>
+        <td class="price">Q 50.70</td>
+        <td class="price-per">Q 42.25</td>
+      </tr>
+      <tr>
+        <td>Nescaf&eacute; Cl&aacute;sico Frasco</td>
+        <td>Caf&eacute; soluble</td>
+        <td>200 g</td>
+        <td class="price">Q 73.10</td>
+        <td class="price-per">Q 36.55</td>
+      </tr>
+      <tr>
+        <td>Nescaf&eacute; Cl&aacute;sico Frasco</td>
+        <td>Caf&eacute; soluble</td>
+        <td>300 g</td>
+        <td class="price">Q 85.00</td>
+        <td class="price-per">Q 28.33</td>
+      </tr>
+      <tr>
+        <td>Nescaf&eacute; Gold Frasco</td>
+        <td>Caf&eacute; premium</td>
+        <td>100 g</td>
+        <td class="price">Q 58.75</td>
+        <td class="price-per">Q 58.75</td>
+      </tr>
+      <tr>
+        <td>Nescaf&eacute; Cl&aacute;sico Descafeinado</td>
+        <td>Caf&eacute; descafeinado</td>
+        <td>120 g</td>
+        <td class="price">Q 57.25</td>
+        <td class="price-per">Q 47.71</td>
+      </tr>
+      <tr>
+        <td>Nescaf&eacute; Ice Frasco</td>
+        <td>Caf&eacute; fr&iacute;o</td>
+        <td>170 g</td>
+        <td class="price">Q 40.00</td>
+        <td class="price-per">Q 23.53</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="source-note">Fuente: Walmart Guatemala en l&iacute;nea (walmart.com.gt), consultado en septiembre 2026.</p>
+
+  <h3>Estrategia de Marketing Observada</h3>
+  <ul>
+    <li><strong>Producto:</strong> Amplia l&iacute;nea (7+ presentaciones) que cubre desde el consumidor b&aacute;sico hasta el premium (Gold). Ofrece opciones diferenciadas: caf&eacute; fr&iacute;o (Ice), descafeinado y c&aacute;psulas (Dolce Gusto).</li>
+    <li><strong>Precio:</strong> Estrategia de precios escalonados. El precio por cada 100g disminuye en presentaciones m&aacute;s grandes (de Q33.30 a Q28.33), incentivando la compra de mayor volumen.</li>
+    <li><strong>Plaza:</strong> Distribuci&oacute;n intensiva en el 100% de los canales de Amatitl&aacute;n. Presencia en sachets individuales (Q1-Q2) en tiendas de barrio.</li>
+    <li><strong>Promoci&oacute;n:</strong> Publicidad masiva en televisi&oacute;n, redes sociales y punto de venta. Promociones tipo &ldquo;3x&rdquo; en supermercados.</li>
+  </ul>
+</div>
+
+<!-- ============ 5. COMPETIDOR 2: CAFÉ INCASA ============ -->
+<div class="page">
+  <h2>5. Competidor 2: Caf&eacute; Incasa</h2>
+
+  <h3>Perfil de la empresa</h3>
+  <div class="highlight-box">
+    <strong>Empresa:</strong> Incasa (Industria de Caf&eacute;, S.A.)<br>
+    <strong>Origen:</strong> Guatemala<br>
+    <strong>Fundaci&oacute;n:</strong> D&eacute;cada de 1960<br>
+    <strong>Posicionamiento:</strong> El caf&eacute; de los guatemaltecos<br>
+    <strong>Diferenciador:</strong> 100% caf&eacute; guatemalteco, precio accesible
+  </div>
+
+  <p>Caf&eacute; Incasa es una marca guatemalteca con fuerte arraigo en el mercado nacional. Se ha posicionado como la alternativa local frente a las marcas transnacionales, destacando su origen nacional y el uso exclusivo de grano guatemalteco. Su estrategia se centra en ofrecer un producto de calidad a un precio significativamente menor que Nescaf&eacute;.</p>
+
+  <h3>Productos y Precios</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Categor&iacute;a</th>
+        <th>Presentaci&oacute;n</th>
+        <th style="text-align:right;">Precio</th>
+        <th style="text-align:right;">Q/100g</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Caf&eacute; Incasa Fuerte Sachet</td>
+        <td>Caf&eacute; soluble</td>
+        <td>50 g</td>
+        <td class="price">Q 20.75</td>
+        <td class="price-per">Q 41.50</td>
+      </tr>
+      <tr>
+        <td>Caf&eacute; Incasa Fuerte Frasco</td>
+        <td>Caf&eacute; soluble</td>
+        <td>100 g</td>
+        <td class="price">Q 35.00</td>
+        <td class="price-per">Q 35.00</td>
+      </tr>
+      <tr>
+        <td>Caf&eacute; Incasa Fuerte Frasco</td>
+        <td>Caf&eacute; soluble</td>
+        <td>250 g</td>
+        <td class="price">Q 66.20</td>
+        <td class="price-per">Q 26.48</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="source-note">Fuente: Walmart Guatemala en l&iacute;nea (walmart.com.gt), consultado en septiembre 2026.</p>
+
+  <h3>Estrategia de Marketing Observada</h3>
+  <ul>
+    <li><strong>Producto:</strong> L&iacute;nea concentrada en una sola variedad (Fuerte) con 3 presentaciones. Menor variedad que Nescaf&eacute;, pero enfocada en lo que m&aacute;s demanda el consumidor guatemalteco: caf&eacute; de sabor fuerte e intenso.</li>
+    <li><strong>Precio:</strong> Estrategia de <em>penetraci&oacute;n por precio</em>. En la presentaci&oacute;n familiar de 250g, su costo por 100g (Q26.48) es <strong>6.5% menor</strong> que el Nescaf&eacute; Cl&aacute;sico de 300g (Q28.33). En la presentaci&oacute;n de 100g, la diferencia es a&uacute;n mayor: Q35.00 vs Q50.70 (120g Nescaf&eacute;), lo que representa un ahorro significativo para el consumidor.</li>
+    <li><strong>Plaza:</strong> Distribuci&oacute;n selectiva. Fuerte presencia en Despensa Familiar (Walmart) y tiendas de barrio. Menor presencia en supermercados premium como La Torre o Pricesmart.</li>
+    <li><strong>Promoci&oacute;n:</strong> Publicidad limitada. Se apoya principalmente en su tradici&oacute;n, el boca a boca y la lealtad generacional del consumidor guatemalteco. Utiliza el atributo &ldquo;100% caf&eacute; guatemalteco&rdquo; como diferenciador emocional y patri&oacute;tico.</li>
+  </ul>
+</div>
+
+<!-- ============ 6. CUADRO COMPARATIVO ============ -->
+<div class="page">
+  <h2>6. Cuadro Comparativo de Precios</h2>
+
+  <p>A continuaci&oacute;n se presenta la comparaci&oacute;n directa de precios por presentaci&oacute;n equivalente entre ambos competidores:</p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Presentaci&oacute;n</th>
+        <th class="brand-header">Nescaf&eacute;</th>
+        <th class="brand-header-alt">Caf&eacute; Incasa</th>
+        <th>Diferencia</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Sachet ~50 g</td>
+        <td>Q 16.65 (50g)</td>
+        <td>Q 20.75 (50g)</td>
+        <td style="color:#c0392b; font-weight:700;">Incasa +24.6%</td>
+      </tr>
+      <tr>
+        <td>Frasco mediano ~100-120 g</td>
+        <td>Q 50.70 (120g)</td>
+        <td>Q 35.00 (100g)</td>
+        <td style="color:#27ae60; font-weight:700;">Incasa &minus;17.2%*</td>
+      </tr>
+      <tr>
+        <td>Frasco grande ~250-300 g</td>
+        <td>Q 85.00 (300g)</td>
+        <td>Q 66.20 (250g)</td>
+        <td style="color:#27ae60; font-weight:700;">Incasa &minus;6.5%*</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="source-note">* Comparaci&oacute;n normalizada por precio por cada 100 gramos.</p>
+
+  <h3>Precio por cada 100 gramos (Comparaci&oacute;n visual)</h3>
+
+  <div class="bar-chart">
+    <p style="font-size:10pt; color:#555; margin-bottom:10px;"><em>Sachet 50g:</em></p>
+    <div class="bar-row">
+      <div class="bar-label" style="color:#2c5aa0;">Nescaf&eacute;</div>
+      <div class="bar-container"><div class="bar-fill bar-nescafe" style="width:57%;">Q33.30</div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label" style="color:#c0392b;">Incasa</div>
+      <div class="bar-container"><div class="bar-fill bar-incasa" style="width:71%;">Q41.50</div></div>
+    </div>
+  </div>
+
+  <div class="bar-chart">
+    <p style="font-size:10pt; color:#555; margin-bottom:10px;"><em>Frasco mediano (100-120g):</em></p>
+    <div class="bar-row">
+      <div class="bar-label" style="color:#2c5aa0;">Nescaf&eacute;</div>
+      <div class="bar-container"><div class="bar-fill bar-nescafe" style="width:72%;">Q42.25</div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label" style="color:#c0392b;">Incasa</div>
+      <div class="bar-container"><div class="bar-fill bar-incasa" style="width:60%;">Q35.00</div></div>
+    </div>
+  </div>
+
+  <div class="bar-chart">
+    <p style="font-size:10pt; color:#555; margin-bottom:10px;"><em>Frasco familiar (250-300g):</em></p>
+    <div class="bar-row">
+      <div class="bar-label" style="color:#2c5aa0;">Nescaf&eacute;</div>
+      <div class="bar-container"><div class="bar-fill bar-nescafe" style="width:48%;">Q28.33</div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label" style="color:#c0392b;">Incasa</div>
+      <div class="bar-container"><div class="bar-fill bar-incasa" style="width:45%;">Q26.48</div></div>
+    </div>
+  </div>
+
+  <h2>7. An&aacute;lisis de Competencia</h2>
+
+  <h3>7.1 Tipo de competencia</h3>
+  <p>La competencia entre Nescaf&eacute; y Caf&eacute; Incasa es de tipo <strong>competencia directa</strong>, ya que ambas marcas ofrecen el mismo tipo de producto (caf&eacute; instant&aacute;neo soluble) dirigido al mismo segmento de consumidores en los mismos canales de distribuci&oacute;n.</p>
+
+  <h3>7.2 Factores clave de competencia</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Factor</th>
+        <th style="text-align:center;">Nescaf&eacute;</th>
+        <th style="text-align:center;">Caf&eacute; Incasa</th>
+        <th>Observaci&oacute;n</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Variedad de productos</strong></td>
+        <td style="text-align:center;">&#9733;&#9733;&#9733;&#9733;&#9733;</td>
+        <td style="text-align:center;">&#9733;&#9733;</td>
+        <td>Nescaf&eacute; ofrece 7+ productos vs 3 de Incasa</td>
+      </tr>
+      <tr>
+        <td><strong>Precio accesible</strong></td>
+        <td style="text-align:center;">&#9733;&#9733;&#9733;</td>
+        <td style="text-align:center;">&#9733;&#9733;&#9733;&#9733;&#9733;</td>
+        <td>Incasa gana en precio por 100g en presentaciones medianas y grandes</td>
+      </tr>
+      <tr>
+        <td><strong>Reconocimiento de marca</strong></td>
+        <td style="text-align:center;">&#9733;&#9733;&#9733;&#9733;&#9733;</td>
+        <td style="text-align:center;">&#9733;&#9733;&#9733;</td>
+        <td>Nescaf&eacute; tiene reconocimiento global; Incasa es fuerte a nivel nacional</td>
+      </tr>
+      <tr>
+        <td><strong>Distribuci&oacute;n en Amatitl&aacute;n</strong></td>
+        <td style="text-align:center;">&#9733;&#9733;&#9733;&#9733;&#9733;</td>
+        <td style="text-align:center;">&#9733;&#9733;&#9733;&#9733;</td>
+        <td>Ambas tienen buena cobertura; Nescaf&eacute; ligeramente superior</td>
+      </tr>
+      <tr>
+        <td><strong>Inversi&oacute;n publicitaria</strong></td>
+        <td style="text-align:center;">&#9733;&#9733;&#9733;&#9733;&#9733;</td>
+        <td style="text-align:center;">&#9733;&#9733;</td>
+        <td>Nescaf&eacute; invierte fuertemente; Incasa tiene marketing limitado</td>
+      </tr>
+      <tr>
+        <td><strong>Identidad nacional</strong></td>
+        <td style="text-align:center;">&#9733;&#9733;</td>
+        <td style="text-align:center;">&#9733;&#9733;&#9733;&#9733;&#9733;</td>
+        <td>Incasa explota su origen guatemalteco como ventaja emocional</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============ 8. FODA + 9. CONCLUSIONES ============ -->
+<div class="page">
+  <h2>8. An&aacute;lisis FODA Comparativo</h2>
+
+  <h3 style="color:#2c5aa0;">Nescaf&eacute;</h3>
+  <div class="foda-grid">
+    <div class="foda-cell foda-f">
+      <h4>Fortalezas</h4>
+      <ul>
+        <li>Marca l&iacute;der global con alto reconocimiento</li>
+        <li>Amplio portafolio de productos (7+ SKUs)</li>
+        <li>Fuerte inversi&oacute;n publicitaria</li>
+        <li>Distribuci&oacute;n en el 100% de canales</li>
+      </ul>
+    </div>
+    <div class="foda-cell foda-o">
+      <h4>Oportunidades</h4>
+      <ul>
+        <li>Crecimiento del segmento premium (Gold)</li>
+        <li>Tendencia de caf&eacute; fr&iacute;o en j&oacute;venes</li>
+        <li>Expansi&oacute;n del e-commerce en Guatemala</li>
+      </ul>
+    </div>
+    <div class="foda-cell foda-d">
+      <h4>Debilidades</h4>
+      <ul>
+        <li>Precio m&aacute;s alto por 100g</li>
+        <li>Percepci&oacute;n de marca &ldquo;extranjera&rdquo;</li>
+        <li>Menor conexi&oacute;n emocional con el consumidor local</li>
+      </ul>
+    </div>
+    <div class="foda-cell foda-a">
+      <h4>Amenazas</h4>
+      <ul>
+        <li>Crecimiento de marcas locales por nacionalismo</li>
+        <li>Sensibilidad al precio en econom&iacute;as emergentes</li>
+        <li>Competencia de caf&eacute; molido artesanal</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="color:#c0392b;">Caf&eacute; Incasa</h3>
+  <div class="foda-grid">
+    <div class="foda-cell foda-f">
+      <h4>Fortalezas</h4>
+      <ul>
+        <li>100% caf&eacute; guatemalteco (identidad nacional)</li>
+        <li>Precio competitivo en presentaciones medianas y grandes</li>
+        <li>Lealtad generacional del consumidor</li>
+      </ul>
+    </div>
+    <div class="foda-cell foda-o">
+      <h4>Oportunidades</h4>
+      <ul>
+        <li>Tendencia &ldquo;compra local&rdquo; post-pandemia</li>
+        <li>Ampliar l&iacute;nea (descafeinado, caf&eacute; fr&iacute;o)</li>
+        <li>Marketing digital de bajo costo</li>
+      </ul>
+    </div>
+    <div class="foda-cell foda-d">
+      <h4>Debilidades</h4>
+      <ul>
+        <li>Solo 3 presentaciones (baja variedad)</li>
+        <li>Publicidad casi inexistente</li>
+        <li>Empaque menos atractivo visualmente</li>
+      </ul>
+    </div>
+    <div class="foda-cell foda-a">
+      <h4>Amenazas</h4>
+      <ul>
+        <li>Dominio publicitario de Nestl&eacute;</li>
+        <li>Entrada de nuevas marcas internacionales</li>
+        <li>Cambio en h&aacute;bitos de consumo hacia caf&eacute; de especialidad</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CONCLUSIONES ============ -->
+<div class="page">
+  <h2>9. Conclusiones y Recomendaciones</h2>
+
+  <div class="conclusion-box">
+    <h3>Hallazgo principal</h3>
+    <p>El mercado de caf&eacute; instant&aacute;neo en Amatitl&aacute;n est&aacute; dominado por dos jugadores con estrategias opuestas: <strong>Nescaf&eacute;</strong> compite por <em>diferenciaci&oacute;n</em> (variedad, marca, publicidad), mientras que <strong>Caf&eacute; Incasa</strong> compite por <em>liderazgo en costos</em> (precio bajo + identidad nacional). Ambas estrategias coexisten exitosamente porque atienden motivaciones de compra diferentes en el consumidor.</p>
+  </div>
+
+  <h3>Conclusiones espec&iacute;ficas:</h3>
+  <ol>
+    <li><strong>Nescaf&eacute; lidera en amplitud de portafolio</strong> con 7 o m&aacute;s productos frente a solo 3 de Incasa. Esto le permite capturar diferentes momentos de consumo (caf&eacute; caliente cl&aacute;sico, premium, fr&iacute;o, descafeinado).</li>
+    <li><strong>Caf&eacute; Incasa gana en precio</strong> en las presentaciones que m&aacute;s consume el guatemalteco promedio (frasco de 100g y 250g), con un ahorro de entre 6.5% y 17.2% por cada 100 gramos.</li>
+    <li><strong>La identidad nacional es un activo real</strong> de Incasa. En las tiendas de barrio de Amatitl&aacute;n, muchos consumidores eligen Incasa por tradici&oacute;n familiar y porque &ldquo;es guatemalteco&rdquo;, no solo por precio.</li>
+    <li><strong>La brecha publicitaria</strong> es el factor m&aacute;s asim&eacute;trico. Nescaf&eacute; invierte millones en publicidad a nivel regional; Incasa pr&aacute;cticamente no invierte. Pese a ello, Incasa mantiene una cuota de mercado relevante gracias a la lealtad de sus consumidores.</li>
+  </ol>
+
+  <h3>Recomendaciones:</h3>
+  <ul>
+    <li><strong>Para Caf&eacute; Incasa:</strong> Deber&iacute;a ampliar su l&iacute;nea con al menos una variedad suave y una presentaci&oacute;n individual (sachet de Q1-Q2 para tiendas de barrio). Tambi&eacute;n podr&iacute;a invertir en marketing digital (redes sociales) que es de bajo costo y alto impacto en j&oacute;venes.</li>
+    <li><strong>Para Nescaf&eacute;:</strong> Deber&iacute;a reforzar su comunicaci&oacute;n de valor (justificar el precio premium) y explorar alianzas con productores guatemaltecos para contrarrestar el argumento de &ldquo;caf&eacute; importado&rdquo;.</li>
+    <li><strong>Para un nuevo competidor:</strong> Existe oportunidad en el nicho de caf&eacute; instant&aacute;neo &ldquo;artesanal&rdquo; o &ldquo;de especialidad&rdquo;, posicion&aacute;ndose entre el precio de Incasa y la calidad percibida de Nescaf&eacute; Gold.</li>
+  </ul>
+
+  <h2>10. Fuentes de Informaci&oacute;n</h2>
+  <ol style="font-size: 10.5pt;">
+    <li>Walmart Guatemala &mdash; Tienda en l&iacute;nea: <em>www.walmart.com.gt</em> (precios consultados el 29 de septiembre de 2026)</li>
+    <li>Maxi Despensa Guatemala &mdash; Tienda en l&iacute;nea: <em>www.maxidespensa.com.gt</em></li>
+    <li>Observaci&oacute;n directa en puntos de venta: Despensa Familiar Amatitl&aacute;n, tiendas de barrio del centro y colonia El Morlón</li>
+    <li>Nestl&eacute; Guatemala &mdash; Sitio oficial: <em>www.nestle.com.gt</em></li>
+    <li>Caf&eacute; Incasa &mdash; Informaci&oacute;n de producto en distribuidores autorizados</li>
+    <li>Euromonitor International &mdash; &ldquo;Hot Drinks in Guatemala&rdquo;, 2025</li>
+  </ol>
+</div>
+
+</body>
+</html>
