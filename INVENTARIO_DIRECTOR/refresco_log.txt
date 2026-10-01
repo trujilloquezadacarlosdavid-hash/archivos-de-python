@@ -965,3 +965,62 @@ Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PH
   Vencido: 29,242 | <=30d: 14,011 | 31-60d: 3,254 | 61-90d: 4,249 | Vigente: 82,302
 Listo.
 [mié 30/09/2026 12:35:17.17] Refresco completado 
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Calculando metricas...
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\INFOGRAFIA_SOP_DIRECTOR.html (23 KB)
+  Stock 131,528 | Despacho 369,110 | Recibido 268,848 | Riesgo 50,719 (38.6%) | PLNER 22,713 | Rotacion 97d
+Listo.
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Extrayendo detalle a nivel LP...
+  1852 LPs Heinz
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\DETALLE_HEINZ.html  (441 KB)
+  Planeacion: 22,713 cajas / 15 SKUs / 169 LPs
+  Vencido: 29,242 | <=30d: 14,011 | 31-60d: 3,229 | 61-90d: 4,237 | Vigente: 80,809
+Listo.
+[mié 30/09/2026 18:14:54.09] Refresco completado 
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Calculando metricas...
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\INFOGRAFIA_SOP_DIRECTOR.html (23 KB)
+  Stock 131,528 | Despacho 369,110 | Recibido 268,848 | Riesgo 50,719 (38.6%) | PLNER 22,688 | Rotacion 97d
+Listo.
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Extrayendo detalle a nivel LP...
+  1851 LPs Heinz
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\DETALLE_HEINZ.html  (441 KB)
+  Planeacion: 22,688 cajas / 15 SKUs / 168 LPs
+  Vencido: 29,242 | <=30d: 14,011 | 31-60d: 3,229 | 61-90d: 4,237 | Vigente: 80,809
+Listo.
+[mié 30/09/2026 18:34:07.63] Refresco completado 
+Conectando a SQL...
+Traceback (most recent call last):
+  File "C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\EXTRAER_SOP_HEINZ.py", line 19, in <module>
+    conn = pyodbc.connect(SQL, timeout=30)
+pyodbc.OperationalError: ('08001', '[08001] [Microsoft][ODBC Driver 17 for SQL Server]Unable to complete login process due to delay in opening server connection (0) (SQLDriverConnect)')
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Extrayendo detalle a nivel LP...
+  1853 LPs Heinz
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\DETALLE_HEINZ.html  (441 KB)
+  Planeacion: 22,688 cajas / 15 SKUs / 168 LPs
+  Vencido: 33,412 | <=30d: 9,960 | 31-60d: 3,112 | 61-90d: 4,247 | Vigente: 81,199
+Listo.
+[jue 01/10/2026  3:49:58.97] Refresco completado 
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Calculando metricas...
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\INFOGRAFIA_SOP_DIRECTOR.html (23 KB)
+  Stock 133,680 | Despacho 369,110 | Recibido 273,748 | Riesgo 50,731 (37.9%) | PLNER 23,563 | Rotacion 99d
+Listo.
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Extrayendo detalle a nivel LP...
+  1863 LPs Heinz
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\DETALLE_HEINZ.html  (443 KB)
+  Planeacion: 23,563 cajas / 15 SKUs / 173 LPs
+  Vencido: 33,412 | <=30d: 9,960 | 31-60d: 3,112 | 61-90d: 4,247 | Vigente: 82,949
+Listo.
+[jue 01/10/2026  4:34:32.30] Refresco completado 
