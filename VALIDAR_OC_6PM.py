@@ -125,7 +125,11 @@ def main():
         return False
 
     log("Paso 3: Enviando por WhatsApp ...")
-    texto = f"Validacion OC Formularios - Entregas {manana}"
+    # Mensaje personalizado para cierre de turno
+    # Incluye programación de descargas de hoy y estado de citas
+    manana = (datetime.now() + timedelta(days=1)).strftime("%d/%m/%Y")
+    fecha_hoy = datetime.now().strftime("%d/%m/%Y")
+    texto = f"Cierre Turno {fecha_hoy} - Programacion Descargas Hoy: Revisar estado general. Validacion OC completada."
     try:
         wa = subprocess.run(
             [PYTHON, ENVIAR_WA, DESTINO_CARLOS, texto, SCREENSHOT],
