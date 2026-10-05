@@ -18,3 +18,21 @@ ERROR FINAL: no se pudo enviar (sin reintentos por seguridad).
 [2026-10-02 04:27:45] ERROR envio WA (exit code 1)
 [2026-10-02 04:27:45] === Fin (exito=False) ===
 
+[2026-10-05 03:55:00] === Inicio validacion OC para entregas 06/10/2026 ===
+[2026-10-05 03:55:00] Paso 1: Ejecutando VALIDAR_OC_FORMULARIOS.py ...
+[2026-10-05 03:55:11] Salida (ultimas lineas):
+Buscando formularios de entrega en Outlook (hoy)...
+  Encontrados: 0 correos con formulario
+  No se encontraron formularios hoy.
+  Reporte vacio guardado en: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\VALIDACION_OC_FORMULARIOS.html
+[2026-10-05 03:55:11] Paso 2: Tomando screenshot del dashboard ...
+[2026-10-05 03:55:34] Screenshot OK (83 KB): C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\VALIDACION_OC_FORMULARIOS.png
+[2026-10-05 03:55:34] Paso 3: Enviando por WhatsApp ...
+[2026-10-05 03:56:54] WA salida: Conectado al Edge de Castro (puerto 9222).
+Ninguna pestana activa; recargando WhatsApp...
+ERROR: no se pudo activar ninguna pestana de WhatsApp.
+ERROR: No hay pestana de WhatsApp abierta.
+ERROR FINAL: no se pudo enviar (sin reintentos por seguridad).
+[2026-10-05 03:56:54] ERROR envio WA (exit code 1)
+[2026-10-05 03:56:54] === Fin (exito=False) ===
+
