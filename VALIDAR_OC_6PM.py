@@ -45,6 +45,54 @@ def tomar_screenshot():
 
 
 def main():
+    # --- CONFIGURACIÓN DE HORARIO AUTOMÁTICO ---
+    # El agente solo correrá automáticamente desde las 3:00 AM hasta las 12:00 PM
+    # Fuera de este rango, el script terminará sin hacer nada (para evitar errores de WhatsApp)
+    now = datetime.now()
+    current_hour = now.hour  # 0-23 (0=medianoche, 3=3AM, 12=mediodía)
+    start_hour = 3   # 3:00 AM
+    end_hour = 12    # 12:00 PM (noon)
+    
+    if current_hour < start_hour or current_hour >= end_hour:
+        log(f"Fuera del horario programado (3:00 AM - 12:00 PM). Hora actual: {now.strftime('%H:%M')}")
+        print(f"Fuera del horario programado (3:00 AM - 12:00 PM). Hora actual: {now.strftime('%H:%M')}")
+        # Registrar y salir sin hacer nada
+        log("Agente desactivado fuera de su rango horario programado.")
+        return  # Sale de la función main(), el script terminará después
+
+    # --- REGISTRO DE ERRORES DESDE LA SEMANA PASADA ---
+    # Revisa si hubo errores en la corrida anterior para reportarlos
+    error_log = os.path.join(SCRIPT_DIR, "VALIDAR_OC_6PM.log")
+    errors_last_week = []
+    
+    if os.path.exists(error_log):
+        try:
+            with open(error_log, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+                # Buscar líneas de error en los últimos 7 días
+                week_ago = datetime.now() - timedelta(days=7)
+                for line in lines:
+                    if "ERROR" in line.upper():
+                        try:
+                            # Extraer fecha de la línea del log
+                            line_date_str = line.strip()[1:11]  # Formato [YYYY-MM-DD]
+                            line_date = datetime.strptime(line_date_str, "%Y-%m-%d")
+                            if line_date >= week_ago:
+                                errors_last_week.append(line.strip())
+                        except:
+                            pass  # Si no se puede parsear la fecha, lo ignoramos
+        except:
+            pass
+
+    # Reportar errores de la semana pasada al inicio
+    if errors_last_week:
+        log(f"--- ADVERTENCIA: {len(errors_last_week)} error(es) detectado(s) desde la semana pasada ---")
+        for err in errors_last_week[:5]:  # Mostrar máximo 5 errores
+            log(f"  Error: {err[:100]}")
+        if len(errors_last_week) > 5:
+            log(f"  ... y {len(errors_last_week) - 5} errores más")
+        log(f"--- Fin reporte de errores pasados ---")
+
     manana = (datetime.now() + timedelta(days=1)).strftime("%d/%m/%Y")
     log(f"=== Inicio validacion OC para entregas {manana} ===")
 

@@ -36,3 +36,15 @@ ERROR FINAL: no se pudo enviar (sin reintentos por seguridad).
 [2026-10-05 03:56:54] ERROR envio WA (exit code 1)
 [2026-10-05 03:56:54] === Fin (exito=False) ===
 
+[2026-10-05 05:58:32] --- ADVERTENCIA: 2 error(es) detectado(s) desde la semana pasada ---
+[2026-10-05 05:58:32]   Error: [2026-10-02 04:27:45] ERROR envio WA (exit code 1)
+[2026-10-05 05:58:32]   Error: [2026-10-05 03:56:54] ERROR envio WA (exit code 1)
+[2026-10-05 05:58:32] --- Fin reporte de errores pasados ---
+[2026-10-05 05:58:32] === Inicio validacion OC para entregas 06/10/2026 ===
+[2026-10-05 05:58:32] Paso 1: Ejecutando VALIDAR_OC_FORMULARIOS.py ...
+[2026-10-05 05:58:39] Salida (ultimas lineas):
+Buscando formularios de entrega en Outlook (hoy)...
+  Encontrados: 0 correos con formulario
+  No se encontraron formularios hoy.
+  Reporte vacio guardado en: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\VALIDACION_OC_FORMULARIOS.html
+[2026-10-05 05:58:39] Paso 2: Tomando screenshot del dashboard ...
