@@ -228,3 +228,91 @@ ERROR FINAL: no se pudo enviar (sin reintentos por seguridad).
 [2026-10-05 11:38:14] ERROR envio WA (exit code 1)
 [2026-10-05 11:38:14] === Fin (exito=False) ===
 
+[2026-10-06 11:49:09] --- ADVERTENCIA: 68 error(es) detectado(s) desde la semana pasada ---
+[2026-10-06 11:49:09]   Error: [2026-10-02 04:27:45] ERROR envio WA (exit code 1)
+[2026-10-06 11:49:09]   Error: [2026-10-05 03:56:54] ERROR envio WA (exit code 1)
+[2026-10-06 11:49:09]   Error: [2026-10-05 05:58:32] --- ADVERTENCIA: 2 error(es) detectado(s) desde la semana pasada ---
+[2026-10-06 11:49:09]   Error: [2026-10-05 05:58:32]   Error: [2026-10-02 04:27:45] ERROR envio WA (exit code 1)
+[2026-10-06 11:49:09]   Error: [2026-10-05 05:58:32]   Error: [2026-10-05 03:56:54] ERROR envio WA (exit code 1)
+[2026-10-06 11:49:09]   ... y 63 errores más
+[2026-10-06 11:49:09] --- Fin reporte de errores pasados ---
+[2026-10-06 11:49:09] === Inicio validacion OC para entregas 07/10/2026 ===
+[2026-10-06 11:49:09] Paso 1: Ejecutando VALIDAR_OC_FORMULARIOS.py ...
+[2026-10-06 11:49:19] Salida (ultimas lineas):
+Buscando formularios de entrega en Outlook (hoy)...
+  Encontrados: 0 correos con formulario
+  No se encontraron formularios hoy.
+  Reporte vacio guardado en: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\VALIDACION_OC_FORMULARIOS.html
+[2026-10-06 11:49:19] Paso 2: Tomando screenshot del dashboard ...
+[2026-10-06 11:49:44] Screenshot OK (83 KB): C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\VALIDACION_OC_FORMULARIOS.png
+[2026-10-06 11:49:44] Paso 3: Enviando por WhatsApp ...
+[2026-10-06 11:50:15] WA salida: ueda: '50237639994'
+No aparecio el grupo en los resultados de busqueda.
+Usando buscador (intento 2/2)...
+Busqueda: '50237639994'
+No aparecio el grupo en los resultados de busqueda.
+ERROR: no se pudo abrir el grupo correcto '50237639994'.
+ERROR FINAL: no se pudo enviar (sin reintentos por seguridad).
+[2026-10-06 11:50:15] ERROR envio WA (exit code 1)
+[2026-10-06 11:50:15] === Fin (exito=False) ===
+
+[2026-10-06 11:51:25] --- ADVERTENCIA: 77 error(es) detectado(s) desde la semana pasada ---
+[2026-10-06 11:51:25]   Error: [2026-10-02 04:27:45] ERROR envio WA (exit code 1)
+[2026-10-06 11:51:25]   Error: [2026-10-05 03:56:54] ERROR envio WA (exit code 1)
+[2026-10-06 11:51:25]   Error: [2026-10-05 05:58:32] --- ADVERTENCIA: 2 error(es) detectado(s) desde la semana pasada ---
+[2026-10-06 11:51:25]   Error: [2026-10-05 05:58:32]   Error: [2026-10-02 04:27:45] ERROR envio WA (exit code 1)
+[2026-10-06 11:51:25]   Error: [2026-10-05 05:58:32]   Error: [2026-10-05 03:56:54] ERROR envio WA (exit code 1)
+[2026-10-06 11:51:25]   ... y 72 errores más
+[2026-10-06 11:51:25] --- Fin reporte de errores pasados ---
+[2026-10-06 11:51:25] === Inicio validacion OC para entregas 07/10/2026 ===
+[2026-10-06 11:51:25] Paso 1: Ejecutando VALIDAR_OC_FORMULARIOS.py ...
+[2026-10-06 11:51:31] Salida (ultimas lineas):
+Buscando formularios de entrega en Outlook (hoy)...
+  Encontrados: 0 correos con formulario
+  No se encontraron formularios hoy.
+  Reporte vacio guardado en: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\VALIDACION_OC_FORMULARIOS.html
+[2026-10-06 11:51:31] Paso 2: Tomando screenshot del dashboard ...
+[2026-10-06 11:51:50] Screenshot OK (83 KB): C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\VALIDACION_OC_FORMULARIOS.png
+[2026-10-06 11:51:50] Paso 3: Enviando por WhatsApp ...
+[2026-10-06 11:52:22] WA salida: ueda: '50237639994'
+No aparecio el grupo en los resultados de busqueda.
+Usando buscador (intento 2/2)...
+Busqueda: '50237639994'
+No aparecio el grupo en los resultados de busqueda.
+ERROR: no se pudo abrir el grupo correcto '50237639994'.
+ERROR FINAL: no se pudo enviar (sin reintentos por seguridad).
+[2026-10-06 11:52:22] ERROR envio WA (exit code 1)
+[2026-10-06 11:52:22] === Fin (exito=False) ===
+
+[2026-10-06 11:58:43] --- ADVERTENCIA: 86 error(es) detectado(s) desde la semana pasada ---
+[2026-10-06 11:58:43]   Error: [2026-10-02 04:27:45] ERROR envio WA (exit code 1)
+[2026-10-06 11:58:43]   Error: [2026-10-05 03:56:54] ERROR envio WA (exit code 1)
+[2026-10-06 11:58:43]   Error: [2026-10-05 05:58:32] --- ADVERTENCIA: 2 error(es) detectado(s) desde la semana pasada ---
+[2026-10-06 11:58:43]   Error: [2026-10-05 05:58:32]   Error: [2026-10-02 04:27:45] ERROR envio WA (exit code 1)
+[2026-10-06 11:58:43]   Error: [2026-10-05 05:58:32]   Error: [2026-10-05 03:56:54] ERROR envio WA (exit code 1)
+[2026-10-06 11:58:43]   ... y 81 errores más
+[2026-10-06 11:58:43] --- Fin reporte de errores pasados ---
+[2026-10-06 11:58:43] === Inicio validacion OC para entregas 07/10/2026 ===
+[2026-10-06 11:58:43] Paso 1: Ejecutando VALIDAR_OC_FORMULARIOS.py ...
+[2026-10-06 11:58:50] Salida (ultimas lineas):
+Buscando formularios de entrega en Outlook (hoy)...
+  Encontrados: 0 correos con formulario
+  No se encontraron formularios hoy.
+  Reporte vacio guardado en: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\VALIDACION_OC_FORMULARIOS.html
+[2026-10-06 11:58:50] Paso 2: Tomando screenshot del dashboard ...
+[2026-10-06 11:59:08] Screenshot OK (83 KB): C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\VALIDACION_OC_FORMULARIOS.png
+[2026-10-06 11:59:08] Paso 3: Enviando por WhatsApp ...
+[2026-10-06 11:59:39] WA salida: ueda: '50237639994'
+No aparecio el grupo en los resultados de busqueda.
+Usando buscador (intento 2/2)...
+Busqueda: '50237639994'
+No aparecio el grupo en los resultados de busqueda.
+ERROR: no se pudo abrir el grupo correcto '50237639994'.
+ERROR FINAL: no se pudo enviar (sin reintentos por seguridad).
+[2026-10-06 11:59:39] ERROR envio WA (exit code 1)
+[2026-10-06 11:59:39] === Fin (exito=False) ===
+
+[2026-10-06 12:06:03] Fuera del horario programado (3:00 AM - 12:00 PM). Hora actual: 12:06
+[2026-10-06 12:06:03] Agente desactivado fuera de su rango horario programado.
+[2026-10-06 12:06:03] === Fin (exito=None) ===
+
