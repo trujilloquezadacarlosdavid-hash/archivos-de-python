@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Hallazgos Inplant — Arium</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F3F1EC;--sf:#FFFFFF;--sf2:#EAE7E1;
+  --tx:#1B1E24;--tx2:#5D616B;--tx3:#9A9DA4;
+  --ac:#C45A18;--ac2:#B04D10;--acb:rgba(196,90,24,.07);
+  --bl:#1A5276;--blb:rgba(26,82,118,.07);
+  --ok:#247D4A;--okb:rgba(36,125,74,.07);
+  --er:#C02828;--erb:rgba(192,40,40,.07);
+  --wn:#B48A0A;--wnb:rgba(180,138,10,.08);
+  --bd:#D2CFC7;--bd2:#E3E0D9;
+  --sh:0 1px 3px rgba(0,0,0,.06);
+  --r:10px;--rs:6px;
+  --f:'Inter',system-ui,-apple-system,sans-serif;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111316;--sf:#1A1D24;--sf2:#22262E;
+  --tx:#E2E0DA;--tx2:#9A9DA4;--tx3:#5D616B;
+  --ac:#E88040;--ac2:#F09050;--acb:rgba(232,128,64,.1);
+  --bl:#5AA8D8;--blb:rgba(90,168,216,.1);
+  --ok:#50B878;--okb:rgba(80,184,120,.1);
+  --er:#E06050;--erb:rgba(224,96,80,.1);
+  --wn:#E8C040;--wnb:rgba(232,192,64,.1);
+  --bd:#2A2E36;--bd2:#22262E;
+  --sh:0 1px 3px rgba(0,0,0,.3);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#111316;--sf:#1A1D24;--sf2:#22262E;
+  --tx:#E2E0DA;--tx2:#9A9DA4;--tx3:#5D616B;
+  --ac:#E88040;--ac2:#F09050;--acb:rgba(232,128,64,.1);
+  --bl:#5AA8D8;--blb:rgba(90,168,216,.1);
+  --ok:#50B878;--okb:rgba(80,184,120,.1);
+  --er:#E06050;--erb:rgba(224,96,80,.1);
+  --wn:#E8C040;--wnb:rgba(232,192,64,.1);
+  --bd:#2A2E36;--bd2:#22262E;
+  --sh:0 1px 3px rgba(0,0,0,.3);
+  color-scheme:dark;
+}
+html{height:100%}
+body{
+  font-family:var(--f);font-size:15px;line-height:1.5;
+  background:var(--bg);color:var(--tx);min-height:100%;
+  padding:0 max(16px,env(safe-area-inset-right,0)) env(safe-area-inset-bottom,0) max(16px,env(safe-area-inset-left,0));
+  padding-top:env(safe-area-inset-top,0);
+}
+/* header */
+.hdr{
+  position:sticky;top:env(safe-area-inset-top,0);z-index:10;
+  background:var(--sf);border-bottom:1px solid var(--bd);
+  padding:12px 0;margin:0 calc(-1 * max(16px,env(safe-area-inset-right,0))) 0 calc(-1 * max(16px,env(safe-area-inset-left,0)));
+  padding-left:max(16px,env(safe-area-inset-left,0));
+  padding-right:max(16px,env(safe-area-inset-right,0));
+  display:flex;align-items:center;gap:10px;
+}
+.hdr h1{font-size:17px;font-weight:700;letter-spacing:-.01em;flex:1}
+.badge{
+  font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;
+  background:var(--acb);color:var(--ac);cursor:pointer;white-space:nowrap;
+}
+.badge:hover{background:var(--ac);color:#fff}
+/* card */
+.card{background:var(--sf);border:1px solid var(--bd2);border-radius:var(--r);box-shadow:var(--sh);padding:16px;margin-top:14px}
+.card-t{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--tx2);margin-bottom:10px}
+/* fields */
+.fld{margin-bottom:12px}
+.fld label{display:block;font-size:12px;font-weight:600;color:var(--tx2);margin-bottom:3px}
+.fld label .rq{color:var(--er)}
+.fld input,.fld select,.fld textarea{
+  width:100%;padding:10px 12px;font-size:15px;font-family:var(--f);
+  background:var(--sf2);color:var(--tx);border:1px solid var(--bd);border-radius:var(--rs);
+  transition:border-color .15s;-webkit-appearance:none;appearance:none;
+}
+.fld select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235D616B' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;
+}
+.fld input:focus,.fld select:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--acb)}
+.fld .ro{background:var(--blb);border-color:var(--bl);color:var(--bl);font-weight:500}
+.fld .ht{font-size:11px;color:var(--tx3);margin-top:2px}
+.row{display:flex;gap:10px}.row .fld{flex:1;min-width:0}
+/* search */
+.search-wrap{position:relative}
+.search-wrap input{padding-right:44px}
+.search-btn{
+  position:absolute;right:1px;top:1px;bottom:1px;width:40px;
+  background:var(--ac);color:#fff;border:none;border-radius:0 var(--rs) var(--rs) 0;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;
+}
+.search-btn:hover{background:var(--ac2)}
+.ac-list{
+  position:absolute;left:0;right:0;top:100%;z-index:20;
+  background:var(--sf);border:1px solid var(--bd);border-radius:var(--rs);
+  box-shadow:0 4px 16px rgba(0,0,0,.12);max-height:240px;overflow-y:auto;
+  display:none;
+}
+.ac-list.show{display:block}
+.ac-item{
+  padding:10px 12px;cursor:pointer;border-bottom:1px solid var(--bd2);
+  font-size:13px;
+}
+.ac-item:last-child{border:none}
+.ac-item:hover,.ac-item.sel{background:var(--acb)}
+.ac-item .code{font-weight:700;color:var(--ac);font-size:12px}
+.ac-item .name{color:var(--tx)}
+.ac-item .meta{color:var(--tx3);font-size:11px}
+/* auto-filled info */
+.info-box{
+  background:var(--blb);border:1px solid var(--bl);border-radius:var(--rs);
+  padding:10px 14px;margin-bottom:12px;font-size:13px;display:none;
+}
+.info-box.show{display:block}
+.info-box .lbl{font-size:11px;color:var(--bl);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.info-box .val{font-weight:600;color:var(--bl);margin-top:2px}
+/* motivo combo */
+.motivo-other{display:none;margin-top:6px}
+.motivo-other.show{display:block}
+/* buttons */
+.btn{
+  display:block;width:100%;padding:14px;font-size:16px;font-weight:600;
+  font-family:var(--f);border:none;border-radius:var(--r);cursor:pointer;
+  transition:background .15s,transform .1s;text-align:center;
+}
+.btn:active{transform:scale(.98)}
+.btn-p{background:var(--ac);color:#fff}.btn-p:hover{background:var(--ac2)}
+.btn-p:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-s{background:var(--sf2);color:var(--tx);border:1px solid var(--bd)}
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* toast */
+.toast{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  background:var(--ok);color:#fff;padding:12px 24px;border-radius:var(--r);
+  font-weight:600;font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,.15);
+  z-index:100;animation:slideU .3s ease;pointer-events:none;
+}
+@keyframes slideU{from{opacity:0;transform:translate(-50%,20px)}to{opacity:1;transform:translate(-50%,0)}}
+/* inplant selector */
+.inp-grid{display:flex;gap:10px;flex-wrap:wrap}
+.inp-btn{
+  flex:1;min-width:90px;padding:16px 10px;font-size:16px;font-weight:700;
+  font-family:var(--f);border:2px solid var(--bd);border-radius:var(--r);
+  background:var(--sf2);color:var(--tx);cursor:pointer;transition:all .15s;
+  text-align:center;
+}
+.inp-btn:hover,.inp-btn.on{border-color:var(--ac);background:var(--acb);color:var(--ac)}
+/* recent entries */
+.recent{margin-top:20px;margin-bottom:40px}
+.recent h3{font-size:13px;font-weight:700;color:var(--tx2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em}
+.ent{
+  background:var(--sf);border:1px solid var(--bd2);border-radius:var(--rs);
+  padding:10px 12px;margin-bottom:6px;font-size:13px;
+}
+.ent .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ent .mtag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;background:var(--wnb);color:var(--wn);white-space:nowrap}
+.ent .desc{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ent .meta{color:var(--tx3);font-size:11px;margin-top:3px}
+.empty{text-align:center;padding:24px;color:var(--tx3);font-size:14px}
+/* setup */
+.setup{background:var(--wnb);border:1px solid var(--wn);border-radius:var(--r);padding:14px;margin-top:14px;font-size:13px}
+.setup strong{color:var(--wn)}
+.setup input{margin-top:8px}
+.setup button{margin-top:8px}
+/* success */
+.succ{text-align:center;padding:32px 20px}
+.succ .ico{font-size:52px;margin-bottom:4px;color:var(--ok)}
+.succ .tit{font-size:20px;font-weight:700;color:var(--ok)}
+.succ .det{font-size:14px;color:var(--tx2);margin-top:6px}
+@media(min-width:540px){body{max-width:500px;margin-left:auto;margin-right:auto}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>Hallazgos Inplant</h1>
+  <span class="badge" id="badgeInp" hidden onclick="changeInp()"></span>
+</div>
+
+<!-- Setup (API URL) -->
+<div class="setup" id="setupBox" hidden>
+  <strong>Configuracion:</strong> pega la URL del Apps Script:
+  <div class="fld" style="margin:8px 0 0"><input id="apiInput" placeholder="https://script.google.com/macros/s/..."></div>
+  <button class="btn btn-p" style="width:auto;padding:8px 20px;font-size:13px" onclick="saveApi()">Guardar</button>
+</div>
+
+<!-- Inplant selector -->
+<div class="card" id="inpCard">
+  <div class="card-t">Selecciona tu inplant</div>
+  <div class="inp-grid">
+    <button class="inp-btn" onclick="pickInp('GTA')">GTA</button>
+    <button class="inp-btn" onclick="pickInp('Walmart')">Walmart</button>
+    <button class="inp-btn" onclick="pickInp('Unisuper')">Unisuper</button>
+  </div>
+</div>
+
+<!-- Form -->
+<form id="frm" hidden autocomplete="off">
+
+  <div class="card">
+    <div class="card-t">Buscar producto</div>
+    <div class="fld">
+      <label>Codigo Arium o nombre <span class="rq">*</span></label>
+      <div class="search-wrap">
+        <input type="text" id="skuInput" placeholder="A000000... o escribi el nombre" autocapitalize="characters" required>
+        <button type="button" class="search-btn" onclick="doSearch()" title="Buscar">&#128269;</button>
+        <div class="ac-list" id="acList"></div>
+      </div>
+      <div class="ht">Escribe el codigo o parte del nombre del producto</div>
+    </div>
+    <div class="info-box" id="prodInfo">
+      <div class="lbl">Producto encontrado</div>
+      <div class="val" id="prodName"></div>
+      <div style="display:flex;gap:16px;margin-top:4px;font-size:12px;color:var(--tx2)">
+        <span>Casa: <strong id="prodCasa"></strong></span>
+        <span>UM: <strong id="prodUm"></strong></span>
+        <span>UxC: <strong id="prodUxc"></strong></span>
+      </div>
+    </div>
+    <input type="hidden" id="codigoFinal">
+    <input type="hidden" id="descFinal">
+    <input type="hidden" id="casaFinal">
+    <input type="hidden" id="umFinal">
+    <input type="hidden" id="uxcFinal">
+    <input type="hidden" id="costoFinal">
+  </div>
+
+  <div class="card">
+    <div class="card-t">Detalle del hallazgo</div>
+
+    <div class="row">
+      <div class="fld">
+        <label>Fecha <span class="rq">*</span></label>
+        <input type="date" id="fecha" required>
+      </div>
+      <div class="fld">
+        <label>Cajas rechazadas <span class="rq">*</span></label>
+        <input type="number" id="cantidad" min="1" step="1" required placeholder="0" inputmode="numeric">
+      </div>
+    </div>
+
+    <div class="fld">
+      <label>Unidad de medida</label>
+      <select id="umRech">
+        <option value="CAJA" selected>CAJA</option>
+        <option value="PAQUETE">PAQUETE</option>
+        <option value="UNIDAD">UNIDAD</option>
+      </select>
+    </div>
+
+    <div class="fld">
+      <label>Motivo <span class="rq">*</span></label>
+      <select id="motivo" required>
+        <option value="">-- Selecciona el motivo --</option>
+        <optgroup label="Mas frecuentes">
+          <option>CODIGO DE BARRAS</option>
+          <option>FALTANTE</option>
+          <option>FECHA CORTA</option>
+          <option>DUPLICADO EN FACTURA</option>
+          <option>RECHAZO COMPLETO DE CITA</option>
+          <option>CRUCE</option>
+          <option>NO SOLICITADO</option>
+          <option>SOBRANTE</option>
+        </optgroup>
+        <optgroup label="Orden de compra">
+          <option>ORDEN DE COMPRA</option>
+          <option>ORDEN DE COMPRA COMPLETA</option>
+          <option>INGRESO DE ORDEN INCORRECTA</option>
+          <option>PEDIDO INCORRECTO</option>
+          <option>FUERA DE OC</option>
+          <option>OC CANCELADA</option>
+          <option>OC VENCIDA</option>
+          <option>ORDEN DE COMPRA INCORRECTA</option>
+          <option>TIPO DE PEDIDO INCORRECTO</option>
+        </optgroup>
+        <optgroup label="Producto">
+          <option>DAÑADO</option>
+          <option>EMPAQUE</option>
+          <option>PRODUCTO VENCIDO</option>
+          <option>ALTERACION DE FECHA</option>
+          <option>CAJA INCOMPLETA</option>
+          <option>CRITERIOS DE CALIDAD</option>
+          <option>CODIGO NUEVO</option>
+          <option>MULTIFECHA</option>
+          <option>PRODUCTO INCOMPLETO</option>
+          <option>BARRA ILEGIBLE</option>
+          <option>BARRA INEXISTENTE</option>
+          <option>SIN IDENTIFICACION</option>
+          <option>CODIGPO SIN FECHA DE V.</option>
+          <option>NO MAQUILADO</option>
+          <option>REGISTRO SANITARIO</option>
+          <option>UNIDAD DE MEDIDA</option>
+        </optgroup>
+        <optgroup label="Operativo">
+          <option>ASIGNACION INCORRECTA</option>
+          <option>DOCUMENTACION DE ENTREGA</option>
+          <option>VARIABLES LOGISTICAS</option>
+          <option>FACTURACION</option>
+          <option>FISICO NO FACTURADO</option>
+          <option>FACTOR DE CONVERSION</option>
+          <option>FORMULARIO</option>
+          <option>DIFERENCIA DE MONTOS</option>
+          <option>REQUISITOS DE CLIENTE</option>
+          <option>REQUISITOS CLIENTE</option>
+          <option>SEPARACION INCORRECTA</option>
+          <option>NO FACTURADO</option>
+          <option>DIFERENCIA DE PRECIOS</option>
+          <option>MAL FACTURADO</option>
+        </optgroup>
+        <option value="__OTRO__">OTRO (escribir manualmente)</option>
+      </select>
+    </div>
+    <div class="motivo-other" id="motivoOther">
+      <div class="fld" style="margin:0">
+        <input type="text" id="motivoManual" placeholder="Escribe el motivo..." autocapitalize="characters">
+      </div>
+    </div>
+
+    <div class="fld">
+      <label>Cita (codigo o nombre del cliente)</label>
+      <input type="text" id="cita" placeholder="42696045 o FLOR DEL CAMPO" autocapitalize="characters">
+    </div>
+  </div>
+
+  <div style="margin-top:16px">
+    <button type="submit" class="btn btn-p" id="subBtn">Registrar Hallazgo</button>
+  </div>
+  <button type="button" class="btn btn-s" onclick="changeInp()" style="margin-top:8px;font-size:13px">Cambiar Inplant</button>
+</form>
+
+<!-- Success -->
+<div id="succView" hidden>
+  <div class="card succ">
+    <div class="ico">&#10004;</div>
+    <div class="tit">Registrado</div>
+    <div class="det" id="succDet"></div>
+    <div id="citaKeepHint" style="font-size:12px;color:var(--bl);margin-top:12px;padding:8px 12px;background:var(--blb);border-radius:var(--rs)" hidden></div>
+    <button class="btn btn-p" style="margin-top:16px" onclick="newEntry()">Otro SKU de la misma cita</button>
+    <button class="btn btn-s" style="margin-top:8px;font-size:13px" onclick="newEntryClearCita()">Nueva cita (limpiar todo)</button>
+  </div>
+</div>
+
+<!-- Recent -->
+<div class="recent" id="recSec" hidden>
+  <h3>Ultimos registros</h3>
+  <div id="recList"></div>
+</div>
+
+<script>
+const SK='hz_data', AK='hz_api', IK='hz_inp';
+let INP='', MD=null;
+
+// --- Init ---
+function init(){
+  const s=ls(IK);
+  if(s){INP=s;showForm()}
+  el('fecha').value=today();
+  checkApi();
+  loadMD();
+  el('motivo').addEventListener('change',function(){
+    el('motivoOther').classList.toggle('show',this.value==='__OTRO__');
+    if(this.value==='__OTRO__') el('motivoManual').focus();
+  });
+  el('skuInput').addEventListener('input',onSkuInput);
+  el('skuInput').addEventListener('keydown',onSkuKey);
+  el('frm').addEventListener('submit',onSubmit);
+  document.addEventListener('click',function(e){
+    if(!e.target.closest('.search-wrap')) el('acList').classList.remove('show');
+  });
+}
+
+function el(id){return document.getElementById(id)}
+function today(){const d=new Date();return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())}
+function p2(n){return n<10?'0'+n:n}
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)return localStorage.removeItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+function lsJ(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||'[]');localStorage.setItem(k,JSON.stringify(v))}catch(e){return[]}}
+function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
+
+// --- Inplant ---
+function pickInp(name){
+  INP=name;ls(IK,name);showForm();
+}
+function showForm(){
+  el('inpCard').hidden=true;
+  el('frm').hidden=false;
+  el('recSec').hidden=false;
+  const b=el('badgeInp');b.textContent=INP;b.hidden=false;
+  renderRecent();
+}
+function changeInp(){
+  el('inpCard').hidden=false;
+  el('frm').hidden=true;
+  el('succView').hidden=true;
+  document.querySelectorAll('.inp-btn').forEach(b=>b.classList.toggle('on',b.textContent===INP));
+}
+
+// --- API config ---
+function checkApi(){el('setupBox').hidden=!!ls(AK)}
+function saveApi(){
+  const u=el('apiInput').value.trim();
+  if(!u)return;ls(AK,u);el('setupBox').hidden=true;
+}
+
+// --- Master Data ---
+async function loadMD(){
+  try{
+    const r=await fetch('productos.json');
+    MD=await r.json();
+    console.log('MD cargada:',Object.keys(MD).length,'productos');
+  }catch(e){console.warn('No se pudo cargar productos.json:',e)}
+}
+
+function searchMD(q){
+  if(!MD)return[];
+  q=q.toUpperCase().trim();
+  if(!q)return[];
+  const res=[];
+  // exact code match first
+  if(MD[q])return[{c:q,n:MD[q][0],u:MD[q][1],x:MD[q][2],h:MD[q][3],p:MD[q][4]}];
+  // partial search (code or name)
+  for(const[c,v]of Object.entries(MD)){
+    if(c.includes(q)||v[0].includes(q)){
+      res.push({c,n:v[0],u:v[1],x:v[2],h:v[3],p:v[4]});
+      if(res.length>=8)break;
+    }
+  }
+  return res;
+}
+
+function onSkuInput(){
+  const q=el('skuInput').value.trim();
+  if(q.length<2){el('acList').classList.remove('show');return}
+  const res=searchMD(q);
+  if(!res.length){el('acList').classList.remove('show');return}
+  el('acList').innerHTML=res.map((r,i)=>
+    '<div class="ac-item'+(i===0?' sel':'')+'" data-idx="'+i+'" onclick="pickProd('+i+')">'+
+    '<div class="code">'+esc(r.c)+'</div>'+
+    '<div class="name">'+esc(r.n)+'</div>'+
+    '<div class="meta">'+esc(r.h)+' &middot; '+r.u+' &middot; UxC:'+r.x+'</div></div>'
+  ).join('');
+  el('acList').classList.add('show');
+  el('acList')._data=res;
+}
+
+function onSkuKey(e){
+  const list=el('acList');
+  if(!list.classList.contains('show'))return;
+  const items=list.querySelectorAll('.ac-item');
+  let idx=[...items].findIndex(i=>i.classList.contains('sel'));
+  if(e.key==='ArrowDown'){e.preventDefault();idx=Math.min(idx+1,items.length-1)}
+  else if(e.key==='ArrowUp'){e.preventDefault();idx=Math.max(idx-1,0)}
+  else if(e.key==='Enter'&&idx>=0){e.preventDefault();pickProd(idx);return}
+  else return;
+  items.forEach((it,i)=>it.classList.toggle('sel',i===idx));
+  items[idx]?.scrollIntoView({block:'nearest'});
+}
+
+function pickProd(idx){
+  const data=el('acList')._data;
+  if(!data||!data[idx])return;
+  const p=data[idx];
+  el('skuInput').value=p.c;
+  el('codigoFinal').value=p.c;
+  el('descFinal').value=p.n;
+  el('casaFinal').value=p.h;
+  el('umFinal').value=p.u;
+  el('uxcFinal').value=p.x;
+  el('costoFinal').value=p.p;
+  // show info box
+  el('prodName').textContent=p.n;
+  el('prodCasa').textContent=p.h;
+  el('prodUm').textContent=p.u;
+  el('prodUxc').textContent=p.x;
+  el('prodInfo').classList.add('show');
+  el('acList').classList.remove('show');
+  // focus next field
+  el('cantidad').focus();
+}
+
+function doSearch(){
+  const q=el('skuInput').value.trim();
+  if(!q)return;
+  const res=searchMD(q);
+  if(res.length===1){pickProd(0);el('acList')._data=res}
+  else{onSkuInput()}
+}
+
+// --- Submit ---
+async function onSubmit(e){
+  e.preventDefault();
+  const btn=el('subBtn');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Enviando...';
+
+  const motVal=el('motivo').value==='__OTRO__'?el('motivoManual').value.trim().toUpperCase():el('motivo').value;
+  if(!motVal){btn.disabled=false;btn.textContent='Registrar Hallazgo';alert('Escribe el motivo');return}
+
+  const f=el('fecha').value;
+  const[y,m]=f.split('-');
+  const entry={
+    fecha:f, mes:parseInt(m), anio:parseInt(y),
+    cita:el('cita').value.trim().toUpperCase(),
+    codigo:el('codigoFinal').value||el('skuInput').value.trim().toUpperCase(),
+    cantidad:parseInt(el('cantidad').value)||0,
+    um_rechazada:el('umRech').value,
+    motivo:motVal,
+    monto_um:parseFloat(el('costoFinal').value)||0,
+    descripcion:el('descFinal').value||'',
+    um_md:el('umFinal').value||'',
+    uxc:parseInt(el('uxcFinal').value)||0,
+    monto_total:0,
+    oc_ov:'',
+    cliente:INP,
+    casa:el('casaFinal').value||'',
+    responsabilidad:'',
+    timestamp:new Date().toISOString()
+  };
+  entry.monto_total=entry.cantidad*entry.uxc*entry.monto_um;
+
+  // Save local
+  const all=lsJ(SK);all.unshift(entry);if(all.length>300)all.length=300;lsJ(SK,all);
+
+  // Send to Google Apps Script
+  const api=ls(AK);let sent=false;
+  if(api){
+    try{await fetch(api,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(entry)});sent=true}
+    catch(err){console.warn('Error:',err)}
+  }
+
+  btn.disabled=false;btn.textContent='Registrar Hallazgo';
+  el('frm').hidden=true;el('succView').hidden=false;
+  el('succDet').textContent=entry.cantidad+' '+entry.um_rechazada+' — '+entry.motivo+(entry.descripcion?' — '+entry.descripcion:'')+(sent?'':' (guardado local)');
+  // Hint sobre la cita que queda guardada
+  const h=el('citaKeepHint');
+  if(entry.cita){h.innerHTML='Cita <strong>'+esc(entry.cita)+'</strong> y fecha <strong>'+entry.fecha.split('-').reverse().join('/')+'</strong> se mantienen para el siguiente SKU';h.hidden=false}
+  else{h.hidden=true}
+  renderRecent();
+}
+
+function newEntry(){
+  el('succView').hidden=true;el('frm').hidden=false;
+  // Mantener CITA y FECHA (misma cita, varios SKUs es comun)
+  el('skuInput').value='';el('codigoFinal').value='';el('descFinal').value='';el('casaFinal').value='';
+  el('umFinal').value='';el('uxcFinal').value='';el('costoFinal').value='';
+  el('prodInfo').classList.remove('show');
+  el('cantidad').value='';el('motivo').value='';
+  el('motivoManual').value='';el('motivoOther').classList.remove('show');
+  el('umRech').value='CAJA';
+  // Nota: NO se limpia cita ni fecha para registros rapidos de la misma cita
+  window.scrollTo(0,0);
+  el('skuInput').focus();
+}
+
+function newEntryClearCita(){
+  // Para empezar una cita nueva (otro cliente/dia)
+  el('cita').value='';
+  el('fecha').value=today();
+  newEntry();
+}
+
+// --- Recent ---
+function renderRecent(){
+  const all=lsJ(SK).filter(e=>e.cliente===INP);
+  const list=el('recList');
+  if(!all.length){list.innerHTML='<div class="empty">Sin registros para '+INP+'</div>';return}
+  list.innerHTML=all.slice(0,20).map(e=>{
+    const f=e.fecha?e.fecha.split('-').reverse().join('/'):'';
+    return'<div class="ent"><div class="top"><span class="desc">'+esc(e.descripcion||e.codigo)+'</span>'+
+    '<span class="mtag">'+esc(e.motivo)+'</span></div>'+
+    '<div class="meta">'+f+' &middot; '+e.cantidad+' '+e.um_rechazada+
+    (e.casa?' &middot; '+esc(e.casa):'')+
+    '</div></div>';
+  }).join('');
+}
+
+init();
+</script>
+</body>
+</html>
