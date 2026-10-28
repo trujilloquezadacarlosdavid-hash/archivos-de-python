@@ -4211,3 +4211,53 @@ Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PH
   Vencido: 43,237 | <=30d: 2,473 | 31-60d: 4,635 | 61-90d: 438 | Vigente: 55,339
 Listo.
 [mar 27/10/2026 18:35:35.14] Refresco completado 
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Calculando metricas...
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\INFOGRAFIA_SOP_DIRECTOR.html (23 KB)
+  Stock 105,388 | Despacho 404,297 | Recibido 277,646 | Riesgo 50,608 (48.0%) | PLNER 17,891 | Rotacion 78d
+Listo.
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Extrayendo detalle a nivel LP...
+  1795 LPs Heinz
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\DETALLE_HEINZ.html  (430 KB)
+  Planeacion: 17,891 cajas / 16 SKUs / 147 LPs
+  Vencido: 43,062 | <=30d: 2,473 | 31-60d: 4,635 | 61-90d: 438 | Vigente: 54,779
+Listo.
+[mar 27/10/2026 19:34:37.35] Refresco completado 
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Calculando metricas...
+Traceback (most recent call last):
+  File "C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\EXTRAER_SOP_HEINZ.py", line 109, in <module>
+    desp_mes = {m: cajas("TranType=341 AND FORMAT(TrxDate,'yyyy-MM')=?", [m], table='trx') for m in MESES}
+                   ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\EXTRAER_SOP_HEINZ.py", line 38, in cajas
+    cur.execute(sql, list(skus)+(extra or []))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pyodbc.OperationalError: ('08S01', '[08S01] [Microsoft][ODBC Driver 17 for SQL Server]TCP Provider: Se produjo un error durante el intento de conexión ya que la parte conectada no respondió adecuadamente tras un periodo de tiempo, o bien se produjo un error en la conexión establecida ya que el host conectado no ha podido responder.\r\n (10060) (SQLExecDirectW); [08S01] [Microsoft][ODBC Driver 17 for SQL Server]Communication link failure (10060)')
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Extrayendo detalle a nivel LP...
+  1795 LPs Heinz
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\DETALLE_HEINZ.html  (430 KB)
+  Planeacion: 17,891 cajas / 16 SKUs / 147 LPs
+  Vencido: 43,062 | <=30d: 2,473 | 31-60d: 4,635 | 61-90d: 438 | Vigente: 54,779
+Listo.
+[mar 27/10/2026 20:35:12.16] Refresco completado 
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Calculando metricas...
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\INFOGRAFIA_SOP_DIRECTOR.html (23 KB)
+  Stock 104,958 | Despacho 404,729 | Recibido 277,646 | Riesgo 50,611 (48.2%) | PLNER 17,466 | Rotacion 78d
+Listo.
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Extrayendo detalle a nivel LP...
+  0 LPs Heinz
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\DETALLE_HEINZ.html  (12 KB)
+  Planeacion: 0 cajas / 0 SKUs / 0 LPs
+  Vencido: 0 | <=30d: 0 | 31-60d: 0 | 61-90d: 0 | Vigente: 0
+Listo.
+[miÃ© 28/10/2026  3:00:26.51] Refresco completado 
