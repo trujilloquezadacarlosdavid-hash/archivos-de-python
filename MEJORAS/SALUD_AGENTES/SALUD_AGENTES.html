@@ -1,0 +1,246 @@
+﻿<!DOCTYPE html>
+<html lang="es-GT">
+<head>
+<meta charset="UTF-8">
+<title>Salud Agentes - Bodega 1110</title>
+<meta http-equiv="refresh" content="300">
+<style>
+:root {
+  --arium-blue: #003A70;
+  --arium-gold: #B8860B;
+  --ok: #2E8B57;
+  --warn: #F4C430;
+  --err: #C8102E;
+  --unk: #999;
+  --bg: #F8F9FA;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+body { background: var(--bg); color: #333; padding: 1rem; }
+header { background: var(--arium-blue); color: white; padding: 1rem 1.5rem; border-radius: 6px; }
+h1 { font-size: 1.4rem; }
+.timestamp { font-size: 0.85rem; opacity: 0.85; margin-top: 0.3rem; }
+.kpi-row { display: flex; gap: 0.8rem; margin: 1rem 0; }
+.kpi { flex: 1; background: white; padding: 0.8rem 1rem; border-radius: 6px; border-left: 5px solid var(--arium-blue); }
+.kpi.ok { border-color: var(--ok); } .kpi.warn { border-color: var(--warn); }
+.kpi.err { border-color: var(--err); } .kpi.unk { border-color: var(--unk); }
+.kpi-num { font-size: 2rem; font-weight: 700; }
+.kpi.ok .kpi-num { color: var(--ok); } .kpi.warn .kpi-num { color: var(--warn); }
+.kpi.err .kpi-num { color: var(--err); } .kpi.unk .kpi-num { color: var(--unk); }
+.kpi-lbl { font-size: 0.85rem; text-transform: uppercase; color: #666; }
+table { width: 100%; border-collapse: collapse; background: white; margin-top: 1rem; border-radius: 6px; overflow: hidden; }
+th { background: var(--arium-blue); color: white; padding: 0.6rem; text-align: left; font-size: 0.85rem; }
+td { padding: 0.6rem; border-bottom: 1px solid #eee; font-size: 0.85rem; vertical-align: top; }
+tr:nth-child(even) td { background: #FAFAFA; }
+tr.ok { border-left: 5px solid var(--ok); }
+tr.warn { border-left: 5px solid var(--warn); background: #FFFBF0 !important; }
+tr.err { border-left: 5px solid var(--err); background: #FDF2F2 !important; }
+tr.unk { border-left: 5px solid var(--unk); }
+.estado { text-align: center; font-size: 1.2rem; width: 40px; }
+.desc { color: #666; font-size: 0.8rem; }
+.det { font-size: 0.78rem; color: #555; font-style: italic; }
+.dup { background: #FFF3CD; padding: 1rem 1.5rem; border-radius: 6px; margin: 1rem 0; border-left: 5px solid var(--warn); }
+.dup h2 { color: var(--arium-blue); margin-bottom: 0.5rem; }
+.dup ul { margin-left: 1.5rem; margin-top: 0.5rem; }
+footer { text-align: center; margin-top: 2rem; font-size: 0.8rem; color: #999; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Salud de Agentes - Bodega 1110</h1>
+  <div class="timestamp">Generado: 02-nov-2026 16:48 &middot; PC: FRU-LOG-C1G4NN3 &middot; Autorrefresca c/5min</div>
+</header>
+
+<section class="kpi-row">
+  <div class="kpi ok"><div class="kpi-num">12</div><div class="kpi-lbl">OK</div></div>
+  <div class="kpi warn"><div class="kpi-num">5</div><div class="kpi-lbl">Advertencia</div></div>
+  <div class="kpi err"><div class="kpi-num">0</div><div class="kpi-lbl">Error</div></div>
+  <div class="kpi unk"><div class="kpi-num">1</div><div class="kpi-lbl">Desconocido</div></div>
+</section>
+
+    <section class="dup">
+      <h2>&#x26A0; Tareas DUPLICADAS detectadas (1)</h2>
+      <p>Patron conocido (Castro ya pasÃ³ por esto). Eliminar los duplicados con <code>schtasks /Delete /TN</code>.</p>
+      <ul><li><strong>SoftLanding\S-1-5-21-2385998828-2602280483-4010541656-4822\SoftLandingCreativeManagementTask</strong> &times;2</li></ul>
+    </section>
+
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Agente</th>
+      <th>Frecuencia</th>
+      <th>Ultima corrida</th>
+      <th>Proxima</th>
+      <th>Log</th>
+      <th>Detalle</th>
+    </tr>
+  </thead>
+  <tbody>
+        <tr class="warn">
+          <td class="estado">&#x26A0;</td>
+          <td><strong>Agente FSD Mondelez</strong><br><span class="desc">Envia FSD + Fill Rate a Mondelez (diario)</span></td>
+          <td>diaria</td>
+          <td>2/11/2026 16:45:01</td>
+          <td>2/11/2026 17:00:00</td>
+          <td>2026-10-30 10:20 (50.3 KB)</td>
+          <td class="det">Ultima corrida exitosa | Log sin updates hace 78h</td>
+        </tr>
+        <tr class="warn">
+          <td class="estado">&#x26A0;</td>
+          <td><strong>Agente FSD Casa</strong><br><span class="desc">FSD para casas no-Mondelez</span></td>
+          <td>diaria</td>
+          <td>2/11/2026 16:45:01</td>
+          <td>2/11/2026 17:00:00</td>
+          <td>2026-10-30 10:20 (50.3 KB)</td>
+          <td class="det">Ultima corrida exitosa | Log sin updates hace 78h</td>
+        </tr>
+        <tr class="warn">
+          <td class="estado">&#x26A0;</td>
+          <td><strong>Auditoria FSD Diaria</strong><br><span class="desc">Compara calendario vs FSDs enviados del dia</span></td>
+          <td>diaria 12:15 PM</td>
+          <td>2/11/2026 12:15:01</td>
+          <td>3/11/2026 12:15:00</td>
+          <td>2026-11-02 12:17 (26.1 KB)</td>
+          <td class="det">Codigo 1 (no fatal, revisar)</td>
+        </tr>
+        <tr class="ok">
+          <td class="estado">&#x2705;</td>
+          <td><strong>Monitor FSD</strong><br><span class="desc">Monitorea estado FSD c/15min</span></td>
+          <td>diaria 3:30 AM</td>
+          <td>2/11/2026 12:00:00</td>
+          <td>3/11/2026 03:30:00</td>
+          <td>2026-11-02 12:02 (974 KB)</td>
+          <td class="det">Ultima corrida exitosa</td>
+        </tr>
+        <tr class="ok">
+          <td class="estado">&#x2705;</td>
+          <td><strong>Archivar Mondelez (David)</strong><br><span class="desc">Archiva PDFs Reporte de descarga MONDELEZ</span></td>
+          <td>c/10min</td>
+          <td>2/11/2026 16:45:02</td>
+          <td>2/11/2026 17:00:00</td>
+          <td>-</td>
+          <td class="det">Ultima corrida exitosa</td>
+        </tr>
+        <tr class="ok">
+          <td class="estado">&#x2705;</td>
+          <td><strong>Archivar Notas Envio Mondelez</strong><br><span class="desc">Archiva Notas de envio Mondelez</span></td>
+          <td>c/15min 7AM-6PM</td>
+          <td>2/11/2026 16:45:01</td>
+          <td>2/11/2026 17:00:00</td>
+          <td>-</td>
+          <td class="det">Ultima corrida exitosa</td>
+        </tr>
+        <tr class="ok">
+          <td class="estado">&#x2705;</td>
+          <td><strong>Carta Aceptacion</strong><br><span class="desc">Borrador diario carta aceptacion</span></td>
+          <td>diaria 6PM</td>
+          <td>2/11/2026 16:45:02</td>
+          <td>2/11/2026 17:00:00</td>
+          <td>-</td>
+          <td class="det">Ultima corrida exitosa</td>
+        </tr>
+        <tr class="warn">
+          <td class="estado">&#x26A0;</td>
+          <td><strong>Dashboard Recepciones (SQL)</strong><br><span class="desc">Actualiza dashboard desde SQL Korber</span></td>
+          <td>manual + servicio</td>
+          <td>2/11/2026 01:06:33</td>
+          <td>N/A</td>
+          <td>-</td>
+          <td class="det">Codigo 267014 (no fatal, revisar)</td>
+        </tr>
+        <tr class="warn">
+          <td class="estado">&#x26A0;</td>
+          <td><strong>MTTO Montacargas Lector</strong><br><span class="desc">Lee grupo WA MTTO + envia correo diario</span></td>
+          <td>c/hora 6AM-6PM lun-sab</td>
+          <td>2/11/2026 07:00:01</td>
+          <td>3/11/2026 07:00:00</td>
+          <td>2026-10-28 13:24 (0.5 KB)</td>
+          <td class="det">Ultima corrida exitosa | Log sin updates hace 123h</td>
+        </tr>
+        <tr class="ok">
+          <td class="estado">&#x2705;</td>
+          <td><strong>Monitor Fechas 1110</strong><br><span class="desc">Revisa recepciones y alerta WA si fecha incorrecta</span></td>
+          <td>c/15min 3AM-12PM</td>
+          <td>2/11/2026 12:00:02</td>
+          <td>3/11/2026 03:00:00</td>
+          <td>-</td>
+          <td class="det">Ultima corrida exitosa</td>
+        </tr>
+        <tr class="ok">
+          <td class="estado">&#x2705;</td>
+          <td><strong>Detector Vencidos Pasillos</strong><br><span class="desc">Detecta LPs vencidos en pasillos (3 corridas)</span></td>
+          <td>4,7,11 AM lun-sab</td>
+          <td>2/11/2026 04:00:00</td>
+          <td>3/11/2026 04:00:00</td>
+          <td>-</td>
+          <td class="det">Ultima corrida exitosa</td>
+        </tr>
+        <tr class="ok">
+          <td class="estado">&#x2705;</td>
+          <td><strong>Detector Exceso LPs</strong><br><span class="desc">Detecta posiciones B-F con exceso de LPs</span></td>
+          <td>c/15min 3AM-12PM</td>
+          <td>2/11/2026 12:00:03</td>
+          <td>3/11/2026 03:00:00</td>
+          <td>-</td>
+          <td class="det">Ultima corrida exitosa</td>
+        </tr>
+        <tr class="ok">
+          <td class="estado">&#x2705;</td>
+          <td><strong>Monitor Tiempos Muertos</strong><br><span class="desc">Detecta montacarguistas inactivos >10min</span></td>
+          <td>c/10min</td>
+          <td>2/11/2026 12:00:00</td>
+          <td>3/11/2026 03:00:00</td>
+          <td>2026-11-02 11:43 (0.8 KB)</td>
+          <td class="det">Ultima corrida exitosa</td>
+        </tr>
+        <tr class="ok">
+          <td class="estado">&#x2705;</td>
+          <td><strong>Castro Status WA</strong><br><span class="desc">Status descargas al grupo WA</span></td>
+          <td>multiples horarios</td>
+          <td>2/11/2026 03:05:01</td>
+          <td>3/11/2026 03:05:00</td>
+          <td>-</td>
+          <td class="det">Ultima corrida exitosa</td>
+        </tr>
+        <tr class="ok">
+          <td class="estado">&#x2705;</td>
+          <td><strong>Reporte Cierre Ops SAP vs KORBER</strong><br><span class="desc">Cuadre diario SAP vs Korber</span></td>
+          <td>diaria 3AM</td>
+          <td>2/11/2026 03:00:01</td>
+          <td>3/11/2026 03:00:00</td>
+          <td>-</td>
+          <td class="det">Ultima corrida exitosa</td>
+        </tr>
+        <tr class="ok">
+          <td class="estado">&#x2705;</td>
+          <td><strong>Avance Mensual Equipo</strong><br><span class="desc">Mensaje avance a Recepciones 2026 sabados</span></td>
+          <td>sabado 3AM</td>
+          <td>31/10/2026 13:36:42</td>
+          <td>7/11/2026 03:00:00</td>
+          <td>-</td>
+          <td class="det">Ultima corrida exitosa</td>
+        </tr>
+        <tr class="ok">
+          <td class="estado">&#x2705;</td>
+          <td><strong>AutoGitHub Python</strong><br><span class="desc">Sync del repo cada 2h</span></td>
+          <td>c/2h</td>
+          <td>2/11/2026 15:06:27</td>
+          <td>2/11/2026 17:00:00</td>
+          <td>-</td>
+          <td class="det">Ultima corrida exitosa</td>
+        </tr>
+        <tr class="unk">
+          <td class="estado">&#x2753;</td>
+          <td><strong>Dashboard Heinz (SOP + Detalle)</strong><br><span class="desc">Dashboards de inventario para Director</span></td>
+          <td>manual (ACTUALIZAR_HEINZ.bat)</td>
+          <td></td>
+          <td></td>
+          <td>2026-11-02 16:35 (262.3 KB)</td>
+          <td class="det"></td>
+        </tr>
+  </tbody>
+</table>
+
+<footer>18 agentes monitoreados &middot; Fuente: schtasks + logs locales &middot; Carlos Trujillo - Jefe Bodega 1110</footer>
+</body>
+</html>
