@@ -5281,3 +5281,33 @@ Traceback (most recent call last):
     conn = pyodbc.connect(SQL, timeout=30)
 pyodbc.OperationalError: ('08001', '[08001] [Microsoft][ODBC Driver 17 for SQL Server]Named Pipes Provider: Could not open a connection to SQL Server [53].  (53) (SQLDriverConnect); [08001] [Microsoft][ODBC Driver 17 for SQL Server]Login timeout expired (0); [08001] [Microsoft][ODBC Driver 17 for SQL Server]A network-related or instance-specific error has occurred while establishing a connection to SQL Server. Server is not found or not accessible. Check if instance name is correct and if SQL Server is configured to allow remote connections. For more information see SQL Server Books Online. (53)')
 [lun 02/11/2026 20:33:38.39] Refresco completado 
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Calculando metricas...
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\INFOGRAFIA_SOP_DIRECTOR.html (23 KB)
+  Stock 100,740 | Despacho 426,370 | Recibido 294,949 | Riesgo 37,585 (37.3%) | PLNER 14,843 | Rotacion 72d
+Listo.
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Extrayendo detalle a nivel LP...
+  1699 LPs Heinz
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\DETALLE_HEINZ.html  (406 KB)
+  Planeacion: 14,843 cajas / 15 SKUs / 123 LPs
+  Vencido: 29,907 | <=30d: 2,252 | 31-60d: 4,315 | 61-90d: 1,111 | Vigente: 63,155
+Listo.
+[lun 02/11/2026 21:35:40.09] Refresco completado 
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Calculando metricas...
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\INFOGRAFIA_SOP_DIRECTOR.html (23 KB)
+  Stock 100,590 | Despacho 426,520 | Recibido 294,949 | Riesgo 37,585 (37.4%) | PLNER 14,818 | Rotacion 72d
+Listo.
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Extrayendo detalle a nivel LP...
+  1696 LPs Heinz
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\DETALLE_HEINZ.html  (405 KB)
+  Planeacion: 14,818 cajas / 15 SKUs / 122 LPs
+  Vencido: 29,907 | <=30d: 2,252 | 31-60d: 4,315 | 61-90d: 1,111 | Vigente: 63,005
+Listo.
+[lun 02/11/2026 22:35:45.01] Refresco completado 
