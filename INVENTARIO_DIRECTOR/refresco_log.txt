@@ -6263,3 +6263,23 @@ Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PH
   Vencido: 30,101 | <=30d: 2,537 | 31-60d: 4,100 | 61-90d: 1,569 | Vigente: 69,346
 Listo.
 [sÃ¡b 07/11/2026 11:37:15.53] Refresco completado 
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Calculando metricas...
+Traceback (most recent call last):
+  File "C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\EXTRAER_SOP_HEINZ.py", line 109, in <module>
+    desp_mes = {m: cajas("TranType=341 AND FORMAT(TrxDate,'yyyy-MM')=?", [m], table='trx') for m in MESES}
+                   ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\EXTRAER_SOP_HEINZ.py", line 38, in cajas
+    cur.execute(sql, list(skus)+(extra or []))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pyodbc.OperationalError: ('08S01', '[08S01] [Microsoft][ODBC Driver 17 for SQL Server]TCP Provider: Se ha anulado una conexión establecida por el software en su equipo host..\r\n (10053) (SQLExecDirectW); [08S01] [Microsoft][ODBC Driver 17 for SQL Server]Communication link failure (10053)')
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Extrayendo detalle a nivel LP...
+  1721 LPs Heinz
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\DETALLE_HEINZ.html  (412 KB)
+  Planeacion: 13,578 cajas / 15 SKUs / 125 LPs
+  Vencido: 30,103 | <=30d: 2,831 | 31-60d: 3,819 | 61-90d: 1,907 | Vigente: 68,996
+Listo.
+[lun 09/11/2026 10:19:31.49] Refresco completado 
