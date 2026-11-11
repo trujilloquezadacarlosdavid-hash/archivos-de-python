@@ -1,65 +1,17 @@
 ﻿{
-  "version": "0.0.1",
-  "configurations": [
-    {
-      "name": "picking-dash",
-      "runtimeExecutable": "C:\\Users\\trujillo.c\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
-      "runtimeArgs": ["-m","http.server","8765","--directory","C:\\Users\\trujillo.c\\OneDrive - Me Llega, S.A\\Escritorio\\ARCHIVOS DE PHYTON\\DASHBOARD ASIGNACION PICKING"],
-      "port": 8765
-    },
-    {
-      "name": "recepciones",
-      "runtimeExecutable": "C:\\Users\\trujillo.c\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
-      "runtimeArgs": ["-m","http.server","8766","--directory","C:\\Users\\trujillo.c\\OneDrive - Me Llega, S.A\\Escritorio\\TRUJILLO.C\\PROYECTO RECEPCIONES 2026"],
-      "port": 8766
-    },
-    {
-      "name": "status-demanda",
-      "runtimeExecutable": "C:\\Users\\trujillo.c\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
-      "runtimeArgs": ["-m","http.server","8767","--directory","C:\\Users\\trujillo.c\\OneDrive - Me Llega, S.A\\Escritorio\\ARCHIVOS DE PHYTON\\STATUS DEMANDA"],
-      "port": 8767
-    },
-    {
-      "name": "peluchicine",
-      "runtimeExecutable": "C:\\Users\\trujillo.c\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
-      "runtimeArgs": ["-m","http.server","8768","--directory","C:\\Users\\trujillo.c\\OneDrive - Me Llega, S.A\\Escritorio"],
-      "port": 8768
-    },
-    {
-      "name": "w2w",
-      "runtimeExecutable": "C:\\Users\\trujillo.c\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
-      "runtimeArgs": ["-m","http.server","8769","--bind","127.0.0.1","--directory","C:\\Users\\trujillo.c\\OneDrive - Me Llega, S.A\\Escritorio\\Archivo para coteos WTW"],
-      "port": 8769
-    },
-    {
-      "name": "mi-tienda",
-      "runtimeExecutable": "C:\\Users\\trujillo.c\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
-      "runtimeArgs": ["-m","http.server","8793","--bind","127.0.0.1","--directory","C:\\Users\\trujillo.c\\OneDrive - Me Llega, S.A\\Escritorio\\ARCHIVOS DE PHYTON\\MI TIENDA"],
-      "port": 8793
-    },
-    {
-      "name": "verificadores-dash",
-      "runtimeExecutable": "C:\\Users\\trujillo.c\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
-      "runtimeArgs": ["-m","http.server","8792","--bind","127.0.0.1","--directory","C:\\Users\\trujillo.c\\AppData\\Local\\Temp\\claude\\C--Users-trujillo-c-OneDrive---Me-Llega--S-A-Escritorio-ARCHIVOS-DE-PHYTON\\b5710c59-333e-4849-8b0c-a9c92672ea18\\scratchpad"],
-      "port": 8792
-    },
-    {
-      "name": "almacenamiento",
-      "runtimeExecutable": "C:\\Users\\trujillo.c\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
-      "runtimeArgs": ["C:\\Users\\trujillo.c\\OneDrive - Me Llega, S.A\\Escritorio\\TRUJILLO.C\\PROYECTO ALMACENAMIENTO\\servidor_vivo.py"],
-      "port": 8795
-    },
-    {
-      "name": "almacenamiento-static",
-      "runtimeExecutable": "C:\\Users\\trujillo.c\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
-      "runtimeArgs": ["-m","http.server","8796","--bind","127.0.0.1","--directory","C:\\Users\\trujillo.c\\OneDrive - Me Llega, S.A\\Escritorio\\TRUJILLO.C\\PROYECTO ALMACENAMIENTO"],
-      "port": 8796
-    },
-    {
-      "name": "inventario-director",
-      "runtimeExecutable": "C:\\Users\\trujillo.c\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
-      "runtimeArgs": ["-m","http.server","8797","--bind","127.0.0.1","--directory","C:\\Users\\trujillo.c\\OneDrive - Me Llega, S.A\\Escritorio\\ARCHIVOS DE PHYTON\\INVENTARIO_DIRECTOR"],
-      "port": 8797
-    }
-  ]
+    "version":  "0.0.1",
+    "configurations":  [
+                           {
+                               "port":  8765,
+                               "runtimeExecutable":  "python",
+                               "name":  "ciclicos",
+                               "runtimeArgs":  [
+                                                   "-m",
+                                                   "http.server",
+                                                   "8765",
+                                                   "--directory",
+                                                   "C:\\Users\\trujillo.c\\AppData\\Local\\Temp"
+                                               ]
+                           }
+                       ]
 }
