@@ -6962,3 +6962,38 @@ Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PH
   Vencido: 25,813 | <=30d: 2,653 | 31-60d: 3,915 | 61-90d: 2,149 | Vigente: 62,352
 Listo.
 [vie 13/11/2026  4:36:32.38] Refresco completado 
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Calculando metricas...
+Traceback (most recent call last):
+  File "C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\EXTRAER_SOP_HEINZ.py", line 109, in <module>
+    desp_mes = {m: cajas("TranType=341 AND FORMAT(TrxDate,'yyyy-MM')=?", [m], table='trx') for m in MESES}
+                   ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\EXTRAER_SOP_HEINZ.py", line 38, in cajas
+    cur.execute(sql, list(skus)+(extra or []))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pyodbc.OperationalError: ('08S01', '[08S01] [Microsoft][ODBC Driver 17 for SQL Server]TCP Provider: Se ha anulado una conexión establecida por el software en su equipo host..\r\n (10053) (SQLExecDirectW); [08S01] [Microsoft][ODBC Driver 17 for SQL Server]Communication link failure (10053)')
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Extrayendo detalle a nivel LP...
+  1521 LPs Heinz
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\DETALLE_HEINZ.html  (366 KB)
+  Planeacion: 11,462 cajas / 15 SKUs / 121 LPs
+  Vencido: 25,813 | <=30d: 2,653 | 31-60d: 3,915 | 61-90d: 2,149 | Vigente: 62,352
+Listo.
+[vie 13/11/2026  5:39:10.22] Refresco completado 
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Calculando metricas...
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\INFOGRAFIA_SOP_DIRECTOR.html (23 KB)
+  Stock 96,881 | Despacho 446,769 | Recibido 311,229 | Riesgo 34,529 (35.6%) | PLNER 11,462 | Rotacion 69d
+Listo.
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Extrayendo detalle a nivel LP...
+  1521 LPs Heinz
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\DETALLE_HEINZ.html  (366 KB)
+  Planeacion: 11,462 cajas / 15 SKUs / 121 LPs
+  Vencido: 25,813 | <=30d: 2,653 | 31-60d: 3,915 | 61-90d: 2,149 | Vigente: 62,352
+Listo.
+[vie 13/11/2026  6:35:55.51] Refresco completado 
