@@ -3,7 +3,7 @@
     "configurations":  [
                            {
                                "port":  8765,
-                               "runtimeExecutable":  "python",
+                               "runtimeExecutable":  "py",
                                "name":  "ciclicos",
                                "runtimeArgs":  [
                                                    "-m",
