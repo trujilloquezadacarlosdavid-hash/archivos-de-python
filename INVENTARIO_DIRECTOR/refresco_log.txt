@@ -8507,3 +8507,33 @@ Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PH
   Vencido: 20,094 | <=30d: 5,110 | 31-60d: 421 | 61-90d: 2,419 | Vigente: 71,729
 Listo.
 [mar 24/11/2026  2:57:40.46] Refresco completado 
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Calculando metricas...
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\INFOGRAFIA_SOP_DIRECTOR.html (23 KB)
+  Stock 99,773 | Despacho 467,405 | Recibido 337,787 | Riesgo 28,044 (28.1%) | PLNER 7,118 | Rotacion 70d
+Listo.
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Extrayendo detalle a nivel LP...
+  1535 LPs Heinz
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\DETALLE_HEINZ.html  (368 KB)
+  Planeacion: 7,118 cajas / 13 SKUs / 104 LPs
+  Vencido: 20,094 | <=30d: 5,110 | 31-60d: 421 | 61-90d: 2,419 | Vigente: 71,729
+Listo.
+[mar 24/11/2026  3:36:46.34] Refresco completado 
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Calculando metricas...
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\INFOGRAFIA_SOP_DIRECTOR.html (23 KB)
+  Stock 100,423 | Despacho 467,405 | Recibido 337,787 | Riesgo 28,044 (27.9%) | PLNER 7,118 | Rotacion 70d
+Listo.
+Conectando a SQL...
+SKUs Kraft Heinz: 84
+Extrayendo detalle a nivel LP...
+  1545 LPs Heinz
+Generado: C:\Users\trujillo.c\OneDrive - Me Llega, S.A\Escritorio\ARCHIVOS DE PHYTON\INVENTARIO_DIRECTOR\DETALLE_HEINZ.html  (370 KB)
+  Planeacion: 7,118 cajas / 13 SKUs / 104 LPs
+  Vencido: 20,094 | <=30d: 5,110 | 31-60d: 421 | 61-90d: 2,419 | Vigente: 72,379
+Listo.
+[mar 24/11/2026  4:35:53.52] Refresco completado 
