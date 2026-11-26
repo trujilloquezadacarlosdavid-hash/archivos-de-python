@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análisis Recepciones KELLANOVA — Oct-Nov 2026</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#f3f5fa;color:#2a3550;line-height:1.5}
+.header{background:linear-gradient(120deg,#0d2a6b,#164193);color:#fff;padding:28px 32px 20px;border-bottom:4px solid #f5b400}
+.header h1{font-size:1.6rem;font-weight:700;letter-spacing:-.3px}
+.header .sub{color:#b9c6e6;font-size:.88rem;margin-top:4px}
+.header .badge{display:inline-block;background:#f5b400;color:#0d2a6b;font-weight:700;padding:2px 10px;border-radius:4px;font-size:.78rem;margin-left:8px;vertical-align:middle}
+.container{max-width:1200px;margin:0 auto;padding:20px}
+
+/* KPI row */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:24px}
+.kpi{background:#fff;border:1px solid #d7dceb;border-radius:10px;padding:16px 18px;text-align:center}
+.kpi .label{font-size:.75rem;color:#5a6b8e;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.kpi .value{font-size:2rem;font-weight:700;color:#1a2340;margin:4px 0 2px}
+.kpi .delta{font-size:.78rem;font-weight:600}
+.kpi .delta.bad{color:#d64541}
+.kpi .delta.good{color:#1e8449}
+.kpi .delta.warn{color:#b48500}
+
+/* Cards */
+.card{background:#fff;border:1px solid #d7dceb;border-radius:10px;padding:20px 22px;margin-bottom:20px}
+.card h2{font-size:1.1rem;font-weight:700;color:#0d2a6b;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #f5b400}
+.card h3{font-size:.95rem;font-weight:700;color:#1a2340;margin:14px 0 8px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+th{background:#0d2a6b;color:#fff;padding:8px 10px;text-align:left;font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.3px}
+td{padding:7px 10px;border-bottom:1px solid #e8ecf4}
+tr:nth-child(even){background:#fafbff}
+tr:hover{background:#eef1f8}
+.right{text-align:right}
+.center{text-align:center}
+
+/* Status pills */
+.pill{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.72rem;font-weight:600}
+.pill.red{background:#fde8e8;color:#d64541;border:1px solid #f5b7b7}
+.pill.yellow{background:#fef7e0;color:#b48500;border:1px solid #f5d97e}
+.pill.green{background:#e8f5ec;color:#1e8449;border:1px solid #a3d9b5}
+
+/* Bars */
+.bar-wrap{width:100%;height:18px;background:#e8ecf4;border-radius:4px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:4px 0 0 4px;transition:width .3s}
+.bar-fill.ok{background:#1e8449}
+.bar-fill.warn{background:#f5b400}
+.bar-fill.bad{background:#d64541}
+
+/* Chart containers */
+.chart-svg{width:100%;overflow-x:auto}
+.chart-svg svg{display:block;margin:0 auto}
+
+/* Sections */
+.section-title{font-size:1.2rem;font-weight:700;color:#0d2a6b;margin:28px 0 14px;padding-left:12px;border-left:4px solid #f5b400}
+
+/* Email draft */
+.email-box{background:#fffff8;border:2px solid #0d2a6b;border-radius:10px;padding:24px;font-size:.88rem;line-height:1.7}
+.email-box .field{font-weight:700;color:#0d2a6b}
+.email-box hr{border:none;border-top:1px solid #d7dceb;margin:12px 0}
+
+/* Print */
+@media print{body{background:#fff}.header{break-after:avoid}.card{break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Análisis de Recepciones — KELLANOVA <span class="badge">Oct-Nov 2026</span></h1>
+  <div class="sub">Bodega 1110 · Corporación Arium · Generado: 26 de noviembre de 2026 · Periodo: 01-Oct al 26-Nov 2026</div>
+</div>
+
+<div class="container">
+
+<!-- ============ RESUMEN EJECUTIVO ============ -->
+<h2 class="section-title">Resumen Ejecutivo</h2>
+
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="label">Entregas Totales</div>
+    <div class="value">21</div>
+    <div class="delta warn">12 Oct · 9 Nov</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Cajas Enviadas</div>
+    <div class="value">25,585</div>
+    <div class="delta">Oct 13,253 · Nov 12,332</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Cajas Recibidas</div>
+    <div class="value">23,599</div>
+    <div class="delta bad">-1,986 vs enviadas</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Fill Rate Global</div>
+    <div class="value" style="color:#d64541">92.2%</div>
+    <div class="delta bad">Oct 93.4% → Nov 91.0%</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Cajas Dañadas</div>
+    <div class="value" style="color:#d64541">3,169</div>
+    <div class="delta bad">12.4% del total enviado</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Excedieron Tiempo</div>
+    <div class="value" style="color:#d64541">62%</div>
+    <div class="delta bad">13 de 21 entregas</div>
+  </div>
+</div>
+
+<div class="card" style="background:#fef7e0;border-color:#f5b400">
+  <h2 style="border-color:#d64541;color:#d64541">Hallazgos Críticos</h2>
+  <ul style="padding-left:18px;font-size:.88rem">
+    <li><strong>Producto dañado estable:</strong> 12.6% en octubre → <strong>12.2% en noviembre</strong> (corregido: Cita 3005639 tenía 992 cajas infladas a 359 reales por triplicación en formulario de descarga)</li>
+    <li><strong>62% de las entregas excedieron el slot asignado</strong> de rampa (promedio: +88 min de exceso)</li>
+    <li><strong>Fill Rate deteriorándose:</strong> de 93.4% (Oct) a 91.0% (Nov) — cada punto representa ~123 cajas no ingresadas</li>
+    <li><strong>Entregas críticas (Fill &lt;80%):</strong> 4 entregas con rechazos masivos (Oct 08: 59.3%, Nov 20: 61.2%, Nov 19: 64%, Oct 27: 75.3%)</li>
+    <li><strong>Causas dominantes de rechazo:</strong> cajas dañadas/corrugado (76%), fecha corta (15%), producto sin lote impreso (6%)</li>
+  </ul>
+</div>
+
+<!-- ============ FILL RATE ============ -->
+<h2 class="section-title">Fill Rate por Entrega</h2>
+
+<div class="card">
+  <h2>Evolución del Fill Rate — Octubre a Noviembre 2026</h2>
+  <p style="font-size:.82rem;color:#5a6b8e;margin-bottom:12px">Fill Rate = Cajas Recibidas / Cajas Enviadas. Referencia objetivo: ≥98%</p>
+
+  <div class="chart-svg">
+    <svg viewBox="0 0 1100 320" xmlns="http://www.w3.org/2000/svg" style="max-width:1100px">
+      <!-- Grid -->
+      <line x1="80" y1="40" x2="1060" y2="40" stroke="#e1e0d9" stroke-width="1"/>
+      <line x1="80" y1="90" x2="1060" y2="90" stroke="#e1e0d9" stroke-width="1"/>
+      <line x1="80" y1="140" x2="1060" y2="140" stroke="#e1e0d9" stroke-width="1"/>
+      <line x1="80" y1="190" x2="1060" y2="190" stroke="#e1e0d9" stroke-width="1"/>
+      <line x1="80" y1="240" x2="1060" y2="240" stroke="#e1e0d9" stroke-width="1"/>
+      <!-- Baseline -->
+      <line x1="80" y1="280" x2="1060" y2="280" stroke="#c3c2b7" stroke-width="2"/>
+
+      <!-- Y axis labels -->
+      <text x="72" y="44" fill="#5a6b8e" font-size="11" text-anchor="end">100%</text>
+      <text x="72" y="94" fill="#5a6b8e" font-size="11" text-anchor="end">90%</text>
+      <text x="72" y="144" fill="#5a6b8e" font-size="11" text-anchor="end">80%</text>
+      <text x="72" y="194" fill="#5a6b8e" font-size="11" text-anchor="end">70%</text>
+      <text x="72" y="244" fill="#5a6b8e" font-size="11" text-anchor="end">60%</text>
+
+      <!-- Target line 98% -->
+      <line x1="80" y1="50" x2="1060" y2="50" stroke="#1e8449" stroke-width="1.5" stroke-dasharray="6,3"/>
+      <text x="1065" y="54" fill="#1e8449" font-size="10" font-weight="600">Meta 98%</text>
+
+      <!-- Bars: each bar = fill rate. Scale: 50%=280, 100%=40 → y = 280 - (fr-50)*4.8 -->
+      <!-- Oct 01: 90% --> <rect x="96" y="92" width="20" height="188" rx="4" fill="#2a78d6" opacity="0.85"/><text x="106" y="86" fill="#2a3550" font-size="9" text-anchor="middle">90%</text>
+      <!-- Oct 02: 95.7% --> <rect x="142" y="60" width="20" height="220" rx="4" fill="#2a78d6" opacity="0.85"/><text x="152" y="54" fill="#2a3550" font-size="9" text-anchor="middle">96%</text>
+      <!-- Oct 05: 90.9% --> <rect x="188" y="84" width="20" height="196" rx="4" fill="#2a78d6" opacity="0.85"/><text x="198" y="78" fill="#2a3550" font-size="9" text-anchor="middle">91%</text>
+      <!-- Oct 06: 93.5% --> <rect x="234" y="69" width="20" height="211" rx="4" fill="#2a78d6" opacity="0.85"/><text x="244" y="63" fill="#2a3550" font-size="9" text-anchor="middle">94%</text>
+      <!-- Oct 08: 59.3% --> <rect x="280" y="236" width="20" height="44" rx="4" fill="#d64541"/><text x="290" y="230" fill="#d64541" font-size="9" text-anchor="middle" font-weight="700">59%</text>
+      <!-- Oct 13: 86.1% --> <rect x="326" y="107" width="20" height="173" rx="4" fill="#f5b400" opacity="0.9"/><text x="336" y="101" fill="#2a3550" font-size="9" text-anchor="middle">86%</text>
+      <!-- Oct 14: 97% --> <rect x="372" y="54" width="20" height="226" rx="4" fill="#1e8449" opacity="0.85"/><text x="382" y="48" fill="#1e8449" font-size="9" text-anchor="middle">97%</text>
+      <!-- Oct 19: 80.9% --> <rect x="418" y="132" width="20" height="148" rx="4" fill="#f5b400" opacity="0.9"/><text x="428" y="126" fill="#2a3550" font-size="9" text-anchor="middle">81%</text>
+      <!-- Oct 22: 86.8% --> <rect x="464" y="103" width="20" height="177" rx="4" fill="#f5b400" opacity="0.9"/><text x="474" y="97" fill="#2a3550" font-size="9" text-anchor="middle">87%</text>
+      <!-- Oct 27: 75.3% --> <rect x="510" y="161" width="20" height="119" rx="4" fill="#d64541"/><text x="520" y="155" fill="#d64541" font-size="9" text-anchor="middle" font-weight="700">75%</text>
+      <!-- Oct 29: 91.4% --> <rect x="556" y="81" width="20" height="199" rx="4" fill="#2a78d6" opacity="0.85"/><text x="566" y="75" fill="#2a3550" font-size="9" text-anchor="middle">91%</text>
+      <!-- Oct 31: 176.9% sobrante --> <rect x="602" y="40" width="20" height="240" rx="4" fill="#f5b400" opacity="0.7"/><text x="612" y="34" fill="#b48500" font-size="9" text-anchor="middle">177%*</text>
+
+      <!-- SEPARATOR OCT/NOV -->
+      <line x1="638" y1="30" x2="638" y2="290" stroke="#0d2a6b" stroke-width="1" stroke-dasharray="4,2"/>
+      <text x="640" y="300" fill="#0d2a6b" font-size="10" font-weight="600">NOV →</text>
+
+      <!-- Nov 02: 88.8% --> <rect x="650" y="94" width="20" height="186" rx="4" fill="#2a78d6" opacity="0.85"/><text x="660" y="88" fill="#2a3550" font-size="9" text-anchor="middle">89%</text>
+      <!-- Nov 10: 98.1% --> <rect x="696" y="49" width="20" height="231" rx="4" fill="#1e8449" opacity="0.85"/><text x="706" y="43" fill="#1e8449" font-size="9" text-anchor="middle">98%</text>
+      <!-- Nov 12: 79% --> <rect x="742" y="141" width="20" height="139" rx="4" fill="#d64541"/><text x="752" y="135" fill="#d64541" font-size="9" text-anchor="middle" font-weight="700">79%</text>
+      <!-- Nov 14: 82.4% --> <rect x="788" y="125" width="20" height="155" rx="4" fill="#f5b400" opacity="0.9"/><text x="798" y="119" fill="#2a3550" font-size="9" text-anchor="middle">82%</text>
+      <!-- Nov 18: 96.9% --> <rect x="834" y="55" width="20" height="225" rx="4" fill="#2a78d6" opacity="0.85"/><text x="844" y="49" fill="#2a3550" font-size="9" text-anchor="middle">97%</text>
+      <!-- Nov 19: 64% --> <rect x="880" y="213" width="20" height="67" rx="4" fill="#d64541"/><text x="890" y="207" fill="#d64541" font-size="9" text-anchor="middle" font-weight="700">64%</text>
+      <!-- Nov 20: 61.2% --> <rect x="926" y="226" width="20" height="54" rx="4" fill="#d64541"/><text x="936" y="220" fill="#d64541" font-size="9" text-anchor="middle" font-weight="700">61%</text>
+      <!-- Nov 25: 92.8% --> <rect x="972" y="75" width="20" height="205" rx="4" fill="#2a78d6" opacity="0.85"/><text x="982" y="69" fill="#2a3550" font-size="9" text-anchor="middle">93%</text>
+      <!-- Nov 26: 101.2% sobrante --> <rect x="1018" y="40" width="20" height="240" rx="4" fill="#f5b400" opacity="0.7"/><text x="1028" y="34" fill="#b48500" font-size="9" text-anchor="middle">101%*</text>
+
+      <!-- X labels -->
+      <text x="106" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,106,296)">Oct01</text>
+      <text x="152" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,152,296)">Oct02</text>
+      <text x="198" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,198,296)">Oct05</text>
+      <text x="244" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,244,296)">Oct06</text>
+      <text x="290" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,290,296)">Oct08</text>
+      <text x="336" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,336,296)">Oct13</text>
+      <text x="382" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,382,296)">Oct14</text>
+      <text x="428" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,428,296)">Oct19</text>
+      <text x="474" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,474,296)">Oct22</text>
+      <text x="520" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,520,296)">Oct27</text>
+      <text x="566" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,566,296)">Oct29</text>
+      <text x="612" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,612,296)">Oct31</text>
+      <text x="660" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,660,296)">Nov02</text>
+      <text x="706" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,706,296)">Nov10</text>
+      <text x="752" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,752,296)">Nov12</text>
+      <text x="798" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,798,296)">Nov14</text>
+      <text x="844" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,844,296)">Nov18</text>
+      <text x="890" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,890,296)">Nov19</text>
+      <text x="936" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,936,296)">Nov20</text>
+      <text x="982" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,982,296)">Nov25</text>
+      <text x="1028" y="296" fill="#5a6b8e" font-size="8" text-anchor="middle" transform="rotate(-45,1028,296)">Nov26</text>
+
+      <!-- Legend -->
+      <rect x="82" y="10" width="10" height="10" rx="2" fill="#1e8449"/>
+      <text x="96" y="19" fill="#2a3550" font-size="10">≥95%</text>
+      <rect x="145" y="10" width="10" height="10" rx="2" fill="#2a78d6"/>
+      <text x="159" y="19" fill="#2a3550" font-size="10">85-95%</text>
+      <rect x="215" y="10" width="10" height="10" rx="2" fill="#f5b400"/>
+      <text x="229" y="19" fill="#2a3550" font-size="10">80-85%</text>
+      <rect x="285" y="10" width="10" height="10" rx="2" fill="#d64541"/>
+      <text x="299" y="19" fill="#2a3550" font-size="10">&lt;80%</text>
+    </svg>
+  </div>
+  <p style="font-size:.75rem;color:#8fa0c8;margin-top:6px">* Entregas con sobrante (cajas recibidas > enviadas, posible código duplicado en OC).</p>
+</div>
+
+<!-- ============ TIEMPOS DE DESCARGA ============ -->
+<h2 class="section-title">Tiempos de Descarga vs. Slot Asignado</h2>
+
+<div class="card">
+  <h2>Ocupación de Rampa por Entrega</h2>
+  <p style="font-size:.82rem;color:#5a6b8e;margin-bottom:12px">Slot asignado: 03:00-06:00 (180 min) o 03:00-07:00 (240 min). Tiempo de rampa = Inicio a Finalización.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Cita</th>
+        <th>Rampa</th>
+        <th>Slot (min)</th>
+        <th>Rampa Ocupada</th>
+        <th>Exceso</th>
+        <th>Cajas Dañ.</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>01-Oct</td><td>3004728</td><td>R-05</td><td class="right">180</td><td class="right">03:20–06:45 (205 min)</td><td class="right" style="color:#d64541;font-weight:700">+25 min</td><td class="right">65</td><td><span class="pill yellow">Excedida</span></td></tr>
+      <tr><td>02-Oct</td><td>3004749</td><td>R-05</td><td class="right">180</td><td class="right">03:10–06:52 (222 min)</td><td class="right" style="color:#d64541;font-weight:700">+42 min</td><td class="right">47</td><td><span class="pill yellow">Excedida</span></td></tr>
+      <tr><td>05-Oct</td><td>3004789</td><td>R-03</td><td class="right">180</td><td class="right">08:26–10:59 (153 min)</td><td class="right" style="color:#1e8449">OK</td><td class="right">91</td><td><span class="pill green">En tiempo</span></td></tr>
+      <tr><td>06-Oct</td><td>3004803</td><td>R-09</td><td class="right">240</td><td class="right">03:30–07:18 (228 min)</td><td class="right" style="color:#1e8449">OK</td><td class="right">62</td><td><span class="pill green">En tiempo</span></td></tr>
+      <tr style="background:#fde8e8"><td>08-Oct</td><td>3004847</td><td>R-09</td><td class="right">180</td><td class="right">03:40–09:41 (<strong>361 min</strong>)</td><td class="right" style="color:#d64541;font-weight:700">+181 min</td><td class="right" style="color:#d64541;font-weight:700">781</td><td><span class="pill red">Crítica</span></td></tr>
+      <tr><td>13-Oct</td><td>3004909</td><td>R-04</td><td class="right">180</td><td class="right">03:30–06:43 (193 min)</td><td class="right" style="color:#d64541;font-weight:700">+13 min</td><td class="right">74</td><td><span class="pill yellow">Excedida</span></td></tr>
+      <tr><td>14-Oct</td><td>3004924</td><td>R-03</td><td class="right">180</td><td class="right">03:15–08:37 (322 min)</td><td class="right" style="color:#d64541;font-weight:700">+142 min</td><td class="right">43</td><td><span class="pill red">Crítica</span></td></tr>
+      <tr><td>19-Oct</td><td>3004978</td><td>R-03</td><td class="right">180</td><td class="right">03:20–05:59 (159 min)</td><td class="right" style="color:#1e8449">OK</td><td class="right">76</td><td><span class="pill green">En tiempo</span></td></tr>
+      <tr><td>22-Oct</td><td>3005024</td><td>R-04</td><td class="right">180</td><td class="right">04:00–06:56 (176 min)</td><td class="right" style="color:#1e8449">OK</td><td class="right">86</td><td><span class="pill green">En tiempo</span></td></tr>
+      <tr style="background:#fde8e8"><td>27-Oct</td><td>3005100</td><td>R-08</td><td class="right">180</td><td class="right">03:00–08:27 (<strong>327 min</strong>)</td><td class="right" style="color:#d64541;font-weight:700">+147 min</td><td class="right">192</td><td><span class="pill red">Crítica</span></td></tr>
+      <tr><td>29-Oct</td><td>3005142</td><td>R-04</td><td class="right">180</td><td class="right">03:15–08:22 (307 min)</td><td class="right" style="color:#d64541;font-weight:700">+127 min</td><td class="right">68</td><td><span class="pill red">Crítica</span></td></tr>
+      <tr><td>31-Oct</td><td>3005192</td><td>R-02</td><td class="right">180</td><td class="right">03:20–07:11 (231 min)</td><td class="right" style="color:#d64541;font-weight:700">+51 min</td><td class="right">80</td><td><span class="pill yellow">Excedida</span></td></tr>
+      <tr style="background:#e8f5ec"><td>02-Nov</td><td>3005196</td><td>R-05</td><td class="right">180</td><td class="right">08:32–09:37 (65 min)</td><td class="right" style="color:#1e8449">OK</td><td class="right">94</td><td><span class="pill green">En tiempo</span></td></tr>
+      <tr><td>10-Nov</td><td>3005346</td><td>R-09</td><td class="right">240</td><td class="right">04:03–07:31 (208 min)</td><td class="right" style="color:#1e8449">OK</td><td class="right">46</td><td><span class="pill green">En tiempo</span></td></tr>
+      <tr><td>12-Nov</td><td>3005393</td><td>R-09</td><td class="right">240</td><td class="right">05:43–06:57 (74 min)</td><td class="right" style="color:#1e8449">OK</td><td class="right">231</td><td><span class="pill green">En tiempo</span></td></tr>
+      <tr><td>14-Nov</td><td>3005433</td><td>R-03</td><td class="right">240</td><td class="right">03:48–08:05 (257 min)</td><td class="right" style="color:#d64541;font-weight:700">+17 min</td><td class="right">183</td><td><span class="pill yellow">Excedida</span></td></tr>
+      <tr><td>18-Nov</td><td>3005487</td><td>R-08</td><td class="right">180</td><td class="right">06:15–06:38 (23 min)</td><td class="right" style="color:#1e8449">OK</td><td class="right">26</td><td><span class="pill green">En tiempo</span></td></tr>
+      <tr style="background:#fde8e8"><td>19-Nov</td><td>3005515</td><td>R-08</td><td class="right">180</td><td class="right">03:48–09:23 (<strong>335 min</strong>)</td><td class="right" style="color:#d64541;font-weight:700">+155 min</td><td class="right">288</td><td><span class="pill red">Crítica</span></td></tr>
+      <tr><td>20-Nov</td><td>3005529</td><td>R-07</td><td class="right">180</td><td class="right">03:24–07:17 (233 min)</td><td class="right" style="color:#d64541;font-weight:700">+53 min</td><td class="right">233</td><td><span class="pill yellow">Excedida</span></td></tr>
+      <tr><td>25-Nov</td><td>3005615</td><td>R-02</td><td class="right">180</td><td class="right">03:25–06:49 (204 min)</td><td class="right" style="color:#d64541;font-weight:700">+24 min</td><td class="right">44</td><td><span class="pill yellow">Excedida</span></td></tr>
+      <tr style="background:#fde8e8"><td>26-Nov</td><td>3005639</td><td>R-07</td><td class="right">180</td><td class="right">03:39–09:30 (<strong>351 min</strong>)</td><td class="right" style="color:#d64541;font-weight:700">+171 min</td><td class="right" style="color:#d64541;font-weight:700">359*</td><td><span class="pill red">Crítica</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="label">Promedio Rampa Ocupada</div>
+    <div class="value">216 min</div>
+    <div class="delta bad">3h 36min vs 3h slot</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Excedencias</div>
+    <div class="value" style="color:#d64541">13/21</div>
+    <div class="delta bad">62% de entregas</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Exceso Promedio</div>
+    <div class="value" style="color:#d64541">+88 min</div>
+    <div class="delta bad">cuando excede</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Peor Caso</div>
+    <div class="value" style="color:#d64541">+181 min</div>
+    <div class="delta bad">08-Oct (6h en rampa)</div>
+  </div>
+</div>
+
+<!-- ============ RECHAZOS POR CAUSA ============ -->
+<h2 class="section-title">Análisis de Rechazos por Causa</h2>
+
+<div class="card">
+  <h2>Distribución de Causas de Rechazo (Oct-Nov 2026)</h2>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:16px">
+    <div>
+      <h3>Categorías de Rechazo</h3>
+      <table>
+        <thead><tr><th>Causa</th><th class="right">Incidencias</th><th class="right">% del total</th></tr></thead>
+        <tbody>
+          <tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#d64541;margin-right:6px"></span>Cajas Dañadas / Corrugado</td><td class="right">90</td><td class="right">76%</td></tr>
+          <tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#f5b400;margin-right:6px"></span>Fecha Corta</td><td class="right">18</td><td class="right">15%</td></tr>
+          <tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#0d2a6b;margin-right:6px"></span>No Conforme (sin lote en corrugado)</td><td class="right">6</td><td class="right">5%</td></tr>
+          <tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#5a6b8e;margin-right:6px"></span>Código Duplicado en OC</td><td class="right">2</td><td class="right">2%</td></tr>
+          <tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#8fa0c8;margin-right:6px"></span>Faltante</td><td class="right">2</td><td class="right">2%</td></tr>
+          <tr style="font-weight:700;background:#eef1f8"><td>TOTAL</td><td class="right">118</td><td class="right">100%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3>Impacto en Cajas por Causa</h3>
+      <div style="margin-top:10px">
+        <div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:3px">
+            <span>Cajas Dañadas / Corrugado</span>
+            <span style="font-weight:700;color:#d64541">~2,408 cajas (76%)</span>
+          </div>
+          <div class="bar-wrap"><div class="bar-fill bad" style="width:76%"></div></div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:3px">
+            <span>Fecha Corta</span>
+            <span style="font-weight:700;color:#b48500">~475 cajas (15%)</span>
+          </div>
+          <div class="bar-wrap"><div class="bar-fill warn" style="width:15%"></div></div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:3px">
+            <span>No Conforme (sin lote)</span>
+            <span style="font-weight:700;color:#0d2a6b">~190 cajas (6%)</span>
+          </div>
+          <div class="bar-wrap"><div class="bar-fill" style="width:6%;background:#0d2a6b"></div></div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:3px">
+            <span>Otros (duplicado/faltante)</span>
+            <span style="font-weight:700;color:#5a6b8e">~95 cajas (3%)</span>
+          </div>
+          <div class="bar-wrap"><div class="bar-fill" style="width:3%;background:#5a6b8e"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Entregas Críticas (> 100 cajas rechazadas)</h3>
+  <table>
+    <thead><tr><th>Fecha</th><th>Cita</th><th class="right">Enviadas</th><th class="right">Dañadas</th><th class="right">% Rechazo</th><th>Causa Principal</th></tr></thead>
+    <tbody>
+      <tr style="background:#fef7e0"><td>26-Nov</td><td>3005639</td><td class="right">3,465</td><td class="right" style="color:#b48500;font-weight:700">359*</td><td class="right" style="color:#b48500;font-weight:700">10.4%</td><td>Corregido: formulario triplicó filas (992→359). FROOT LOOPS: 95 Dan de 4 Env imposible</td></tr>
+      <tr style="background:#fde8e8"><td>08-Oct</td><td>3004847</td><td class="right">1,918</td><td class="right" style="color:#d64541;font-weight:700">781</td><td class="right" style="color:#d64541;font-weight:700">40.7%</td><td>Sin lote en corrugado + Dañadas (14 SKUs)</td></tr>
+      <tr><td>19-Nov</td><td>3005515</td><td class="right">799</td><td class="right" style="color:#d64541;font-weight:700">288</td><td class="right" style="color:#d64541;font-weight:700">36.0%</td><td>Fecha corta + Corrugado dañado</td></tr>
+      <tr><td>20-Nov</td><td>3005529</td><td class="right">600</td><td class="right" style="color:#d64541;font-weight:700">233</td><td class="right" style="color:#d64541;font-weight:700">38.8%</td><td>Cajas dañadas + Fecha corta</td></tr>
+      <tr><td>12-Nov</td><td>3005393</td><td class="right">1,100</td><td class="right" style="color:#d64541;font-weight:700">231</td><td class="right" style="color:#d64541;font-weight:700">21.0%</td><td>Cajas dañadas</td></tr>
+      <tr><td>27-Oct</td><td>3005100</td><td class="right">777</td><td class="right">192</td><td class="right" style="color:#d64541;font-weight:700">24.7%</td><td>Cajas dañadas</td></tr>
+      <tr><td>14-Nov</td><td>3005433</td><td class="right">1,041</td><td class="right">183</td><td class="right" style="color:#d64541;font-weight:700">17.6%</td><td>Cajas dañadas + Fecha corta</td></tr>
+      <tr><td>19-Oct</td><td>3004978</td><td class="right">665</td><td class="right">127</td><td class="right" style="color:#d64541;font-weight:700">19.1%</td><td>Fecha corta + Dañadas + Faltante</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============ RETRABAJO ============ -->
+<h2 class="section-title">Impacto del Retrabajo por Rechazos</h2>
+
+<div class="card">
+  <h2>Cadena de Retrabajo Generada por Rechazos</h2>
+
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin:16px 0;text-align:center">
+    <div style="background:#0d2a6b;color:#fff;padding:14px 8px;border-radius:8px 0 0 8px">
+      <div style="font-size:1.3rem;font-weight:700">①</div>
+      <div style="font-size:.78rem;margin-top:4px">Separación física durante descarga</div>
+      <div style="font-size:.7rem;color:#b9c6e6;margin-top:2px">~15-25 min/entrega</div>
+    </div>
+    <div style="background:#164193;color:#fff;padding:14px 8px">
+      <div style="font-size:1.3rem;font-weight:700">②</div>
+      <div style="font-size:.78rem;margin-top:4px">Documentación FSD por cada SKU</div>
+      <div style="font-size:.7rem;color:#b9c6e6;margin-top:2px">~5 min/SKU</div>
+    </div>
+    <div style="background:#0d2a6b;color:#fff;padding:14px 8px">
+      <div style="font-size:1.3rem;font-weight:700">③</div>
+      <div style="font-size:.78rem;margin-top:4px">Re-staging a zona de rechazos</div>
+      <div style="font-size:.7rem;color:#b9c6e6;margin-top:2px">~20 min/entrega</div>
+    </div>
+    <div style="background:#164193;color:#fff;padding:14px 8px">
+      <div style="font-size:1.3rem;font-weight:700">④</div>
+      <div style="font-size:.78rem;margin-top:4px">Gestión administrativa NC</div>
+      <div style="font-size:.7rem;color:#b9c6e6;margin-top:2px">~30 min/entrega</div>
+    </div>
+    <div style="background:#d64541;color:#fff;padding:14px 8px;border-radius:0 8px 8px 0">
+      <div style="font-size:1.3rem;font-weight:700">⑤</div>
+      <div style="font-size:.78rem;margin-top:4px">Rampa bloqueada para otros proveedores</div>
+      <div style="font-size:.7rem;color:#ffe0e0;margin-top:2px">+88 min promedio</div>
+    </div>
+  </div>
+
+  <h3>Tiempo de Pausas y Retrabajo Medido (Noviembre)</h3>
+  <p style="font-size:.82rem;color:#5a6b8e;margin-bottom:10px">Pausas durante la descarga = tiempo invertido en separar producto rechazado, crear FSD y coordinar.</p>
+  <table>
+    <thead><tr><th>Fecha</th><th>Cita</th><th class="right">Tiempo Efectivo</th><th class="right">Pausas (retrabajo)</th><th class="right">Num. Pausas</th><th class="right">Dañadas</th><th>Observación</th></tr></thead>
+    <tbody>
+      <tr style="background:#fef7e0"><td>26-Nov</td><td>3005639</td><td class="right">41 min</td><td class="right" style="color:#d64541;font-weight:700">275 min (4h 35min)</td><td class="right">5</td><td class="right">359*</td><td>Corregido: formulario triplicó filas (992→359)</td></tr>
+      <tr style="background:#fde8e8"><td>19-Nov</td><td>3005515</td><td class="right">28 min</td><td class="right" style="color:#d64541;font-weight:700">273 min (4h 33min)</td><td class="right">3</td><td class="right">288</td><td>Fecha corta + corrugado</td></tr>
+      <tr><td>25-Nov</td><td>3005615</td><td class="right">55 min</td><td class="right" style="color:#d64541;font-weight:700">146 min (2h 26min)</td><td class="right">1</td><td class="right">44</td><td>Cajas dañadas</td></tr>
+      <tr><td>14-Nov</td><td>3005433</td><td class="right">132 min</td><td class="right" style="color:#d64541;font-weight:700">110 min (1h 50min)</td><td class="right">2</td><td class="right">183</td><td>Dañadas + fecha corta</td></tr>
+      <tr><td>10-Nov</td><td>3005346</td><td class="right">98 min</td><td class="right" style="color:#d64541;font-weight:700">80 min (1h 20min)</td><td class="right">1</td><td class="right">46</td><td>Faltante 11 cajas</td></tr>
+      <tr><td>12-Nov</td><td>3005393</td><td class="right">0 min</td><td class="right" style="color:#d64541;font-weight:700">29 min</td><td class="right">1</td><td class="right">231</td><td>Cajas dañadas masivo</td></tr>
+    </tbody>
+    <tfoot>
+      <tr style="background:#0d2a6b;color:#fff;font-weight:700">
+        <td colspan="3">Total Noviembre</td>
+        <td class="right">913 min (15.2 horas)</td>
+        <td class="right">13</td>
+        <td class="right">1,504</td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<div class="kpi-row">
+  <div class="kpi" style="border-color:#d64541;border-width:2px">
+    <div class="label">Horas de Retrabajo Nov</div>
+    <div class="value" style="color:#d64541">15.2h</div>
+    <div class="delta bad">Solo en pausas medidas</div>
+  </div>
+  <div class="kpi" style="border-color:#d64541;border-width:2px">
+    <div class="label">Horas Rampa Excedidas</div>
+    <div class="value" style="color:#d64541">19.1h</div>
+    <div class="delta bad">Total Oct-Nov en excesos</div>
+  </div>
+  <div class="kpi" style="border-color:#d64541;border-width:2px">
+    <div class="label">Entregas Bloqueadas</div>
+    <div class="value" style="color:#d64541">~13</div>
+    <div class="delta bad">Rampas no disponibles para otros</div>
+  </div>
+  <div class="kpi" style="border-color:#d64541;border-width:2px">
+    <div class="label">Costo Operativo</div>
+    <div class="value" style="color:#d64541">+34h</div>
+    <div class="delta bad">Retrabajo + exceso rampa</div>
+  </div>
+</div>
+
+<!-- ============ COMPARATIVO MENSUAL ============ -->
+<h2 class="section-title">Comparativo Octubre vs. Noviembre</h2>
+
+<div class="card">
+  <h2>Tendencia Mensual</h2>
+  <table>
+    <thead>
+      <tr><th>Indicador</th><th class="right">Octubre</th><th class="right">Noviembre</th><th class="right">Variación</th><th>Tendencia</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Entregas</td><td class="right">12</td><td class="right">9</td><td class="right">-3</td><td></td></tr>
+      <tr><td>Cajas Enviadas</td><td class="right">13,253</td><td class="right">12,332</td><td class="right">-921</td><td></td></tr>
+      <tr><td>Cajas Recibidas</td><td class="right">12,380</td><td class="right">11,219</td><td class="right">-1,161</td><td></td></tr>
+      <tr><td>Fill Rate</td><td class="right">93.4%</td><td class="right" style="color:#d64541;font-weight:700">91.0%</td><td class="right" style="color:#d64541;font-weight:700">-2.4 pp</td><td><span class="pill red">Empeora</span></td></tr>
+      <tr><td>Cajas Dañadas</td><td class="right">1,665 (12.6%)</td><td class="right">1,504 (12.2%)</td><td class="right" style="color:#1e8449">-0.4 pp</td><td><span class="pill green">Estable</span></td></tr>
+      <tr><td>Entregas Excedidas</td><td class="right">8 de 12 (67%)</td><td class="right">5 de 9 (56%)</td><td class="right" style="color:#1e8449">-11 pp</td><td><span class="pill yellow">Leve mejora</span></td></tr>
+      <tr><td>Exceso Prom. (cuando excede)</td><td class="right">+91 min</td><td class="right">+84 min</td><td class="right" style="color:#1e8449">-7 min</td><td><span class="pill yellow">Estable</span></td></tr>
+      <tr><td>Pausas por Retrabajo (Nov medido)</td><td class="right">s/d</td><td class="right" style="color:#d64541;font-weight:700">913 min</td><td class="right">—</td><td><span class="pill red">Alto</span></td></tr>
+      <tr style="background:#fef7e0"><td>Anomalía Formulario (Cita 3005639)</td><td class="right">—</td><td class="right" style="color:#b48500;font-weight:700">633 cajas fantasma</td><td class="right">—</td><td><span class="pill yellow">Corregido</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============ NOTA FORMULARIO ============ -->
+<div class="card" style="background:#fef7e0;border-color:#f5b400">
+  <h2 style="border-color:#b48500;color:#b48500">Anomalía en Formulario de Descarga — Cita 3005639 (26-Nov)</h2>
+  <p style="font-size:.88rem;margin-bottom:10px">El formulario de descarga de la Cita 3005639 generó <strong>41 filas para 13 SKUs</strong> cuando deberían ser ~15 filas únicas (OC + SKU). Cada combinación de OC+SKU aparece <strong>triplicada</strong> con valores de dañado idénticos, inflando la cifra reportada.</p>
+  <table>
+    <thead><tr><th>Concepto</th><th class="right">Valor</th></tr></thead>
+    <tbody>
+      <tr><td>Cajas dañadas reportadas en formulario</td><td class="right" style="color:#d64541;font-weight:700">992</td></tr>
+      <tr><td>Cajas dañadas reales (deduplicadas OC+SKU)</td><td class="right" style="color:#1e8449;font-weight:700">359</td></tr>
+      <tr><td>Cajas fantasma por triplicación</td><td class="right" style="color:#b48500;font-weight:700">633 (64% del total reportado)</td></tr>
+      <tr><td>Factor de inflación</td><td class="right" style="font-weight:700">2.76x</td></tr>
+      <tr style="background:#fde8e8"><td>Dato imposible: FROOT LOOPS (A0010001723)</td><td class="right" style="color:#d64541;font-weight:700">95 dañadas de 4 enviadas</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.82rem;color:#5a6b8e;margin-top:10px"><strong>Impacto:</strong> Sin la corrección, la cifra de 992 cajas alteraba los indicadores globales: dañado pasaba de 12.4% a 14.9% y la tendencia mensual aparecía como "empeorando" (17.3%) en vez de estable (12.2%). Este error en la documentación de descarga genera distorsión en indicadores, reportes incorrectos al proveedor y tiempo adicional de reconciliación. <strong>Los valores con asterisco (*) en las tablas reflejan la cifra corregida.</strong></p>
+</div>
+
+<!-- ============ CORREO FORMAL ============ -->
+<h2 class="section-title">Borrador de Correo Formal</h2>
+
+<div class="email-box">
+  <p><span class="field">Para:</span> [Contacto Kellanova Guatemala]</p>
+  <p><span class="field">CC:</span> [Gerencia de Operaciones Arium]</p>
+  <p><span class="field">Asunto:</span> Revisión de Desempeño en Entregas — Bodega 1110 — Octubre-Noviembre 2026</p>
+  <hr>
+  <p>Estimados señores de <strong>Kellanova</strong>,</p>
+  <br>
+  <p>Reciban un cordial saludo. Por medio del presente nos dirigimos a ustedes con el propósito de compartir un análisis del desempeño de las entregas realizadas a nuestra Bodega 1110 durante los meses de <strong>octubre y noviembre de 2026</strong>, con la finalidad de identificar oportunidades de mejora en conjunto.</p>
+  <br>
+  <p><strong>Resumen del periodo (21 entregas):</strong></p>
+  <ul style="padding-left:20px;margin:8px 0">
+    <li><strong>Fill Rate:</strong> 92.2% global (octubre 93.4%, noviembre 91.0%). El estándar de operación esperado es de al menos 98%.</li>
+    <li><strong>Producto dañado:</strong> Se registraron <strong>3,169 cajas dañadas</strong>, equivalentes al 12.4% del total enviado. La tendencia se mantiene estable (12.6% en octubre, 12.2% en noviembre).</li>
+    <li><strong>Fecha corta:</strong> Se identificaron 18 incidencias de producto con fecha de vencimiento insuficiente para nuestros parámetros de recepción.</li>
+    <li><strong>No conformidad de empaque:</strong> En 6 ocasiones el corrugado no presentaba número de lote legible, lo cual impide el rastreo del producto y genera rechazo obligatorio.</li>
+  </ul>
+  <br>
+  <p><strong>Impacto en la operación:</strong></p>
+  <ul style="padding-left:20px;margin:8px 0">
+    <li><strong>Tiempos de descarga:</strong> El 62% de las entregas (13 de 21) excedieron la ventana de tiempo asignada en rampa, con un promedio de <strong>+88 minutos adicionales</strong> por entrega excedida. Esto representa más de <strong>19 horas acumuladas</strong> de rampa bloqueada.</li>
+    <li><strong>Retrabajo:</strong> La separación y reacomodo de producto rechazado generó <strong>15.2 horas de pausas operativas</strong> solo en noviembre (medidas por sistema WMS). Esto incluye la clasificación física, documentación FSD y re-staging a zona de rechazos.</li>
+    <li><strong>Efecto cascada:</strong> La ocupación prolongada de rampas afecta la programación de descargas de otros contenedores en el mismo horario, generando retrasos en cadena.</li>
+  </ul>
+  <br>
+  <p><strong>Entregas con mayor impacto:</strong></p>
+  <ul style="padding-left:20px;margin:8px 0">
+    <li>26-Nov (Cita 3005639): 359 cajas reales dañadas de 3,465 enviadas (10.4% rechazo), 5h 51min en rampa. <em>Nota: el formulario de descarga reportó 992 cajas por triplicación de filas (misma OC y SKU repetidos), inflando el dato un 176%. Esto evidencia la necesidad de mejorar el proceso de llenado del documento.</em></li>
+    <li>08-Oct (Cita 3004847): 781 cajas sin lote + dañadas de 1,918 enviadas (40.7% rechazo), 6h 01min en rampa.</li>
+    <li>19-Nov (Cita 3005515): 288 cajas fecha corta/corrugado de 799 enviadas (36.0% rechazo), 5h 35min en rampa.</li>
+  </ul>
+  <br>
+  <p>Respetuosamente solicitamos se revisen las siguientes áreas en su cadena de distribución:</p>
+  <ol style="padding-left:20px;margin:8px 0">
+    <li><strong>Control de calidad del corrugado en origen:</strong> El 76% de los rechazos corresponden a daño físico del empaque.</li>
+    <li><strong>Rotación FEFO:</strong> Revisar que el producto embarcado cumpla con la vida útil mínima acordada.</li>
+    <li><strong>Identificación de lotes:</strong> Garantizar que toda caja cuente con número de lote legible en el corrugado.</li>
+    <li><strong>Precisión de órdenes de compra:</strong> Se detectaron códigos duplicados en la misma OC, generando discrepancias en la recepción.</li>
+    <li><strong>Calidad del llenado del documento de descarga:</strong> En la entrega del 26-Nov (Cita 3005639), el formulario registró 992 cajas dañadas cuando la cifra real validada en sistema es de 359 — una inflación del 176% por filas triplicadas con la misma OC y SKU. Adicionalmente, se registraron 95 cajas dañadas para un SKU (FROOT LOOPS) del cual solo se enviaron 4 cajas, dato físicamente imposible. Solicitamos se refuerce el control de calidad en el llenado de la documentación de entrega.</li>
+  </ol>
+  <br>
+  <p>Estamos abiertos a coordinar una reunión para revisar estos hallazgos en detalle y definir un plan de acción conjunto que nos permita elevar el nivel de servicio al estándar esperado.</p>
+  <br>
+  <p>Agradecemos de antemano su atención y quedamos a la orden.</p>
+  <br>
+  <p>Atentamente,</p>
+  <p><strong>[Nombre]</strong><br>
+  Supervisión de Recepciones<br>
+  Bodega 1110 — Corporación Arium</p>
+</div>
+
+<!-- Footer -->
+<div style="text-align:center;padding:24px 0;color:#8fa0c8;font-size:.75rem">
+  Generado automáticamente desde datos WMS Körber · Bodega 1110 · 26-Nov-2026
+</div>
+
+</div>
+</body>
+</html>
